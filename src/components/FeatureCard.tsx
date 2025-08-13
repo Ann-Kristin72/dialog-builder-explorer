@@ -5,20 +5,20 @@ interface FeatureCardProps {
   icon: ReactNode;
   title: string;
   description: string;
-  accentColor: "pink" | "purple" | "orange";
+  accentColor: "blue" | "green" | "orange";
 }
 
 export const FeatureCard = ({ icon, title, description, accentColor }: FeatureCardProps) => {
   const borderColorClass = {
-    pink: "border-medical-pink/30",
-    purple: "border-medical-purple/30", 
-    orange: "border-medical-orange/30"
+    blue: "border-tech-blue/30",
+    green: "border-tech-green/30", 
+    orange: "border-tech-orange/30"
   }[accentColor];
 
   const iconColorClass = {
-    pink: "text-medical-pink",
-    purple: "text-medical-purple",
-    orange: "text-medical-orange"
+    blue: "text-tech-blue",
+    green: "text-tech-green",
+    orange: "text-tech-orange"
   }[accentColor];
 
   return (

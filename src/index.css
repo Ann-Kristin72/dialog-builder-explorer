@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design system for VERA - Norwegian Health AI Assistant
+/* Design system for TeknoTassen - Velferdsteknologi ekspert
 All colors MUST be HSL.
 */
 
@@ -17,7 +17,7 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 215 25% 27%;
 
-    --primary: 330 60% 65%;
+    --primary: 210 85% 55%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 210 40% 96%;
@@ -29,27 +29,27 @@ All colors MUST be HSL.
     --accent: 270 50% 85%;
     --accent-foreground: 215 25% 27%;
 
-    --medical-pink: 330 60% 65%;
-    --medical-purple: 270 50% 85%;
-    --medical-orange: 25 90% 70%;
+    --tech-blue: 210 85% 55%;
+    --tech-green: 140 60% 50%;
+    --tech-orange: 25 90% 70%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
     --border: 214 31% 91%;
     --input: 214 31% 91%;
-    --ring: 330 60% 65%;
+    --ring: 210 85% 55%;
 
     --radius: 1rem;
 
     /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(var(--medical-pink)) 0%, hsl(var(--medical-purple)) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(var(--tech-blue)) 0%, hsl(var(--tech-green)) 100%);
     --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(210 40% 98%) 100%);
 
     /* Shadows */
-    --shadow-soft: 0 4px 20px -4px hsl(var(--medical-pink) / 0.15);
+    --shadow-soft: 0 4px 20px -4px hsl(var(--tech-blue) / 0.15);
     --shadow-card: 0 8px 32px -8px hsl(215 25% 27% / 0.1);
-    --shadow-avatar: 0 8px 40px -8px hsl(var(--medical-pink) / 0.3);
+    --shadow-avatar: 0 8px 40px -8px hsl(var(--tech-blue) / 0.3);
 
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -81,7 +81,7 @@ All colors MUST be HSL.
     --popover: 215 25% 15%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 330 60% 65%;
+    --primary: 210 85% 55%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 215 25% 18%;
@@ -93,25 +93,25 @@ All colors MUST be HSL.
     --accent: 270 50% 75%;
     --accent-foreground: 215 25% 12%;
 
-    --medical-pink: 330 60% 65%;
-    --medical-purple: 270 50% 75%;
-    --medical-orange: 25 80% 70%;
+    --tech-blue: 210 85% 55%;
+    --tech-green: 140 60% 50%;
+    --tech-orange: 25 80% 65%;
 
     --destructive: 0 62% 50%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 215 25% 22%;
     --input: 215 25% 22%;
-    --ring: 330 60% 65%;
+    --ring: 210 85% 55%;
 
     /* Dark mode gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(var(--medical-pink)) 0%, hsl(var(--medical-purple)) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(var(--tech-blue)) 0%, hsl(var(--tech-green)) 100%);
     --gradient-card: linear-gradient(145deg, hsl(215 25% 15%) 0%, hsl(215 25% 18%) 100%);
 
     /* Dark mode shadows */
     --shadow-soft: 0 4px 20px -4px hsl(0 0% 0% / 0.3);
     --shadow-card: 0 8px 32px -8px hsl(0 0% 0% / 0.4);
-    --shadow-avatar: 0 8px 40px -8px hsl(var(--medical-pink) / 0.4);
+    --shadow-avatar: 0 8px 40px -8px hsl(var(--tech-blue) / 0.4);
   }
 }
 

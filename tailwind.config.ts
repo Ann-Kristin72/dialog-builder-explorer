@@ -52,10 +52,10 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				medical: {
-					pink: 'hsl(var(--medical-pink))',
-					purple: 'hsl(var(--medical-purple))',
-					orange: 'hsl(var(--medical-orange))'
+				tech: {
+					blue: 'hsl(var(--tech-blue))',
+					green: 'hsl(var(--tech-green))',
+					orange: 'hsl(var(--tech-orange))'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
