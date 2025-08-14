@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { DocumentUpload } from "./DocumentUpload";
 import { Trash2, FileText, Calendar, ChevronDown, ChevronUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 interface Document {
   id: string;
@@ -24,18 +23,16 @@ export const KnowledgeManager = () => {
   const loadDocuments = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('knowledge_documents')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setDocuments(data || []);
+      // Load documents from localStorage instead of Supabase
+      const storedDocs = localStorage.getItem('knowledge_documents');
+      const data = storedDocs ? JSON.parse(storedDocs) : [];
+      setDocuments(data);
+      console.log("Loaded", data.length, "documents from localStorage");
     } catch (error) {
       console.error('Error loading documents:', error);
       toast({
         title: "Kunne ikke laste dokumenter",
-        description: "Sjekk at databasen er satt opp riktig",
+        description: "Sjekk at localStorage fungerer",
         variant: "destructive",
       });
     } finally {
@@ -45,14 +42,12 @@ export const KnowledgeManager = () => {
 
   const deleteDocument = async (id: string, title: string) => {
     try {
-      const { error } = await supabase
-        .from('knowledge_documents')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
-      setDocuments(docs => docs.filter(doc => doc.id !== id));
+      // Remove document from localStorage
+      const storedDocs = JSON.parse(localStorage.getItem('knowledge_documents') || '[]');
+      const updatedDocs = storedDocs.filter((doc: Document) => doc.id !== id);
+      localStorage.setItem('knowledge_documents', JSON.stringify(updatedDocs));
+      
+      setDocuments(updatedDocs);
       toast({
         title: "Dokument slettet",
         description: `"${title}" ble fjernet fra kunnskapsbasen`,
