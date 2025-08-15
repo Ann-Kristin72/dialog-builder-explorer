@@ -9,21 +9,25 @@
 ## 🌟 Funksjoner
 
 ### 🔐 **Autentisering & Roller**
+
 - **Magic Link Login** - Sikker innlogging uten passord
 - **Rollebasert tilgang** - helsepersonell, prosjektleder, admin
 - **Brukeradministrasjon** - Admin dashboard for brukerstyring
 
 ### 📋 **Sjekkliste & Fremdrift**
+
 - **Helhetlig tjenestemodell** - Strukturert implementeringsprosess
 - **Fremdriftssporing** - Individuell progresjon for hver bruker
 - **Dynamiske AI-prompts** - Tilpasset basert på rolle og fremdrift
 
 ### 🤖 **AI-Chat med TeknoTassen**
+
 - **Kontekstbevisst** - Forstår brukerens rolle og fremdrift
 - **Velferdsteknologi-ekspert** - Spesialiserte kunnskaper
 - **Lokal testing** - Fungerer offline med mock backend
 
 ### 🏗️ **Infrastruktur**
+
 - **Azure Bicep** - Komplett infrastruktur som kode
 - **PostgreSQL** - Skalerbar database
 - **Container Apps** - Moderne backend hosting
@@ -32,6 +36,7 @@
 ## 🛠️ Teknologier
 
 ### **Frontend**
+
 - **React 18** - Moderne UI-bibliotek
 - **TypeScript** - Type-sikker utvikling
 - **Vite** - Rask build tool
@@ -39,12 +44,14 @@
 - **shadcn/ui** - Moderne komponenter
 
 ### **Backend**
+
 - **Node.js** - Server-side JavaScript
 - **Express.js** - Web framework
 - **Supabase** - Backend-as-a-Service
 - **OpenAI API** - AI-chat funksjonalitet
 
 ### **Infrastruktur**
+
 - **Azure Bicep** - Infrastructure as Code
 - **Azure PostgreSQL** - Managed database
 - **Azure Container Apps** - Serverless containers
@@ -53,6 +60,7 @@
 ## 🚀 Kom i gang
 
 ### **Forutsetninger**
+
 - **Node.js 18+** - [Last ned her](https://nodejs.org/)
 - **npm** eller **yarn** - Pakkehåndtering
 - **Git** - Versjonskontroll
@@ -145,11 +153,13 @@ infra/               # Azure Bicep infrastruktur
 ## 🚀 Deployment
 
 ### **Lokal Testing**
+
 - Backend: `http://localhost:3001`
 - Frontend: `http://localhost:5173`
 - Mock data og autentisering
 
 ### **Produksjon (Azure)**
+
 ```bash
 # Deploy infrastruktur
 cd infra
@@ -163,6 +173,7 @@ az staticwebapp update --name teknotassen-frontend --resource-group rg-teknotass
 ```
 
 ### **Lovable Platform**
+
 - Åpne [Lovable Project](https://lovable.dev/projects/5b930ef5-a6a4-44b2-8bb3-c37d9e5df2c3)
 - Klikk Share → Publish for live demo
 
@@ -188,16 +199,19 @@ Dette prosjektet er lisensiert under MIT License.
 ## 🛡️ Sikkerhet & Beste Praksis
 
 ### **Miljøvariabler**
+
 - **ALDRIG committ .env filer** til Git
 - **Bruk .gitignore** for å ekskludere sensitive filer
 - **Azure Key Vault** for produksjonssecrets
 
 ### **Git Beste Praksis**
+
 - **Ikke force push** til main branch
 - **Bruk feature branches** for nye funksjoner
 - **Sjekk .gitignore** før hver commit
 
 ### **API Keys**
+
 - **OpenAI API Key** - Kun i backend .env
 - **Supabase Keys** - Miljøvariabler
 - **Azure Credentials** - Managed Identity

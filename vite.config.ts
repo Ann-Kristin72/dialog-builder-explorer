@@ -19,4 +19,22 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Miljøvariabler for OIDC og API
+  define: {
+    __DEV__: mode === "development",
+  },
+  // Build optimalisering for Vercel
+  build: {
+    outDir: "dist",
+    sourcemap: mode === "development",
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom"],
+          oidc: ["oidc-client-ts"],
+          router: ["react-router-dom"],
+        },
+      },
+    },
+  },
 }));
