@@ -13,10 +13,16 @@ const upload = multer({
     fileSize: 10 * 1024 * 1024, // 10MB limit
   },
   fileFilter: (req, file, cb) => {
-    if (file.mimetype === 'text/markdown' || file.mimetype === 'text/plain') {
+    // Sjekk både MIME-type og filnavn
+    const isMarkdown = file.mimetype === 'text/markdown' || 
+                      file.mimetype === 'text/plain' ||
+                      file.originalname.endsWith('.md') ||
+                      file.originalname.endsWith('.txt');
+    
+    if (isMarkdown) {
       cb(null, true);
     } else {
-      cb(new Error('Only markdown and text files are allowed'), false);
+      cb(new Error('Only markdown (.md) and text (.txt) files are allowed'), false);
     }
   },
 });
