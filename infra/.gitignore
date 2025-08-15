@@ -1,0 +1,46 @@
+# Azure Bicep Infrastructure
+# Ekskluder sensitive filer og genererte filer
+
+# Backup filer
+*.backup
+*.bak
+
+# Oppdaterte parameter filer (kan inneholde sensitive verdier)
+parameters.json.bak
+
+# Azure CLI cache
+.azure/
+
+# Bicep cache
+.bicep/
+
+# Terraform (hvis brukt som alternativ)
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# Environment variabler
+.env
+.env.local
+.env.production
+
+# Logs
+*.log
+
+# Temporary filer
+*.tmp
+*.temp
+
+# OS genererte filer
+.DS_Store
+Thumbs.db
+
+# IDE filer
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Deployment outputs
+deployment-outputs.json
+deployment-results.json

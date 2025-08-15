@@ -1,24 +1,78 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { IframeWrapper } from "@/components/IframeWrapper";
+import { Header } from "@/components/Header";
+import { Login } from "@/components/Login";
+import Index from "@/pages/Index";
+import NotFound from "@/pages/NotFound";
+import "./App.css";
 
-const queryClient = new QueryClient();
+// Protected route komponent
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated, isLoading } = useAuth();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <Toaster />
-    <Sonner />
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Index />} />
-        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
-  </QueryClientProvider>
-);
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Laster...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+};
+
+// Hovedapp komponent
+const AppContent: React.FC = () => {
+  return (
+    <Router>
+      <IframeWrapper>
+        <div className="min-h-screen bg-gray-50">
+          <Routes>
+            {/* Login route */}
+            <Route path="/login" element={<Login />} />
+            
+            {/* Protected routes */}
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <>
+                    <Header />
+                    <Index />
+                  </>
+                </ProtectedRoute>
+              }
+            />
+            
+            {/* Auth callback routes */}
+            <Route path="/auth/callback" element={<Navigate to="/" replace />} />
+            <Route path="/auth/silent-renew" element={<Navigate to="/" replace />} />
+            
+            {/* 404 */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+      </IframeWrapper>
+    </Router>
+  );
+};
+
+// Root app komponent
+const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
+};
 
 export default App;
