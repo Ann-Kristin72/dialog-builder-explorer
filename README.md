@@ -1,73 +1,217 @@
-# Welcome to your Lovable project
+# 🚀 TeknoTassen - Velferdsteknologi AI-Assistent
 
-## Project info
+## 📋 Prosjektinfo
 
-**URL**: https://lovable.dev/projects/5b930ef5-a6a4-44b2-8bb3-c37d9e5df2c3
+**TeknoTassen** er en intelligent AI-assistent som hjelper helsepersonell, prosjektledere og administratorer med å implementere velferdsteknologi i kommunal omsorg.
 
-## How can I edit this code?
+**Live Demo**: [TeknoTassen App](https://lovable.dev/projects/5b930ef5-a6a4-44b2-8bb3-c37d9e5df2c3)
 
-There are several ways of editing your application.
+## 🌟 Funksjoner
 
-**Use Lovable**
+### 🔐 **Autentisering & Roller**
+- **Magic Link Login** - Sikker innlogging uten passord
+- **Rollebasert tilgang** - helsepersonell, prosjektleder, admin
+- **Brukeradministrasjon** - Admin dashboard for brukerstyring
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/5b930ef5-a6a4-44b2-8bb3-c37d9e5df2c3) and start prompting.
+### 📋 **Sjekkliste & Fremdrift**
+- **Helhetlig tjenestemodell** - Strukturert implementeringsprosess
+- **Fremdriftssporing** - Individuell progresjon for hver bruker
+- **Dynamiske AI-prompts** - Tilpasset basert på rolle og fremdrift
 
-Changes made via Lovable will be committed automatically to this repo.
+### 🤖 **AI-Chat med TeknoTassen**
+- **Kontekstbevisst** - Forstår brukerens rolle og fremdrift
+- **Velferdsteknologi-ekspert** - Spesialiserte kunnskaper
+- **Lokal testing** - Fungerer offline med mock backend
 
-**Use your preferred IDE**
+### 🏗️ **Infrastruktur**
+- **Azure Bicep** - Komplett infrastruktur som kode
+- **PostgreSQL** - Skalerbar database
+- **Container Apps** - Moderne backend hosting
+- **Static Web Apps** - Frontend hosting
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🛠️ Teknologier
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### **Frontend**
+- **React 18** - Moderne UI-bibliotek
+- **TypeScript** - Type-sikker utvikling
+- **Vite** - Rask build tool
+- **Tailwind CSS** - Utility-first CSS
+- **shadcn/ui** - Moderne komponenter
 
-Follow these steps:
+### **Backend**
+- **Node.js** - Server-side JavaScript
+- **Express.js** - Web framework
+- **Supabase** - Backend-as-a-Service
+- **OpenAI API** - AI-chat funksjonalitet
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### **Infrastruktur**
+- **Azure Bicep** - Infrastructure as Code
+- **Azure PostgreSQL** - Managed database
+- **Azure Container Apps** - Serverless containers
+- **Azure Key Vault** - Sikker secrets management
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 🚀 Kom i gang
 
-# Step 3: Install the necessary dependencies.
-npm i
+### **Forutsetninger**
+- **Node.js 18+** - [Last ned her](https://nodejs.org/)
+- **npm** eller **yarn** - Pakkehåndtering
+- **Git** - Versjonskontroll
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### **Installasjon**
+
+```bash
+# 1. Klone repository
+git clone https://github.com/Ann-Kristin72/dialog-builder-explorer.git
+cd dialog-builder-explorer
+
+# 2. Installer avhengigheter
+npm install
+
+# 3. Start utviklingsserver
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### **Lokal Testing Setup**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+# 1. Start backend server
+cd backend
+npm install
+npm run dev
 
-**Use GitHub Codespaces**
+# 2. I ny terminal - start frontend
+npm run dev
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# 3. Åpne http://localhost:5173
+```
 
-## What technologies are used for this project?
+### **Miljøvariabler**
 
-This project is built with:
+Opprett `.env` fil i `backend/` mappen:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```bash
+# OpenAI API Key
+OPENAI_API_KEY=din-openai-api-nøkkel-her
 
-## How can I deploy this project?
+# Server konfigurasjon
+PORT=3001
+NODE_ENV=development
+```
 
-Simply open [Lovable](https://lovable.dev/projects/5b930ef5-a6a4-44b2-8bb3-c37d9e5df2c3) and click on Share -> Publish.
+## 🔧 Utvikling
 
-## Can I connect a custom domain to my Lovable project?
+### **Tilgjengelige Scripts**
 
-Yes, you can!
+```bash
+npm run dev          # Start utviklingsserver
+npm run build        # Bygg for produksjon
+npm run preview      # Forhåndsvis produksjonsbuild
+npm run lint         # Kjør ESLint
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### **Prosjektstruktur**
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+```
+src/
+├── components/      # React komponenter
+│   ├── ChatInterface.tsx
+│   ├── ChecklistProgress.tsx
+│   ├── Header.tsx
+│   ├── Login.tsx
+│   ├── RoleGate.tsx
+│   └── AdminDashboard.tsx
+├── contexts/        # React Context (Auth)
+│   └── AuthContext.tsx
+├── pages/          # Side-komponenter
+│   └── Index.tsx
+├── utils/          # Hjelpefunksjoner
+│   └── chatPromptBuilder.ts
+└── integrations/   # Eksterne tjenester
+    └── supabase/
+        └── client.ts
+
+backend/             # Lokal testing server
+├── server.js        # Express server
+├── package.json     # Backend avhengigheter
+└── config.js        # Server konfigurasjon
+
+infra/               # Azure Bicep infrastruktur
+├── main.bicep       # Hovedmodul
+├── postgresql.bicep # Database
+├── keyVault.bicep   # Secrets management
+└── ...              # Andre Azure ressurser
+```
+
+## 🚀 Deployment
+
+### **Lokal Testing**
+- Backend: `http://localhost:3001`
+- Frontend: `http://localhost:5173`
+- Mock data og autentisering
+
+### **Produksjon (Azure)**
+```bash
+# Deploy infrastruktur
+cd infra
+az deployment group create --template-file main.bicep --parameters parameters.json
+
+# Deploy backend
+az containerapp update --name teknotassen-backend --resource-group rg-teknotassen
+
+# Deploy frontend
+az staticwebapp update --name teknotassen-frontend --resource-group rg-teknotassen
+```
+
+### **Lovable Platform**
+- Åpne [Lovable Project](https://lovable.dev/projects/5b930ef5-a6a4-44b2-8bb3-c37d9e5df2c3)
+- Klikk Share → Publish for live demo
+
+## 📚 Dokumentasjon
+
+- **ARCHITECTURE.md** - Systemarkitektur og design
+- **README-LOCAL-TESTING.md** - Detaljerte instruksjoner for lokal testing
+- **OPENAI-SETUP.md** - Konfigurering av OpenAI API
+- **database-schema.sql** - Database struktur og RLS policies
+
+## 🤝 Bidrag
+
+1. **Fork** repository
+2. **Opprett feature branch**: `git checkout -b feature/ny-funksjon`
+3. **Commit endringer**: `git commit -m 'feat: legg til ny funksjon'`
+4. **Push til branch**: `git push origin feature/ny-funksjon`
+5. **Opprett Pull Request**
+
+## 📄 Lisens
+
+Dette prosjektet er lisensiert under MIT License.
+
+## 🛡️ Sikkerhet & Beste Praksis
+
+### **Miljøvariabler**
+- **ALDRIG committ .env filer** til Git
+- **Bruk .gitignore** for å ekskludere sensitive filer
+- **Azure Key Vault** for produksjonssecrets
+
+### **Git Beste Praksis**
+- **Ikke force push** til main branch
+- **Bruk feature branches** for nye funksjoner
+- **Sjekk .gitignore** før hver commit
+
+### **API Keys**
+- **OpenAI API Key** - Kun i backend .env
+- **Supabase Keys** - Miljøvariabler
+- **Azure Credentials** - Managed Identity
+
+## 🆘 Support
+
+- **Issues**: [GitHub Issues](https://github.com/Ann-Kristin72/dialog-builder-explorer/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Ann-Kristin72/dialog-builder-explorer/discussions)
+- **Live Demo**: [TeknoTassen App](https://lovable.dev/projects/5b930ef5-a6a4-44b2-8bb3-c37d9e5df2c3)
+
+## 🎯 Status
+
+**✅ Komplett implementasjon** - Alle hovedfunksjoner implementert
+**✅ Lokal testing** - Fungerer offline med mock backend
+**✅ Azure infrastruktur** - Bicep templates klar for produksjon
+**✅ Sikkerhet** - Ingen sensitive filer i repository
+**✅ Dokumentasjon** - Omfattende README og instruksjoner
