@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import multer from 'multer';
 import coursesRouter from './routes/courses.js';
+import ttsSttRouter from './routes/ttsStt.js';
 import { testConnection, initDatabase, initializeDatabasePool } from './utils/database.js';
 import { azureStorageService } from './services/azureStorageService.js';
 
@@ -47,6 +48,7 @@ app.get('/health', (req, res) => {
 
 // API routes
 app.use('/api/courses', coursesRouter);
+app.use('/api/tts-stt', ttsSttRouter);
 
 // Error handling middleware
 app.use((error, req, res, next) => {

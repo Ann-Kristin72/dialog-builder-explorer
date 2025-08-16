@@ -26,12 +26,19 @@ En intelligent backend for TeknoTassen som kombinerer RAG (Retrieval-Augmented G
 - **Personlighet** - TeknoTassens vennlige og nerdete tone
 - **Chat-forslag** basert på tilgjengelige kurs
 
+### **Voice Integration (TTS/STT)**
+- **Text-to-Speech** med ElevenLabs naturlige stemmer
+- **Speech-to-Text** med 96.7% nøyaktighet
+- **Norsk språkstøtte** for lokale brukere
+- **Voice chat** for hands-free interaksjon
+
 ## 🛠️ Teknologier
 
 - **Node.js** + **Express.js** - Moderne backend-framework
 - **PostgreSQL** + **pgvector** - Vektor-database for embeddings
 - **LangChain** - AI/ML pipeline for tekstbehandling
 - **OpenAI API** - Embeddings og chat-generering
+- **ElevenLabs API** - Text-to-Speech og Speech-to-Text
 - **Multer** - Filopplasting og validering
 - **Zod** - Runtime validering av data
 
@@ -88,6 +95,9 @@ DB_PORT=5432
 
 # OpenAI
 OPENAI_API_KEY=your-openai-api-key-here
+
+# ElevenLabs (TTS/STT)
+ELEVENLABS_API_KEY=your-elevenlabs-api-key-here
 ```
 
 ### **Database Setup**
@@ -111,6 +121,15 @@ CREATE EXTENSION IF NOT EXISTS vector;
 - `POST /api/courses/chat` - Chat med RAG-kontekst
 - `GET /api/courses/chat/suggestions` - Få chat-forslag
 - `GET /api/courses/technology/overview` - Teknologioversikt
+
+### **Voice Integration (TTS/STT)**
+- `GET /api/tts-stt/status` - Tjenestestatus
+- `GET /api/tts-stt/voices` - Tilgjengelige stemmer
+- `GET /api/tts-stt/voices/:id` - Stemme-detaljer
+- `POST /api/tts-stt/tts` - Text-to-Speech
+- `POST /api/tts-stt/stt` - Speech-to-Text
+- `GET /api/tts-stt/test-norwegian` - Test norsk TTS
+- `POST /api/tts-stt/chat-voice` - Voice chat demo
 
 ### **System**
 - `GET /health` - Helsesjekk

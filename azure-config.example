@@ -24,3 +24,6 @@ AZURE_CLIENT_SECRET=your_client_secret
 
 # Note: Both StorageConnectionString and PostgresConnectionString 
 # are stored in Key Vault and will be automatically retrieved
+
+# ElevenLabs API Key (for TTS/STT)
+ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
