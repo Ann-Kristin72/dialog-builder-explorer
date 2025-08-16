@@ -12,7 +12,8 @@ import { azureStorageService } from './services/azureStorageService.js';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+// Force port 80 for Azure Web App compatibility
+const PORT = 80;
 
 // Security middleware
 app.use(helmet());

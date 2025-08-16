@@ -23,7 +23,7 @@ RUN mkdir -p uploads
 ENV NODE_ENV=production
 ENV TZ=Europe/Oslo
 
-# Eksponer port 80 (Azure Web Apps forventer dette)
+# Force port 80 for Azure Web Apps (overrides any WEBSITES_PORT)
 ENV PORT=80
 EXPOSE 80
 
