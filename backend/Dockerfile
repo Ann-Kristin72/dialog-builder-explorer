@@ -23,13 +23,13 @@ RUN mkdir -p uploads
 ENV NODE_ENV=production
 ENV TZ=Europe/Oslo
 
-# Eksponer port (App Service leser også WEBSITES_PORT)
-ENV PORT=3000
-EXPOSE 3000
+# Eksponer port 80 (Azure Web Apps forventer dette)
+ENV PORT=80
+EXPOSE 80
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/healthz', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+  CMD node -e "require('http').get('http://localhost:80/healthz', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
 
 # Start
 CMD ["node", "src/server.js"]
