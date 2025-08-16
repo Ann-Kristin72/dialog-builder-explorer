@@ -49,6 +49,17 @@ class AzureStorageService {
     }
   }
 
+  // Get PostgreSQL app user connection string from Key Vault
+  async getPostgresAppConnectionString() {
+    try {
+      const secret = await this.secretClient.getSecret('PostgresAppConnectionString');
+      return secret.value;
+    } catch (error) {
+      console.error('❌ Failed to get PostgreSQL app connection string:', error);
+      throw error;
+    }
+  }
+
   // Initialize Azure Storage clients
   async initializeStorage() {
     try {

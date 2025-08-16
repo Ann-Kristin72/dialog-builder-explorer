@@ -278,13 +278,29 @@ router.get('/azure/test-db', async (req, res) => {
     // Test pgvector extension
     const vectorResult = await pool.query('SELECT * FROM pg_extension WHERE extname = $1', ['vector']);
     
+    // Test current user and role
+    const userResult = await pool.query('SELECT current_user, session_user, current_database()');
+    
+    // Test table structure
+    const tableResult = await pool.query(`
+      SELECT table_name, column_name, data_type, is_nullable
+      FROM information_schema.columns 
+      WHERE table_schema = 'public' 
+      AND table_name IN ('courses', 'course_chunks')
+      ORDER BY table_name, ordinal_position
+    `);
+    
     res.json({
       success: true,
       message: 'Azure PostgreSQL connection test successful',
       database: {
         currentTime: result.rows[0].current_time,
         postgresVersion: result.rows[0].postgres_version,
-        pgvectorAvailable: vectorResult.rows.length > 0
+        pgvectorAvailable: vectorResult.rows.length > 0,
+        currentUser: userResult.rows[0].current_user,
+        sessionUser: userResult.rows[0].session_user,
+        database: userResult.rows[0].current_database,
+        tableStructure: tableResult.rows
       }
     });
     
@@ -292,6 +308,60 @@ router.get('/azure/test-db', async (req, res) => {
     console.error('❌ Azure PostgreSQL test failed:', error);
     res.status(500).json({ 
       error: 'Azure PostgreSQL test failed',
+      message: error.message 
+    });
+  }
+});
+
+// Test role-based access control
+router.get('/azure/test-roles', async (req, res) => {
+  try {
+    const { getPool } = await import('../utils/database.js');
+    const pool = getPool();
+    
+    // Test current user permissions
+    const permissionsResult = await pool.query(`
+      SELECT 
+        table_name,
+        privilege_type,
+        is_grantable
+      FROM information_schema.table_privileges 
+      WHERE grantee = current_user
+      AND table_name IN ('courses', 'course_chunks')
+      ORDER BY table_name, privilege_type
+    `);
+    
+    // Test if we can create roles (for app user)
+    let canCreateRoles = false;
+    try {
+      const roleResult = await pool.query(`
+        SELECT rolcreaterole 
+        FROM pg_roles 
+        WHERE rolname = current_user
+      `);
+      canCreateRoles = roleResult.rows[0]?.rolcreaterole || false;
+    } catch (error) {
+      console.log('Could not check role creation permissions:', error.message);
+    }
+    
+    res.json({
+      success: true,
+      message: 'Role-based access control test completed',
+      currentUser: {
+        permissions: permissionsResult.rows,
+        canCreateRoles: canCreateRoles
+      },
+      recommendations: {
+        useAppUser: 'teknotassen_app should be used for application operations',
+        adminUser: 'ttadmin should only be used for database administration',
+        roleCreation: canCreateRoles ? 'User can create read-only roles' : 'User cannot create roles'
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ Role-based access control test failed:', error);
+    res.status(500).json({ 
+      error: 'Role-based access control test failed',
       message: error.message 
     });
   }

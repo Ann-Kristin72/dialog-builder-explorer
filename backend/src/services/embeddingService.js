@@ -50,15 +50,15 @@ export class EmbeddingService {
       // Generate embeddings for each chunk
       const embeddingsList = await embeddings.embedDocuments(chunks);
       
-      // Store chunks with embeddings
-      for (let i = 0; i < chunks.length; i++) {
-        // Convert embedding array to proper pgvector format
-        const embeddingArray = embeddingsList[i];
-        await client.query(`
-          INSERT INTO course_chunks (course_id, content, embedding, chunk_index)
-          VALUES ($1, $2, $3::vector, $4)
-        `, [courseId, chunks[i], embeddingArray, i]);
-      }
+          // Store chunks with embeddings
+    for (let i = 0; i < chunks.length; i++) {
+      // Convert embedding array to proper pgvector format
+      const embeddingArray = embeddingsList[i];
+      await client.query(`
+        INSERT INTO course_chunks (course_id, chunk_index, content, embedding)
+        VALUES ($1, $2, $3, $4::vector)
+      `, [courseId, i, chunks[i], embeddingArray]);
+    }
       
       await client.query('COMMIT');
       

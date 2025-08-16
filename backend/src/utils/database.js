@@ -75,17 +75,21 @@ export async function initDatabase() {
     const currentPool = getPool();
     const client = await currentPool.connect();
     
+    // Create extensions
+    await client.query('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
+    await client.query('CREATE EXTENSION IF NOT EXISTS vector;');
+    
     // Create courses table
     await client.query(`
       CREATE TABLE IF NOT EXISTS courses (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         title TEXT NOT NULL,
-        slug TEXT UNIQUE NOT NULL,
-        technology TEXT NOT NULL,
-        tags TEXT[] DEFAULT '{}',
-        content_md TEXT NOT NULL,
-        uploaded_by UUID,
-        created_at TIMESTAMP DEFAULT NOW()
+        slug TEXT UNIQUE,
+        technology TEXT,
+        tags TEXT[],
+        content_md TEXT,
+        uploaded_by TEXT,
+        created_at TIMESTAMPTZ DEFAULT now()
       );
     `);
     
@@ -94,14 +98,18 @@ export async function initDatabase() {
       CREATE TABLE IF NOT EXISTS course_chunks (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         course_id UUID REFERENCES courses(id) ON DELETE CASCADE,
-        content TEXT NOT NULL,
-        embedding VECTOR(1536),
         chunk_index INT NOT NULL,
-        created_at TIMESTAMP DEFAULT NOW()
+        content TEXT NOT NULL,
+        embedding VECTOR(1536)
       );
     `);
     
     // Create indexes
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_course_chunks_course 
+      ON course_chunks(course_id);
+    `);
+    
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_course_chunks_embedding 
       ON course_chunks USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);

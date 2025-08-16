@@ -88,7 +88,17 @@ async function startServer() {
     if (process.env.AZURE_KEY_VAULT_URL) {
       try {
         await azureStorageService.initializeKeyVault();
-        const postgresConnectionString = await azureStorageService.getPostgresConnectionString();
+        
+        // Try to use app user connection string first (recommended)
+        let postgresConnectionString;
+        try {
+          postgresConnectionString = await azureStorageService.getPostgresAppConnectionString();
+          console.log('✅ Using PostgreSQL app user connection');
+        } catch (error) {
+          console.log('ℹ️ App user connection not available, falling back to admin connection');
+          postgresConnectionString = await azureStorageService.getPostgresConnectionString();
+        }
+        
         await initializeDatabasePool(postgresConnectionString);
         console.log('✅ Azure PostgreSQL initialized successfully');
       } catch (error) {

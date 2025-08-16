@@ -9,6 +9,10 @@ AZURE_POSTGRES_SERVER=pg-teknotassen.postgres.database.azure.com
 AZURE_POSTGRES_DATABASE=teknotassen
 AZURE_POSTGRES_ADMIN=ttadmin@pg-teknotassen
 
+# PostgreSQL App User (recommended for application)
+AZURE_POSTGRES_APP_USER=teknotassen_app
+# Note: App user password will be stored in Key Vault as PostgresAppConnectionString
+
 # Azure Storage Container Names (from CTO)
 AZURE_COURSES_CONTAINER=courses
 AZURE_BRANDING_CONTAINER=branding
