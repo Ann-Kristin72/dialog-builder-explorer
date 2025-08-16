@@ -47,6 +47,13 @@ jobs:
             echo "✅ ACR already exists!"
           fi
 
+      # Enable admin user on ACR (required for credentials)
+      - name: Enable ACR admin user
+        run: |
+          echo "Enabling admin user on ACR..."
+          az acr update --name $AZURE_CONTAINER_REGISTRY --admin-enabled true
+          echo "✅ ACR admin user enabled!"
+
       # Get ACR credentials
       - name: Get ACR credentials
         run: |
