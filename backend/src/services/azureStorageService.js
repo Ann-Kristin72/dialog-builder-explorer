@@ -34,7 +34,18 @@ class AzureStorageService {
       return secret.value;
     } catch (error) {
       console.error('❌ Failed to get storage connection string:', error);
-      throw new Error('Could not retrieve storage connection string from Key Vault');
+      throw error;
+    }
+  }
+
+  // Get PostgreSQL connection string from Key Vault
+  async getPostgresConnectionString() {
+    try {
+      const secret = await this.secretClient.getSecret('PostgresConnectionString');
+      return secret.value;
+    } catch (error) {
+      console.error('❌ Failed to get PostgreSQL connection string:', error);
+      throw error;
     }
   }
 
@@ -281,6 +292,17 @@ class AzureStorageService {
       console.log('✅ Azure Storage Service fully initialized');
     } catch (error) {
       console.error('❌ Failed to initialize Azure Storage Service:', error);
+      throw error;
+    }
+  }
+
+  // Initialize only Key Vault (for database connection)
+  async initializeKeyVaultOnly() {
+    try {
+      await this.initializeKeyVault();
+      console.log('✅ Azure Key Vault initialized for database connection');
+    } catch (error) {
+      console.error('❌ Failed to initialize Azure Key Vault:', error);
       throw error;
     }
   }

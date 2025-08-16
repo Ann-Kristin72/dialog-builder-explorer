@@ -266,6 +266,37 @@ router.delete('/azure/file/:fileName', authenticateToken, async (req, res) => {
   }
 });
 
+// Test Azure PostgreSQL connection
+router.get('/azure/test-db', async (req, res) => {
+  try {
+    const { getPool } = await import('../utils/database.js');
+    const pool = getPool();
+    
+    // Test basic query
+    const result = await pool.query('SELECT NOW() as current_time, version() as postgres_version');
+    
+    // Test pgvector extension
+    const vectorResult = await pool.query('SELECT * FROM pg_extension WHERE extname = $1', ['vector']);
+    
+    res.json({
+      success: true,
+      message: 'Azure PostgreSQL connection test successful',
+      database: {
+        currentTime: result.rows[0].current_time,
+        postgresVersion: result.rows[0].postgres_version,
+        pgvectorAvailable: vectorResult.rows.length > 0
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ Azure PostgreSQL test failed:', error);
+    res.status(500).json({ 
+      error: 'Azure PostgreSQL test failed',
+      message: error.message 
+    });
+  }
+});
+
 // Get technology overview
 router.get('/technology/overview', async (req, res) => {
   try {

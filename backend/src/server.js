@@ -5,7 +5,7 @@ import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import multer from 'multer';
 import coursesRouter from './routes/courses.js';
-import { testConnection, initDatabase } from './utils/database.js';
+import { testConnection, initDatabase, initializeDatabasePool } from './utils/database.js';
 import { azureStorageService } from './services/azureStorageService.js';
 
 dotenv.config();
@@ -84,13 +84,36 @@ async function startServer() {
       process.exit(1);
     }
     
+    // Initialize Azure PostgreSQL (if configured)
+    if (process.env.AZURE_KEY_VAULT_URL) {
+      try {
+        await azureStorageService.initializeKeyVault();
+        const postgresConnectionString = await azureStorageService.getPostgresConnectionString();
+        await initializeDatabasePool(postgresConnectionString);
+        console.log('✅ Azure PostgreSQL initialized successfully');
+      } catch (error) {
+        console.warn('⚠️ Azure PostgreSQL initialization failed (continuing with local database):', error.message);
+        await initializeDatabasePool(); // Initialize local database
+      }
+    } else {
+      console.log('ℹ️ Azure PostgreSQL not configured (using local database)');
+      await initializeDatabasePool(); // Initialize local database
+    }
+    
+    // Test database connection
+    const dbConnected = await testConnection();
+    if (!dbConnected) {
+      console.error('❌ Cannot start server without database connection');
+      process.exit(1);
+    }
+    
     // Initialize database tables
     await initDatabase();
     
     // Initialize Azure Storage (if configured)
     if (process.env.AZURE_KEY_VAULT_URL) {
       try {
-        await azureStorageService.initialize();
+        await azureStorageService.initializeStorage();
         console.log('✅ Azure Storage initialized successfully');
       } catch (error) {
         console.warn('⚠️ Azure Storage initialization failed (continuing without it):', error.message);

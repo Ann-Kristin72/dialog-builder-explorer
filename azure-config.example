@@ -2,7 +2,12 @@
 # Copy these values to your .env file
 
 # Azure Key Vault
-AZURE_KEY_VAULT_URL=https://your-keyvault-name.vault.azure.net/
+AZURE_KEY_VAULT_URL=https://kv-teknotassen.vault.azure.net/
+
+# Azure PostgreSQL (from CTO)
+AZURE_POSTGRES_SERVER=pg-teknotassen.postgres.database.azure.com
+AZURE_POSTGRES_DATABASE=teknotassen
+AZURE_POSTGRES_ADMIN=ttadmin@pg-teknotassen
 
 # Azure Storage Container Names (from CTO)
 AZURE_COURSES_CONTAINER=courses
@@ -13,5 +18,5 @@ AZURE_TENANT_ID=your_tenant_id
 AZURE_CLIENT_ID=your_client_id
 AZURE_CLIENT_SECRET=your_client_secret
 
-# Note: StorageConnectionString is stored in Key Vault
-# The backend will automatically retrieve it from there
+# Note: Both StorageConnectionString and PostgresConnectionString 
+# are stored in Key Vault and will be automatically retrieved

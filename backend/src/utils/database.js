@@ -5,20 +5,52 @@ dotenv.config();
 
 const { Pool } = pg;
 
-// Database connection pool
-export const pool = new Pool({
-  user: process.env.DB_USER || 'ann-kristin',
-  host: process.env.DB_HOST || 'localhost',
-  database: process.env.DB_NAME || 'teknotassen_dev',
-  password: process.env.DB_PASSWORD || '',
-  port: process.env.DB_PORT || 5432,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-});
+// Database connection pool - supports both local and Azure PostgreSQL
+let pool = null;
+
+// Initialize database pool with Azure PostgreSQL connection string if available
+export async function initializeDatabasePool(azureConnectionString = null) {
+  if (pool) {
+    await pool.end();
+  }
+
+  if (azureConnectionString) {
+    // Use Azure PostgreSQL connection string from Key Vault
+    pool = new Pool({
+      connectionString: azureConnectionString,
+      ssl: { rejectUnauthorized: false }, // Required for Azure PostgreSQL
+      max: 20, // Connection pool size
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 2000,
+    });
+    console.log('✅ Azure PostgreSQL connection pool initialized');
+  } else {
+    // Fallback to local database configuration
+    pool = new Pool({
+      user: process.env.DB_USER || 'ann-kristin',
+      host: process.env.DB_HOST || 'localhost',
+      database: process.env.DB_NAME || 'teknotassen_dev',
+      password: process.env.DB_PASSWORD || '',
+      port: process.env.DB_PORT || 5432,
+      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+    });
+    console.log('✅ Local PostgreSQL connection pool initialized');
+  }
+}
+
+// Get database pool (initialize if needed)
+export function getPool() {
+  if (!pool) {
+    throw new Error('Database pool not initialized. Call initializeDatabasePool() first.');
+  }
+  return pool;
+}
 
 // Test database connection
 export async function testConnection() {
   try {
-    const client = await pool.connect();
+    const currentPool = getPool();
+    const client = await currentPool.connect();
     console.log('✅ Database connected successfully');
     
     // Test pgvector extension
@@ -40,7 +72,8 @@ export async function testConnection() {
 // Initialize database tables
 export async function initDatabase() {
   try {
-    const client = await pool.connect();
+    const currentPool = getPool();
+    const client = await currentPool.connect();
     
     // Create courses table
     await client.query(`

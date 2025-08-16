@@ -1,6 +1,6 @@
 import { OpenAIEmbeddings } from '@langchain/openai';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import { pool } from '../utils/database.js';
+import { getPool } from '../utils/database.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -22,6 +22,7 @@ const textSplitter = new RecursiveCharacterTextSplitter({
 export class EmbeddingService {
   // Process and store a course with embeddings
   static async processCourse(courseData) {
+    const pool = getPool();
     const client = await pool.connect();
     
     try {
@@ -109,6 +110,7 @@ export class EmbeddingService {
       console.log('🔍 Search query:', searchQuery);
       console.log('🔍 Query params:', queryParams);
       
+      const pool = getPool();
       const result = await pool.query(searchQuery, queryParams);
       
       return result.rows.map(row => ({
@@ -129,6 +131,7 @@ export class EmbeddingService {
   // Get all courses
   static async getAllCourses() {
     try {
+      const pool = getPool();
       const result = await pool.query(`
         SELECT id, title, slug, technology, tags, created_at
         FROM courses
@@ -145,6 +148,7 @@ export class EmbeddingService {
   // Get course by ID with chunks
   static async getCourseById(courseId) {
     try {
+      const pool = getPool();
       const courseResult = await pool.query(`
         SELECT * FROM courses WHERE id = $1
       `, [courseId]);
@@ -174,6 +178,7 @@ export class EmbeddingService {
   // Delete course and all its chunks
   static async deleteCourse(courseId) {
     try {
+      const pool = getPool();
       await pool.query('DELETE FROM courses WHERE id = $1', [courseId]);
       console.log(`✅ Course deleted: ${courseId}`);
       return true;
