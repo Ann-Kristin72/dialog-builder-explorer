@@ -31,13 +31,15 @@
 - **Health Check:** `/healthz`
 - **Registry:** `acrteknotassen.azurecr.io`
 
-### Build Process
+### **Build Process**
 1. GitHub Actions checkout
 2. Azure login (OIDC)
-3. ACR login
-4. Docker build & push
-5. Web App container update
-6. Health check verification
+3. **ACR creation** (if needed)
+4. **ACR credentials retrieval** (username/password)
+5. **ACR login** via `azure/docker-login@v1`
+6. **Docker build & push** to ACR
+7. **Deploy to Web App** via `azure/webapps-deploy@v2`
+8. **Health check** verification
 
 ## 🔧 **Environment Variables**
 

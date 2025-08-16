@@ -47,24 +47,30 @@ jobs:
             echo "✅ ACR already exists!"
           fi
 
-      # Login to ACR
-      - name: ACR Login
-        run: az acr login --name $AZURE_CONTAINER_REGISTRY
+      # Get ACR credentials
+      - name: Get ACR credentials
+        run: |
+          echo "Getting ACR credentials..."
+          ACR_USERNAME=$(az acr credential show --name $AZURE_CONTAINER_REGISTRY --query "username" -o tsv)
+          ACR_PASSWORD=$(az acr credential show --name $AZURE_CONTAINER_REGISTRY --query "passwords[0].value" -o tsv)
+          echo "ACR_USERNAME=$ACR_USERNAME" >> $GITHUB_ENV
+          echo "ACR_PASSWORD=$ACR_PASSWORD" >> $GITHUB_ENV
+          echo "✅ ACR credentials retrieved!"
 
-      # Set up Docker Buildx
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      # Login to ACR using Microsoft's recommended action
+      - name: 'Login to ACR'
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io
+          username: ${{ env.ACR_USERNAME }}
+          password: ${{ env.ACR_PASSWORD }}
 
-      # Build image
-      - name: Build image
+      # Build and Push Docker image
+      - name: 'Build and Push Docker image'
         working-directory: .
         run: |
           docker build -f backend/Dockerfile -t $AZURE_CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:${{ github.sha }} .
           docker tag $AZURE_CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:${{ github.sha }} $AZURE_CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:latest
-
-      # Push image
-      - name: Push image
-        run: |
           docker push $AZURE_CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:${{ github.sha }}
           docker push $AZURE_CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:latest
 
@@ -111,6 +117,15 @@ jobs:
           
           if [ $attempt -gt $max_attempts ]; then
             echo "❌ Web App did not become ready after $max_attempts attempts"
+            echo "🔍 Debugging information:"
+            echo "1. Checking Web App container status..."
+            az webapp config container show --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_WEBAPP_NAME --output table
+            echo "2. Checking Web App logs..."
+            az webapp log tail --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_WEBAPP_NAME --provider docker --timeout 30 || echo "Could not get logs"
+            echo "3. Checking Web App app settings..."
+            az webapp config appsettings list --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_WEBAPP_NAME --output table
+            echo "4. Testing container directly..."
+            curl -v --max-time 30 "https://$AZURE_WEBAPP_NAME.azurewebsites.net" || echo "Direct test failed"
             exit 1
           fi
 
