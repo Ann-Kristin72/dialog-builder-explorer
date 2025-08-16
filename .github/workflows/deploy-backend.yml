@@ -128,7 +128,7 @@ jobs:
             echo "1. Checking Web App container status..."
             az webapp config container show --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_WEBAPP_NAME --output table
             echo "2. Checking Web App logs..."
-            az webapp log tail --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_WEBAPP_NAME --provider docker --timeout 30 || echo "Could not get logs"
+            az webapp log tail --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_WEBAPP_NAME --provider docker || echo "Could not get logs"
             echo "3. Checking Web App app settings..."
             az webapp config appsettings list --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_WEBAPP_NAME --output table
             echo "4. Testing container directly..."
