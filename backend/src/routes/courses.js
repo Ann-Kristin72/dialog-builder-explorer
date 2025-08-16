@@ -3,6 +3,7 @@ import multer from 'multer';
 import { EmbeddingService } from '../services/embeddingService.js';
 import { RAGChatService } from '../services/ragChatService.js';
 import { authenticateToken, optionalAuth } from '../middleware/auth.js';
+import { azureStorageService } from '../services/azureStorageService.js';
 import { z } from 'zod';
 
 const router = express.Router();
@@ -175,6 +176,91 @@ router.get('/chat/suggestions', async (req, res) => {
     console.error('Error getting suggestions:', error);
     res.status(500).json({ 
       error: 'Failed to get suggestions',
+      message: error.message 
+    });
+  }
+});
+
+// Azure Storage Routes
+// Upload course file to Azure Blob Storage
+router.post('/azure/upload', authenticateToken, upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    const fileName = req.body.fileName || req.file.originalname;
+    const fileBuffer = req.file.buffer;
+    const contentType = req.file.mimetype || 'text/markdown';
+
+    // Upload to Azure Blob Storage
+    const result = await azureStorageService.uploadCourseFile(fileName, fileBuffer, contentType);
+
+    res.json({
+      success: true,
+      message: 'Course file uploaded to Azure Storage successfully',
+      blobUrl: result.url,
+      blobName: result.blobName,
+      size: result.size
+    });
+
+  } catch (error) {
+    console.error('Error uploading to Azure Storage:', error);
+    res.status(500).json({ 
+      error: 'Failed to upload to Azure Storage',
+      message: error.message 
+    });
+  }
+});
+
+// Get course file from Azure Blob Storage
+router.get('/azure/file/:fileName', async (req, res) => {
+  try {
+    const { fileName } = req.params;
+    const fileData = await azureStorageService.getCourseFile(fileName);
+    
+    res.set('Content-Type', fileData.contentType);
+    res.set('Content-Length', fileData.size);
+    res.send(fileData.content);
+    
+  } catch (error) {
+    console.error('Error getting file from Azure Storage:', error);
+    res.status(500).json({ 
+      error: 'Failed to get file from Azure Storage',
+      message: error.message 
+    });
+  }
+});
+
+// List all course files in Azure Storage
+router.get('/azure/files', async (req, res) => {
+  try {
+    const files = await azureStorageService.listCourseFiles();
+    res.json(files);
+  } catch (error) {
+    console.error('Error listing Azure Storage files:', error);
+    res.status(500).json({ 
+      error: 'Failed to list Azure Storage files',
+      message: error.message 
+    });
+  }
+});
+
+// Delete course file from Azure Storage
+router.delete('/azure/file/:fileName', authenticateToken, async (req, res) => {
+  try {
+    const { fileName } = req.params;
+    await azureStorageService.deleteCourseFile(fileName);
+    
+    res.json({
+      success: true,
+      message: 'Course file deleted from Azure Storage successfully'
+    });
+    
+  } catch (error) {
+    console.error('Error deleting from Azure Storage:', error);
+    res.status(500).json({ 
+      error: 'Failed to delete from Azure Storage',
       message: error.message 
     });
   }

@@ -1,0 +1,17 @@
+# Azure Configuration for TeknoTassen Backend
+# Copy these values to your .env file
+
+# Azure Key Vault
+AZURE_KEY_VAULT_URL=https://your-keyvault-name.vault.azure.net/
+
+# Azure Storage Container Names (from CTO)
+AZURE_COURSES_CONTAINER=courses
+AZURE_BRANDING_CONTAINER=branding
+
+# Azure Service Principal (for Key Vault access)
+AZURE_TENANT_ID=your_tenant_id
+AZURE_CLIENT_ID=your_client_id
+AZURE_CLIENT_SECRET=your_client_secret
+
+# Note: StorageConnectionString is stored in Key Vault
+# The backend will automatically retrieve it from there

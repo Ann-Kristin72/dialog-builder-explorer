@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import multer from 'multer';
 import coursesRouter from './routes/courses.js';
 import { testConnection, initDatabase } from './utils/database.js';
+import { azureStorageService } from './services/azureStorageService.js';
 
 dotenv.config();
 
@@ -85,6 +86,18 @@ async function startServer() {
     
     // Initialize database tables
     await initDatabase();
+    
+    // Initialize Azure Storage (if configured)
+    if (process.env.AZURE_KEY_VAULT_URL) {
+      try {
+        await azureStorageService.initialize();
+        console.log('✅ Azure Storage initialized successfully');
+      } catch (error) {
+        console.warn('⚠️ Azure Storage initialization failed (continuing without it):', error.message);
+      }
+    } else {
+      console.log('ℹ️ Azure Storage not configured (using local storage)');
+    }
     
     // Start server
     app.listen(PORT, () => {
