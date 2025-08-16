@@ -1,137 +1,134 @@
-# 🚀 Azure Deployment Guide - TeknoTassen Backend
+# Azure Web App Deployment Guide
 
-## 📋 Forutsetninger
+## 🚀 **DEPLOYMENT STATUS: READY FOR PRODUCTION**
 
-✅ **Azure Resources (allerede opprettet):**
-- Web App (Linux, Container): `web-teknotassen`
-- Container Registry: `acrteknotassen`
-- Key Vault: `kv-teknotassen`
-- PostgreSQL: `pg-teknotassen`
-- Storage Account: `stteknotassen01`
+**Dato:** 16. august 2025  
+**Status:** ✅ GitHub Secrets konfigurert, RBAC satt opp, Federated Credentials aktiv  
+**Neste:** GitHub Actions deployment i gang
 
-## 🐳 Steg 1: Opprett Azure Container Registry
+## 📋 **Forutsetninger**
 
+### Azure Resources
+- ✅ Resource Group: `teknotassen-rg`
+- ✅ Web App: `web-teknotassen` (Linux, Container)
+- ✅ Key Vault: `kv-teknotassen`
+- ✅ Storage Account: `stteknotassen01`
+- ✅ PostgreSQL: `pg-teknotassen`
+
+### GitHub Setup
+- ✅ Repository: `dialog-builder-explorer`
+- ✅ Workflow: `.github/workflows/deploy-backend.yml`
+- ✅ Secrets: `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`
+- ✅ App Registration: `teknotassen-github-ci` med federated credentials
+- ✅ RBAC: Contributor-rolle på `teknotassen-rg`
+
+## 🐳 **Docker Deployment**
+
+### Container Image
+- **Base:** `node:20-alpine`
+- **Port:** 3000
+- **Health Check:** `/healthz`
+- **Registry:** `acrteknotassen.azurecr.io`
+
+### Build Process
+1. GitHub Actions checkout
+2. Azure login (OIDC)
+3. ACR login
+4. Docker build & push
+5. Web App container update
+6. Health check verification
+
+## 🔧 **Environment Variables**
+
+### Key Vault References
 ```bash
-# Logg inn (om nødvendig)
-az login
-
-# Opprett ACR
-az acr create \
-  --resource-group teknotassen-rg \
-  --name acrteknotassen \
-  --sku Basic \
-  --location norwayeast
-
-# Gi Web App sin Managed Identity pull-rettighet
-RG="teknotassen-rg"
-ACR="acrteknotassen"
-WEBAPP="web-teknotassen"
-
-# Finn principalId til Web App sin managed identity
-WEBAPP_ID=$(az webapp identity show -g $RG -n $WEBAPP --query principalId -o tsv)
-
-# Gi AcrPull på ACR-nivå
-az role assignment create \
-  --assignee $WEBAPP_ID \
-  --role "AcrPull" \
-  --scope $(az acr show -n $ACR --query id -o tsv)
+POSTGRES_URL=@Microsoft.KeyVault(SecretUri=https://kv-teknotassen.vault.azure.net/secrets/PostgresAppConnectionString/)
+BLOB_CONNECTION_STRING=@Microsoft.KeyVault(SecretUri=https://kv-teknotassen.vault.azure.net/secrets/StorageConnectionString/)
+OPENAI_API_KEY=@Microsoft.KeyVault(SecretUri=https://kv-teknotassen.vault.azure.net/secrets/OpenAIAPIKey/)
 ```
 
-## 🔑 Steg 2: Konfigurer GitHub Secrets
-
-Gå til `Settings > Secrets and variables > Actions` i GitHub repoet og legg til:
-
-- `AZURE_SUBSCRIPTION_ID`
-- `AZURE_TENANT_ID` 
-- `AZURE_CLIENT_ID`
-
-## 🚀 Steg 3: Deploy med GitHub Actions
-
-1. **Push til main branch** - workflow starter automatisk
-2. **Eller manuell trigger** via `Actions > Deploy Backend > Run workflow`
-
-## ⚙️ Steg 4: Azure Web App Configuration
-
-Sett disse app settings i Azure Portal (`web-teknotassen > Configuration > Application settings`):
-
+### Container Settings
 ```bash
-NODE_ENV=production
-PORT=3000
 WEBSITES_PORT=3000
-
-# Key Vault references (Azure resolverer disse automatisk)
-POSTGRES_URL=@Microsoft.KeyVault(SecretUri=https://kv-teknotassen.vault.azure.net/secrets/PostgresConnectionString/<VERSION>)
-BLOB_CONNECTION_STRING=@Microsoft.KeyVault(SecretUri=https://kv-teknotassen.vault.azure.net/secrets/StorageConnectionString/<VERSION>)
-OPENAI_API_KEY=@Microsoft.KeyVault(SecretUri=https://kv-teknotassen.vault.azure.net/secrets/OpenAIKey/<VERSION>)
+NODE_ENV=production
+TZ=Europe/Oslo
 ```
 
-## 🧪 Steg 5: Test Deployment
+## 🚀 **Deployment Commands**
 
+### Manual Deployment (hvis GitHub Actions feiler)
 ```bash
-# Health check
+# 1. Opprett ACR (hvis ikke eksisterer)
+az acr create --resource-group teknotassen-rg --name acrteknotassen --sku Basic
+
+# 2. Build og push image
+cd backend
+docker build -t acrteknotassen.azurecr.io/teknotassen-backend:latest .
+docker push acrteknotassen.azurecr.io/teknotassen-backend:latest
+
+# 3. Oppdater Web App
+az webapp config container set \
+  --resource-group teknotassen-rg \
+  --name web-teknotassen \
+  --docker-custom-image-name acrteknotassen.azurecr.io/teknotassen-backend:latest
+
+# 4. Restart
+az webapp restart -g teknotassen-rg -n web-teknotassen
+```
+
+## 🧪 **Testing**
+
+### Health Check
+```bash
 curl https://web-teknotassen.azurewebsites.net/healthz
+```
 
-# Database test
+### Database Connection Test
+```bash
 curl https://web-teknotassen.azurewebsites.net/api/courses/azure/test-db
-
-# TTS/STT status
-curl https://web-teknotassen.azurewebsites.net/api/tts-stt/status
 ```
 
-## 📊 Monitoring
-
-- **Logs**: `web-teknotassen > Log stream`
-- **Metrics**: `web-teknotassen > Metrics`
-- **Container**: `web-teknotassen > Container settings`
-
-## 🔧 Troubleshooting
-
-### Container ikke starter
-```bash
-# Sjekk logs
-az webapp log tail -g teknotassen-rg -n web-teknotassen
-
-# Sjekk container settings
-az webapp config container show -g teknotassen-rg -n web-teknotassen
+### Expected Response
+```json
+{
+  "status": "healthy",
+  "database": "connected",
+  "timestamp": "2025-08-16T14:00:00Z"
+}
 ```
 
-### Database connection feiler
-```bash
-# Sjekk Key Vault secrets
-az keyvault secret list --vault-name kv-teknotassen
+## 🔍 **Monitoring**
 
-# Test connection string
-az keyvault secret show --vault-name kv-teknotassen --name PostgresConnectionString
-```
+### Azure Portal
+- **Web App** → Log Stream
+- **Web App** → Container Settings
+- **Application Insights** → Live Metrics
 
-### Storage connection feiler
-```bash
-# Sjekk storage account
-az storage account show -g teknotassen-rg -n stteknotassen01
+### GitHub Actions
+- **Actions** tab → `Deploy Backend to Azure Web App (Container)`
+- **Run workflow** for manuell trigger
 
-# Test container access
-az storage container list --account-name stteknotassen01
-```
+## 🚨 **Troubleshooting**
 
-## 🌐 CORS Configuration
+### Common Issues
+1. **Container won't start** → Check Log Stream
+2. **Port binding error** → Verify WEBSITES_PORT=3000
+3. **Database connection failed** → Check Key Vault secrets
+4. **ACR pull failed** → Verify RBAC permissions
 
-Backend er konfigurert for:
-- **Production**: `https://teknotassen.vercel.app`
-- **Azure**: `https://web-teknotassen.azurewebsites.net`
-- **Development**: `http://localhost:5173`
+### Log Locations
+- **Container logs:** Web App → Log Stream
+- **Build logs:** GitHub Actions → Workflow runs
+- **Runtime logs:** Web App → Log Stream
 
-## 📝 Neste steg
+## 🎯 **Success Criteria**
 
-1. **Test alle API endpoints**
-2. **Verifiser database-tilkobling**
-3. **Test TTS/STT funksjonalitet**
-4. **Deploy frontend til Vercel**
-5. **Konfigurer custom domain**
+- ✅ Web App responds to `/healthz`
+- ✅ Database connection established
+- ✅ RAG API endpoints accessible
+- ✅ Container running successfully
+- ✅ GitHub Actions deployment successful
 
-## 🆘 Support
+---
 
-Hvis noe går galt:
-1. Sjekk GitHub Actions logs
-2. Sjekk Azure Web App logs
-3. Verifiser Key Vault secrets
-4. Test container lokalt: `docker build -f backend/Dockerfile .`
+**Deployment Status:** 🚀 **IN PROGRESS** - GitHub Actions workflow triggered
