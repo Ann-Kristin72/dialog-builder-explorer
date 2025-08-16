@@ -33,21 +33,34 @@ export class RAGChatService {
   // Chat with RAG context
   static async chat(message, role = 'helsepersonell', technology = null) {
     try {
-      // Search for relevant chunks
-      const relevantChunks = await EmbeddingService.searchChunks(message, technology, 5);
+      // Search for relevant chunks with Nano/Unit structure
+      const searchResult = await EmbeddingService.searchChunks(message, technology, 5, {
+        // TODO: Add RBAC filters when implemented
+        // tenantId: req.user.tenantId,
+        // roles: req.user.roles
+      });
       
-      if (relevantChunks.length === 0) {
+      if (!searchResult || !searchResult.results || Object.keys(searchResult.results).length === 0) {
         return {
           response: "Hei! Jeg ser at jeg ikke har mye informasjon om det du spør om ennå. Kan du prøve å spørre om noe annet, eller kontakt en administrator for å få lagt til mer kunnskap om dette emnet? Null stress - vi fikser dette sammen! 🤓",
           context: [],
-          confidence: 'low'
+          confidence: 'low',
+          results: {}
         };
       }
 
-      // Build context from chunks
-      const context = relevantChunks.map(chunk => 
-        `[${chunk.courseTitle} - ${chunk.technology}]\n${chunk.content}`
-      ).join('\n\n');
+      // Build context from Nano/Unit structure
+      const context = [];
+      for (const nanoSlug in searchResult.results) {
+        const nano = searchResult.results[nanoSlug];
+        for (const unitSlug in nano.units) {
+          const unit = nano.units[unitSlug];
+          const unitContext = unit.chunks.map(chunk => 
+            `[${nano.nano_title} - ${unit.unit_title}]\n${chunk.content}`
+          ).join('\n\n');
+          context.push(unitContext);
+        }
+      }
 
       // Generate system prompt
       const systemPrompt = this.generateSystemPrompt(role, technology);
@@ -71,13 +84,10 @@ export class RAGChatService {
 
       return {
         response,
-        context: relevantChunks.map(chunk => ({
-          title: chunk.courseTitle,
-          technology: chunk.technology,
-          similarity: chunk.similarity,
-          tags: chunk.tags
-        })),
-        confidence: 'high'
+        context: context,
+        confidence: 'high',
+        results: searchResult.results,
+        totalChunks: searchResult.totalChunks
       };
 
     } catch (error) {

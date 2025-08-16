@@ -93,14 +93,32 @@ export async function initDatabase() {
       );
     `);
     
-    // Create course_chunks table
+    // Create course_chunks table with nano/unit hierarchy
     await client.query(`
       CREATE TABLE IF NOT EXISTS course_chunks (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         course_id UUID REFERENCES courses(id) ON DELETE CASCADE,
         chunk_index INT NOT NULL,
         content TEXT NOT NULL,
-        embedding VECTOR(1536)
+        content_markdown TEXT NOT NULL,
+        embedding VECTOR(1536),
+        nano_slug TEXT,
+        unit_slug TEXT,
+        meta JSONB DEFAULT '{}'::jsonb
+      );
+    `);
+    
+    // Create course_assets table for images/audio
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS course_assets (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        course_id UUID REFERENCES courses(id) ON DELETE CASCADE,
+        nano_slug TEXT,
+        unit_slug TEXT,
+        url TEXT NOT NULL,
+        kind TEXT CHECK (kind IN ('image','audio','other')) DEFAULT 'image',
+        alt TEXT,
+        created_at TIMESTAMPTZ DEFAULT now()
       );
     `);
     
@@ -116,11 +134,29 @@ export async function initDatabase() {
     `);
     
     await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_course_chunks_nano 
+      ON course_chunks(nano_slug);
+    `);
+    
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_course_chunks_unit 
+      ON course_chunks(unit_slug);
+    `);
+    
+    await client.query(`
       CREATE INDEX IF NOT EXISTS idx_courses_technology ON courses(technology);
     `);
     
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_courses_tags ON courses USING GIN(tags);
+    `);
+    
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_assets_course ON course_assets(course_id);
+    `);
+    
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_assets_unit ON course_assets(unit_slug);
     `);
     
     console.log('✅ Database tables initialized successfully');

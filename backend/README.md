@@ -4,11 +4,15 @@ En intelligent backend for TeknoTassen som kombinerer RAG (Retrieval-Augmented G
 
 ## 🌟 Funksjoner
 
-### **RAG (Retrieval-Augmented Generation)**
-- **Embedding-basert søk** med pgvector
-- **Intelligent chunking** av markdown-dokumenter
+### **RAG (Retrieval-Augmented Generation) med Nano → Unit Struktur**
+- **Hierarkisk innhold** med Nano (##) og Unit (###) organisering
+- **Frontmatter parsing** fra `[//]: # ({...})` kommentarer
+- **Asset-ekstraksjon** for bilder, lyd og media
+- **Embedding-basert søk** med pgvector (1536 dimensions)
+- **Intelligent chunking** av markdown-dokumenter (max 1500 tokens)
 - **Kontekstbevisste AI-svar** basert på faktisk kunnskap
 - **Ingen hallucineringer** - AI svarer kun basert på opplastet materiale
+- **Strukturert resultat** gruppert etter Nano → Unit for pen presentasjon
 
 ### **Kursadministrasjon**
 - **Markdown-opplasting** med validering
@@ -98,6 +102,7 @@ CREATE EXTENSION IF NOT EXISTS vector;
 
 ### **Kursadministrasjon**
 - `POST /api/courses/upload` - Last opp markdown-kurs
+- `POST /api/courses/ingest` - Ingest markdown med Nano/Unit struktur
 - `GET /api/courses` - Hent alle kurs
 - `GET /api/courses/:id` - Hent kurs etter ID
 - `DELETE /api/courses/:id` - Slett kurs

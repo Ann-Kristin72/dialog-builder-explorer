@@ -1,6 +1,6 @@
 import { OpenAIEmbeddings } from '@langchain/openai';
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { getPool } from '../utils/database.js';
+import MarkdownParserService from './markdownParserService.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -20,7 +20,7 @@ const textSplitter = new RecursiveCharacterTextSplitter({
 });
 
 export class EmbeddingService {
-  // Process and store a course with embeddings
+  // Process and store a course with embeddings using Nano/Unit structure
   static async processCourse(courseData) {
     const pool = getPool();
     const client = await pool.connect();
@@ -28,13 +28,16 @@ export class EmbeddingService {
     try {
       await client.query('BEGIN');
       
+      // Parse markdown into Nano/Unit structure
+      const parsed = MarkdownParserService.parseMarkdown(courseData.content_md);
+      
       // Insert course
       const courseResult = await client.query(`
         INSERT INTO courses (title, slug, technology, tags, content_md, uploaded_by)
         VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING id
       `, [
-        courseData.title,
+        courseData.title || parsed.title,
         courseData.slug,
         courseData.technology,
         courseData.tags || [],
@@ -43,27 +46,78 @@ export class EmbeddingService {
       ]);
       
       const courseId = courseResult.rows[0].id;
+      let totalChunks = 0;
       
-      // Split content into chunks
-      const chunks = await textSplitter.splitText(courseData.content_md);
-      
-      // Generate embeddings for each chunk
-      const embeddingsList = await embeddings.embedDocuments(chunks);
-      
+      // Process each Nano and its Units
+      for (const nano of parsed.nanos) {
+        for (const unit of nano.units) {
+          // Split unit content into chunks if needed
+          let chunks = [unit.content_plain];
+          if (unit.content_plain.length > 1500) {
+            chunks = await MarkdownParserService.splitContent(unit.content_plain, 1500);
+          }
+          
+          // Generate embeddings for chunks
+          const embeddingsList = await embeddings.embedDocuments(chunks);
+          
           // Store chunks with embeddings
-    for (let i = 0; i < chunks.length; i++) {
-      // Convert embedding array to proper pgvector format
-      const embeddingArray = embeddingsList[i];
-      await client.query(`
-        INSERT INTO course_chunks (course_id, chunk_index, content, embedding)
-        VALUES ($1, $2, $3, $4::vector)
-      `, [courseId, i, chunks[i], embeddingArray]);
-    }
+          for (let i = 0; i < chunks.length; i++) {
+            const embeddingArray = embeddingsList[i];
+            await client.query(`
+              INSERT INTO course_chunks (
+                course_id, chunk_index, content, content_markdown, 
+                embedding, nano_slug, unit_slug, meta
+              )
+              VALUES ($1, $2, $3, $4, $5::vector, $6, $7, $8)
+            `, [
+              courseId, 
+              totalChunks + i, 
+              chunks[i], 
+              unit.content,
+              embeddingArray, 
+              nano.slug, 
+              unit.slug,
+              JSON.stringify({
+                nano_title: nano.title,
+                unit_title: unit.title,
+                frontmatter: parsed.frontmatter
+              })
+            ]);
+          }
+          
+          // Store assets for this unit
+          for (const asset of unit.assets) {
+            await client.query(`
+              INSERT INTO course_assets (
+                course_id, nano_slug, unit_slug, url, kind, alt
+              )
+              VALUES ($1, $2, $3, $4, $5, $6)
+            `, [
+              courseId,
+              nano.slug,
+              unit.slug,
+              asset.url,
+              asset.kind,
+              asset.alt
+            ]);
+          }
+          
+          totalChunks += chunks.length;
+        }
+      }
       
       await client.query('COMMIT');
       
-      console.log(`✅ Course processed: ${chunks.length} chunks created`);
-      return { courseId, chunkCount: chunks.length };
+      console.log(`✅ Course processed: ${totalChunks} chunks created across ${parsed.nanos.length} nanos`);
+      return {
+        courseId,
+        chunkCount: totalChunks,
+        nanoCount: parsed.nanos.length,
+        unitCount: parsed.nanos.reduce((sum, nano) => sum + nano.units.length, 0),
+        assetCount: parsed.nanos.reduce((sum, nano) => 
+          sum + nano.units.reduce((unitSum, unit) => unitSum + unit.assets.length, 0), 0
+        )
+      };
       
     } catch (error) {
       await client.query('ROLLBACK');
@@ -73,8 +127,8 @@ export class EmbeddingService {
     }
   }
   
-  // Search for relevant chunks based on query
-  static async searchChunks(query, technology = null, limit = 5) {
+  // Search for relevant chunks based on query with Nano/Unit structure
+  static async searchChunks(query, technology = null, limit = 5, filters = {}) {
     try {
       // Generate embedding for the query
       const queryEmbedding = await embeddings.embedQuery(query);
@@ -83,26 +137,43 @@ export class EmbeddingService {
       let searchQuery = `
         SELECT 
           cc.content,
+          cc.content_markdown,
           cc.chunk_index,
+          cc.nano_slug,
+          cc.unit_slug,
+          cc.meta,
           c.title as course_title,
           c.technology,
           c.tags,
-          1 - (cc.embedding <=> $1) as similarity
+          1 - (cc.embedding <=> $1::vector) as similarity
         FROM course_chunks cc
         JOIN courses c ON cc.course_id = c.id
         WHERE cc.embedding IS NOT NULL
       `;
       
       const queryParams = [queryEmbedding];
+      let paramIndex = 2;
       
+      // Apply filters
       if (technology) {
-        searchQuery += ` AND c.technology = $2`;
+        searchQuery += ` AND c.technology = $${paramIndex}`;
         queryParams.push(technology);
+        paramIndex++;
       }
+      
+      if (filters.courseId) {
+        searchQuery += ` AND c.id = $${paramIndex}`;
+        queryParams.push(filters.courseId);
+        paramIndex++;
+      }
+      
+      // TODO: Add RBAC filters for tenant/role when implemented
+      // if (filters.tenantId) { ... }
+      // if (filters.roles) { ... }
       
       searchQuery += `
         ORDER BY cc.embedding <=> $1::vector
-        LIMIT $${queryParams.length + 1}
+        LIMIT $${paramIndex}
       `;
       
       queryParams.push(limit);
@@ -113,14 +184,55 @@ export class EmbeddingService {
       const pool = getPool();
       const result = await pool.query(searchQuery, queryParams);
       
-      return result.rows.map(row => ({
-        content: row.content,
-        chunkIndex: row.chunk_index,
-        courseTitle: row.course_title,
-        technology: row.technology,
-        tags: row.tags,
-        similarity: row.similarity
-      }));
+      // Group results by Nano and Unit
+      const groupedResults = {};
+      
+      for (const row of result.rows) {
+        const nanoSlug = row.nano_slug || 'unknown';
+        const unitSlug = row.nano_slug || 'unknown';
+        
+        if (!groupedResults[nanoSlug]) {
+          groupedResults[nanoSlug] = {
+            nano_title: row.meta?.nano_title || nanoSlug,
+            units: {}
+          };
+        }
+        
+        if (!groupedResults[nanoSlug].units[unitSlug]) {
+          groupedResults[nanoSlug].units[unitSlug] = {
+            unit_title: row.meta?.unit_title || unitSlug,
+            chunks: [],
+            assets: []
+          };
+        }
+        
+        groupedResults[nanoSlug].units[unitSlug].chunks.push({
+          content: row.content,
+          content_markdown: row.content_markdown,
+          chunkIndex: row.chunk_index,
+          similarity: row.similarity
+        });
+      }
+      
+      // Fetch assets for the found units
+      for (const nanoSlug in groupedResults) {
+        for (const unitSlug in groupedResults[nanoSlug].units) {
+          const assetsResult = await pool.query(`
+            SELECT url, kind, alt
+            FROM course_assets
+            WHERE nano_slug = $1 AND unit_slug = $2
+            AND course_id = $3
+          `, [nanoSlug, unitSlug, result.rows[0]?.course_id]);
+          
+          groupedResults[nanoSlug].units[unitSlug].assets = assetsResult.rows;
+        }
+      }
+      
+      return {
+        query,
+        totalChunks: result.rows.length,
+        results: groupedResults
+      };
       
     } catch (error) {
       console.error('Error searching chunks:', error);

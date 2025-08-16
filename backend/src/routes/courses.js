@@ -313,6 +313,40 @@ router.get('/azure/test-db', async (req, res) => {
   }
 });
 
+// Ingest markdown content with Nano/Unit structure
+router.post('/ingest', authenticateToken, async (req, res) => {
+  try {
+    const { courseId, technology, tags, contentMd } = req.body;
+    
+    if (!contentMd) {
+      return res.status(400).json({ error: 'Content is required' });
+    }
+    
+    // Parse and process the markdown content
+    const result = await EmbeddingService.processCourse({
+      title: req.body.title || 'Ingested Course',
+      slug: req.body.slug || `ingested-${Date.now()}`,
+      technology: technology || 'Generell',
+      tags: tags || [],
+      content_md: contentMd,
+      uploaded_by: req.user.id
+    });
+    
+    res.json({
+      success: true,
+      message: 'Course ingested successfully with Nano/Unit structure',
+      ...result
+    });
+    
+  } catch (error) {
+    console.error('Error ingesting course:', error);
+    res.status(500).json({ 
+      error: 'Failed to ingest course',
+      message: error.message 
+    });
+  }
+});
+
 // Test role-based access control
 router.get('/azure/test-roles', async (req, res) => {
   try {
