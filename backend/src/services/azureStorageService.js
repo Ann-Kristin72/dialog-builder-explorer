@@ -298,11 +298,41 @@ class AzureStorageService {
   // Initialize all services
   async initialize() {
     try {
-      await this.initializeKeyVault();
-      await this.initializeStorage();
-      console.log('✅ Azure Storage Service fully initialized');
+      // Check for Azure environment variables first
+      if (process.env.BLOB_CONNECTION_STRING) {
+        await this.initializeStorageFromEnv();
+        console.log('✅ Azure Storage Service initialized from environment variables');
+      } else if (this.keyVaultUrl) {
+        await this.initializeKeyVault();
+        await this.initializeStorage();
+        console.log('✅ Azure Storage Service initialized from Key Vault');
+      } else {
+        console.log('ℹ️ Azure Storage not configured - using local storage');
+      }
     } catch (error) {
       console.error('❌ Failed to initialize Azure Storage Service:', error);
+      throw error;
+    }
+  }
+
+  // Initialize storage from environment variables
+  async initializeStorageFromEnv() {
+    try {
+      const connectionString = process.env.BLOB_CONNECTION_STRING;
+      const coursesContainer = process.env.AZURE_COURSES_CONTAINER || 'courses';
+      const brandingContainer = process.env.AZURE_BRANDING_CONTAINER || 'branding';
+
+      this.blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
+      this.coursesContainer = this.blobServiceClient.getContainerClient(coursesContainer);
+      this.brandingContainer = this.blobServiceClient.getContainerClient(brandingContainer);
+
+      // Ensure containers exist
+      await this.coursesContainer.createIfNotExists();
+      await this.brandingContainer.createIfNotExists();
+
+      console.log('✅ Azure Storage initialized from environment variables');
+    } catch (error) {
+      console.error('❌ Failed to initialize storage from environment:', error);
       throw error;
     }
   }

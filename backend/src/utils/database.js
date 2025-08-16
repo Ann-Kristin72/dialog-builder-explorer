@@ -14,7 +14,20 @@ export async function initializeDatabasePool(azureConnectionString = null) {
     await pool.end();
   }
 
-  if (azureConnectionString) {
+  // Check for Azure environment variables first
+  const postgresUrl = process.env.POSTGRES_URL;
+  
+  if (postgresUrl) {
+    // Use Azure PostgreSQL connection string from environment
+    pool = new Pool({
+      connectionString: postgresUrl,
+      ssl: { rejectUnauthorized: false }, // Required for Azure PostgreSQL
+      max: 20, // Connection pool size
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 2000,
+    });
+    console.log('✅ Azure PostgreSQL connection pool initialized from environment');
+  } else if (azureConnectionString) {
     // Use Azure PostgreSQL connection string from Key Vault
     pool = new Pool({
       connectionString: azureConnectionString,
@@ -23,7 +36,7 @@ export async function initializeDatabasePool(azureConnectionString = null) {
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 2000,
     });
-    console.log('✅ Azure PostgreSQL connection pool initialized');
+    console.log('✅ Azure PostgreSQL connection pool initialized from Key Vault');
   } else {
     // Fallback to local database configuration
     pool = new Pool({

@@ -27,3 +27,19 @@ AZURE_CLIENT_SECRET=your_client_secret
 
 # ElevenLabs API Key (for TTS/STT)
 ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
+
+# Azure Web App Configuration
+# These will be set in Azure App Service Configuration
+NODE_ENV=production
+PORT=3000
+WEBSITES_PORT=3000
+
+# Database and Storage (resolved by Azure Key Vault)
+# POSTGRES_URL=@Microsoft.KeyVault(SecretUri=https://kv-teknotassen.vault.azure.net/secrets/PostgresConnectionString/<VERSION>)
+# BLOB_CONNECTION_STRING=@Microsoft.KeyVault(SecretUri=https://kv-teknotassen.vault.azure.net/secrets/StorageConnectionString/<VERSION>)
+# OPENAI_API_KEY=@Microsoft.KeyVault(SecretUri=https://kv-teknotassen.vault.azure.net/secrets/OpenAIKey/<VERSION>)
+
+# Container Registry
+AZURE_CONTAINER_REGISTRY=acrteknotassen
+AZURE_WEBAPP_NAME=web-teknotassen
+AZURE_RESOURCE_GROUP=teknotassen-rg

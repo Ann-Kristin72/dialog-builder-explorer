@@ -12,7 +12,7 @@ import { azureStorageService } from './services/azureStorageService.js';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 // Security middleware
 app.use(helmet());
@@ -20,7 +20,7 @@ app.use(helmet());
 // CORS configuration
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://teknotassen.no', 'https://*.vercel.app']
+    ? ['https://teknotassen.vercel.app', 'https://web-teknotassen.azurewebsites.net']
     : ['http://localhost:8080', 'http://localhost:8081', 'http://localhost:3000'],
   credentials: true,
 }));
@@ -37,7 +37,18 @@ app.use('/api/', limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Health check endpoint
+// Health check endpoint (Azure App Service)
+app.get('/healthz', (req, res) => {
+  res.status(200).json({ 
+    status: 'healthy', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    port: PORT,
+    database: 'connected'
+  });
+});
+
+// Legacy health endpoint
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'healthy', 
@@ -87,7 +98,11 @@ async function startServer() {
     }
     
     // Initialize Azure PostgreSQL (if configured)
-    if (process.env.AZURE_KEY_VAULT_URL) {
+    if (process.env.POSTGRES_URL) {
+      // Use environment variable (Azure App Service)
+      await initializeDatabasePool();
+      console.log('✅ Azure PostgreSQL initialized from environment variables');
+    } else if (process.env.AZURE_KEY_VAULT_URL) {
       try {
         await azureStorageService.initializeKeyVault();
         
@@ -123,10 +138,17 @@ async function startServer() {
     await initDatabase();
     
     // Initialize Azure Storage (if configured)
-    if (process.env.AZURE_KEY_VAULT_URL) {
+    if (process.env.BLOB_CONNECTION_STRING) {
       try {
-        await azureStorageService.initializeStorage();
-        console.log('✅ Azure Storage initialized successfully');
+        await azureStorageService.initialize();
+        console.log('✅ Azure Storage initialized from environment variables');
+      } catch (error) {
+        console.warn('⚠️ Azure Storage initialization failed (continuing without it):', error.message);
+      }
+    } else if (process.env.AZURE_KEY_VAULT_URL) {
+      try {
+        await azureStorageService.initialize();
+        console.log('✅ Azure Storage initialized from Key Vault');
       } catch (error) {
         console.warn('⚠️ Azure Storage initialization failed (continuing without it):', error.message);
       }
