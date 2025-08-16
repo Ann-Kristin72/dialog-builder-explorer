@@ -23,6 +23,7 @@ export default defineConfig(({ mode }) => ({
   define: {
     __DEV__: mode === "development",
   },
+  envPrefix: 'VITE_',
   // Build optimalisering for Vercel
   build: {
     outDir: "dist",

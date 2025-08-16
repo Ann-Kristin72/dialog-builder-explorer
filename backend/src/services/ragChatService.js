@@ -65,14 +65,9 @@ export class RAGChatService {
       ];
 
       // Get response from OpenAI
-      const completion = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages: messages,
-        temperature: 0.7,
-        max_tokens: 1000,
-      });
+      const completion = await openai.invoke(messages);
 
-      const response = completion.choices[0].message.content;
+      const response = completion.content;
 
       return {
         response,

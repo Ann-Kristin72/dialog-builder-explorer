@@ -1,0 +1,16 @@
+# Azure AD B2C Configuration
+NEXT_PUBLIC_OIDC_AUTHORITY=https://teknotassenb2c.b2clogin.com/teknotassenb2c.onmicrosoft.com/B2C_1A_SIGNIN
+NEXT_PUBLIC_OIDC_CLIENT_ID=<Application (client) ID fra TeknoTassen Frontend>
+NEXT_PUBLIC_OIDC_TENANT_ID=<Directory (tenant) ID>
+NEXT_PUBLIC_OIDC_POLICY=B2C_1A_SIGNIN
+NEXT_PUBLIC_REDIRECT_URI=http://localhost:5173
+
+# OpenAI API Key (for RAG system)
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Database Configuration (for local development)
+DB_USER=ann-kristin
+DB_HOST=localhost
+DB_NAME=teknotassen_dev
+DB_PASSWORD=
+DB_PORT=5432

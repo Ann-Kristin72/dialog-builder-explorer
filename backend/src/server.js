@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
+import multer from 'multer';
 import coursesRouter from './routes/courses.js';
 import { testConnection, initDatabase } from './utils/database.js';
 
@@ -50,7 +51,7 @@ app.use('/api/courses', coursesRouter);
 app.use((error, req, res, next) => {
   console.error('Unhandled error:', error);
   
-  if (error instanceof multer.MulterError) {
+  if (error.name === 'MulterError') {
     if (error.code === 'LIMIT_FILE_SIZE') {
       return res.status(400).json({ 
         error: 'File too large', 

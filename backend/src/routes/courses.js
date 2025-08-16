@@ -2,6 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import { EmbeddingService } from '../services/embeddingService.js';
 import { RAGChatService } from '../services/ragChatService.js';
+import { authenticateToken, optionalAuth } from '../middleware/auth.js';
 import { z } from 'zod';
 
 const router = express.Router();
@@ -30,13 +31,14 @@ const upload = multer({
 // Validation schemas
 const courseSchema = z.object({
   title: z.string().min(1, 'Title is required'),
+  slug: z.string().min(1, 'Slug is required'),
   technology: z.string().min(1, 'Technology is required'),
   tags: z.array(z.string()).optional(),
   content_md: z.string().min(1, 'Content is required'),
 });
 
-// Upload course from markdown file
-router.post('/upload', upload.single('file'), async (req, res) => {
+// Upload course from markdown file (requires authentication)
+router.post('/upload', authenticateToken, upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
@@ -46,6 +48,12 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     
     // Generate slug from title
     const title = req.body.title || req.file.originalname.replace(/\.[^/.]+$/, '');
+    console.log('Debug - title:', title, 'req.body:', req.body, 'req.file:', req.file.originalname);
+    
+    if (!title) {
+      return res.status(400).json({ error: 'Title is required' });
+    }
+    
     const slug = title.toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
@@ -56,7 +64,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       technology: req.body.technology || 'Generell',
       tags: req.body.tags ? req.body.tags.split(',').map(tag => tag.trim()) : [],
       content_md: content,
-      uploaded_by: req.body.uploaded_by || null,
+      uploaded_by: req.user.id, // Use authenticated user's ID
     };
 
     // Validate course data

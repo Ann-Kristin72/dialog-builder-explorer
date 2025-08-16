@@ -51,10 +51,12 @@ export class EmbeddingService {
       
       // Store chunks with embeddings
       for (let i = 0; i < chunks.length; i++) {
+        // Convert embedding array to proper pgvector format
+        const embeddingArray = embeddingsList[i];
         await client.query(`
           INSERT INTO course_chunks (course_id, content, embedding, chunk_index)
-          VALUES ($1, $2, $3, $4)
-        `, [courseId, chunks[i], embeddingsList[i], i]);
+          VALUES ($1, $2, $3::vector, $4)
+        `, [courseId, chunks[i], embeddingArray, i]);
       }
       
       await client.query('COMMIT');
@@ -98,11 +100,14 @@ export class EmbeddingService {
       }
       
       searchQuery += `
-        ORDER BY cc.embedding <=> $1
+        ORDER BY cc.embedding <=> $1::vector
         LIMIT $${queryParams.length + 1}
       `;
       
       queryParams.push(limit);
+      
+      console.log('🔍 Search query:', searchQuery);
+      console.log('🔍 Query params:', queryParams);
       
       const result = await pool.query(searchQuery, queryParams);
       
