@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { IframeWrapper } from "@/components/IframeWrapper";
 import { Header } from "@/components/Header";
-import { Login } from "@/components/Login";
+import Login from "@/components/Login";
 import Index from "@/pages/Index";
 import NotFound from "@/pages/NotFound";
 import "./App.css";
