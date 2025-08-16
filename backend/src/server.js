@@ -38,14 +38,39 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Health check endpoint (Azure App Service)
-app.get('/healthz', (req, res) => {
-  res.status(200).json({ 
-    status: 'healthy', 
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
-    port: PORT,
-    database: 'connected'
-  });
+app.get('/healthz', async (req, res) => {
+  try {
+    // Check database connection if available
+    let dbStatus = 'unknown';
+    try {
+      const dbConnected = await testConnection();
+      dbStatus = dbConnected ? 'connected' : 'disconnected';
+    } catch (error) {
+      dbStatus = 'error';
+    }
+    
+    res.status(200).json({ 
+      status: 'healthy', 
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      port: PORT,
+      database: dbStatus,
+      services: {
+        database: dbStatus === 'connected',
+        storage: !!process.env.BLOB_CONNECTION_STRING || !!process.env.AZURE_KEY_VAULT_URL,
+        keyvault: !!process.env.AZURE_KEY_VAULT_URL
+      }
+    });
+  } catch (error) {
+    res.status(200).json({ 
+      status: 'degraded', 
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      port: PORT,
+      database: 'error',
+      error: error.message
+    });
+  }
 });
 
 // Legacy health endpoint
@@ -90,18 +115,33 @@ async function startServer() {
   try {
     console.log('🚀 Starting TeknoTassen RAG Backend...');
     
-    // Test database connection
-    const dbConnected = await testConnection();
-    if (!dbConnected) {
-      console.error('❌ Cannot start server without database connection');
-      process.exit(1);
+    // Initialize database connection (but don't crash if it fails)
+    let dbConnected = false;
+    try {
+      // Test database connection
+      dbConnected = await testConnection();
+      if (dbConnected) {
+        console.log('✅ Database connection successful');
+        
+        // Initialize database tables
+        await initDatabase();
+        console.log('✅ Database tables initialized');
+      }
+    } catch (dbError) {
+      console.warn('⚠️ Database initialization failed (continuing without database):', dbError.message);
+      dbConnected = false;
     }
     
     // Initialize Azure PostgreSQL (if configured)
     if (process.env.POSTGRES_URL) {
-      // Use environment variable (Azure App Service)
-      await initializeDatabasePool();
-      console.log('✅ Azure PostgreSQL initialized from environment variables');
+      try {
+        // Use environment variable (Azure App Service)
+        await initializeDatabasePool();
+        console.log('✅ Azure PostgreSQL initialized from environment variables');
+        dbConnected = true;
+      } catch (error) {
+        console.warn('⚠️ Azure PostgreSQL initialization failed:', error.message);
+      }
     } else if (process.env.AZURE_KEY_VAULT_URL) {
       try {
         await azureStorageService.initializeKeyVault();
@@ -118,24 +158,19 @@ async function startServer() {
         
         await initializeDatabasePool(postgresConnectionString);
         console.log('✅ Azure PostgreSQL initialized successfully');
+        dbConnected = true;
       } catch (error) {
-        console.warn('⚠️ Azure PostgreSQL initialization failed (continuing with local database):', error.message);
-        await initializeDatabasePool(); // Initialize local database
+        console.warn('⚠️ Azure PostgreSQL initialization failed (continuing without database):', error.message);
       }
     } else {
       console.log('ℹ️ Azure PostgreSQL not configured (using local database)');
-      await initializeDatabasePool(); // Initialize local database
+      try {
+        await initializeDatabasePool(); // Initialize local database
+        dbConnected = true;
+      } catch (error) {
+        console.warn('⚠️ Local database initialization failed:', error.message);
+      }
     }
-    
-    // Test database connection
-    const dbConnected = await testConnection();
-    if (!dbConnected) {
-      console.error('❌ Cannot start server without database connection');
-      process.exit(1);
-    }
-    
-    // Initialize database tables
-    await initDatabase();
     
     // Initialize Azure Storage (if configured)
     if (process.env.BLOB_CONNECTION_STRING) {
@@ -156,17 +191,25 @@ async function startServer() {
       console.log('ℹ️ Azure Storage not configured (using local storage)');
     }
     
-    // Start server
+    // Start server (even if database connection failed)
     app.listen(PORT, () => {
       console.log(`✅ Server running on port ${PORT}`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+      console.log(`🔗 Health check: http://localhost:${PORT}/healthz`);
       console.log(`📚 API docs: http://localhost:${PORT}/api/courses`);
+      console.log(`💾 Database status: ${dbConnected ? 'Connected' : 'Not connected'}`);
     });
     
   } catch (error) {
     console.error('❌ Failed to start server:', error);
-    process.exit(1);
+    // Don't exit, try to start server anyway
+    console.log('🔄 Attempting to start server without full initialization...');
+    
+    app.listen(PORT, () => {
+      console.log(`✅ Server running on port ${PORT} (limited functionality)`);
+      console.log(`🔗 Health check: http://localhost:${PORT}/healthz`);
+      console.log(`⚠️ Some features may not work due to initialization errors`);
+    });
   }
 }
 
