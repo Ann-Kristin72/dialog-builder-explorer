@@ -47,50 +47,6 @@ jobs:
             echo "✅ ACR already exists!"
           fi
 
-      # Create App Service Plan if it doesn't exist
-      - name: Create App Service Plan if not exists
-        run: |
-          echo "Checking if App Service Plan exists..."
-          if ! az appservice plan show --name teknotassen-plan --resource-group $AZURE_RESOURCE_GROUP >/dev/null 2>&1; then
-            echo "App Service Plan does not exist, creating..."
-            az appservice plan create \
-              --resource-group $AZURE_RESOURCE_GROUP \
-              --name teknotassen-plan \
-              --sku B1 \
-              --is-linux \
-              --location norwayeast
-            echo "✅ App Service Plan created successfully!"
-          else
-            echo "✅ App Service Plan already exists!"
-          fi
-
-      # Create Web App if it doesn't exist
-      - name: Create Web App if not exists
-        run: |
-          echo "Checking if Web App exists..."
-          if ! az webapp show --name $AZURE_WEBAPP_NAME --resource-group $AZURE_RESOURCE_GROUP >/dev/null 2>&1; then
-            echo "Web App does not exist, creating..."
-            az webapp create \
-              --resource-group $AZURE_RESOURCE_GROUP \
-              --name $AZURE_WEBAPP_NAME \
-              --plan teknotassen-plan \
-              --runtime "NODE|20-lts" \
-              --deployment-local-git
-            echo "✅ Web App created successfully!"
-          else
-            echo "✅ Web App already exists!"
-          fi
-
-      # Configure Web App for container deployment
-      - name: Configure Web App for containers
-        run: |
-          echo "Configuring Web App for container deployment..."
-          az webapp config set \
-            --resource-group $AZURE_RESOURCE_GROUP \
-            --name $AZURE_WEBAPP_NAME \
-            --linux-fx-version "DOCKER|$AZURE_CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:latest"
-          echo "✅ Web App configured for containers!"
-
       # Login to ACR
       - name: ACR Login
         run: az acr login --name $AZURE_CONTAINER_REGISTRY
@@ -112,18 +68,14 @@ jobs:
           docker push $AZURE_CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:${{ github.sha }}
           docker push $AZURE_CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:latest
 
-      # Peke Web App til ny tag
-      - name: Set container on Web App
-        run: |
-          az webapp config container set \
-            --resource-group $AZURE_RESOURCE_GROUP \
-            --name $AZURE_WEBAPP_NAME \
-            --docker-custom-image-name $AZURE_CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:${{ github.sha }} \
-            --docker-registry-server-url https://$AZURE_CONTAINER_REGISTRY.azurecr.io
-
-      # Restart for å være sikker
-      - name: Restart Web App
-        run: az webapp restart -g $AZURE_RESOURCE_GROUP -n $AZURE_WEBAPP_NAME
+      # Deploy to Azure Web App using the recommended action
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          slot-name: 'production'
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
+          images: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       # Wait for deployment
       - name: Wait for deployment

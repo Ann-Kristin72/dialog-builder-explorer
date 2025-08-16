@@ -19,6 +19,7 @@
 - ✅ Repository: `dialog-builder-explorer`
 - ✅ Workflow: `.github/workflows/deploy-backend.yml`
 - ✅ Secrets: `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`
+- ✅ **NEW:** `AZURE_PUBLISH_PROFILE` - Web App publish profile
 - ✅ App Registration: `teknotassen-github-ci` med federated credentials
 - ✅ RBAC: Contributor-rolle på `teknotassen-rg`
 
@@ -40,7 +41,22 @@
 
 ## 🔧 **Environment Variables**
 
-### Key Vault References
+### **GitHub Secrets Required**
+```bash
+AZURE_CLIENT_ID          # From teknotassen-github-ci app registration
+AZURE_TENANT_ID          # Azure AD tenant ID
+AZURE_SUBSCRIPTION_ID    # Azure subscription ID
+AZURE_PUBLISH_PROFILE    # Web App publish profile (NEW!)
+```
+
+### **How to get AZURE_PUBLISH_PROFILE:**
+1. **Go to Azure Portal:** `https://portal.azure.com`
+2. **Navigate to:** `web-teknotassen` Web App
+3. **Click:** `Get publish profile`
+4. **Download** the `.publishsettings` file
+5. **Copy the content** and add as GitHub secret `AZURE_PUBLISH_PROFILE`
+
+### **Key Vault References**
 ```bash
 POSTGRES_URL=@Microsoft.KeyVault(SecretUri=https://kv-teknotassen.vault.azure.net/secrets/PostgresAppConnectionString/)
 BLOB_CONNECTION_STRING=@Microsoft.KeyVault(SecretUri=https://kv-teknotassen.vault.azure.net/secrets/StorageConnectionString/)
