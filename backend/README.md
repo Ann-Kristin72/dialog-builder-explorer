@@ -799,17 +799,31 @@ console.log(`📚 API docs: http://0.0.0.0:${port}/api/courses`);
 
 ## 🎯 **Status**
 
-### **Current Status: 🟡 Ready for Deployment**
+### **Current Status: 🔴 LATEST DEPLOYMENT FAILED**
 - **Code Quality:** ✅ All critical fixes implemented
 - **Testing:** ✅ Local testing passed
 - **Documentation:** ✅ Complete
-- **Deployment:** 🟡 Ready for GitHub Actions
+- **Deployment:** ❌ Failed - ImagePullFailure (Image tag mismatch)
+
+### **Latest Issue: Image Tag Mismatch**
+**Problem:** GitHub Actions workflow was deploying with commit hash tag instead of `latest` tag.
+
+**Root Cause:**
+```yaml
+# ❌ FEIL - Deploying with non-existent tag
+images: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+# ✅ RIKTIG - Deploy with existing latest tag  
+images: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
+```
+
+**Fix Applied:** ✅ Changed deployment to use `:latest` tag in workflow
 
 ### **Next Steps**
-1. **Trigger Deployment** - GitHub Actions workflow
-2. **Health Check** - Verify `/healthz` endpoint
-3. **Integration Testing** - Test with frontend
-4. **Performance Testing** - Load testing
+1. **✅ Fix Applied** - Image tag mismatch resolved
+2. **🔄 Retry Deployment** - Trigger GitHub Actions workflow
+3. **Health Check** - Verify `/healthz` endpoint
+4. **Integration Testing** - Test with frontend
 5. **Go-Live** - Production deployment
 
 ---

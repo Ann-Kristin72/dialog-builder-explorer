@@ -565,9 +565,10 @@ az webapp config appsettings list --name web-teknotassen --resource-group teknot
 ## 🎯 **DEPLOYMENT STATUS**
 
 ### **Backend (Azure Web App)**
-- **Status:** 🟡 Ready for final deployment test
+- **Status:** 🔴 **LATEST DEPLOYMENT FAILED** - ImagePullFailure issue identified
 - **Issues Fixed:** ✅ Import order, ✅ Azure services robustness, ✅ Port configuration
-- **Next:** Trigger GitHub Actions deployment
+- **Current Problem:** 🚨 Image tag mismatch in deployment action
+- **Next:** Fix image tag in GitHub Actions workflow
 
 ### **Frontend (Vercel)**
 - **Status:** 🟢 Ready for deployment
@@ -575,5 +576,91 @@ az webapp config appsettings list --name web-teknotassen --resource-group teknot
 - **Dependency:** Backend must be healthy first
 
 ---
+
+## 🚨 **LATEST DEPLOYMENT FAILURE - ImagePullFailure**
+
+### **Problem Identified:**
+**Image Tag Mismatch** - GitHub Actions workflow was deploying with commit hash tag instead of `latest` tag.
+
+#### **What Happened:**
+1. **✅ Docker Build & Push** - Successfully pushed both `:latest` and `:github.sha` tags
+2. **❌ Deployment Action** - Used `:${{ github.sha }}` tag that doesn't exist in ACR
+3. **🚨 ImagePullFailure** - Azure Web App couldn't pull the specified image
+
+#### **Root Cause:**
+```yaml
+# ❌ FEIL - Deploying with non-existent tag
+images: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+# ✅ RIKTIG - Deploy with existing latest tag  
+images: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
+```
+
+### **Fix Applied:**
+- **✅ Image Tag Fixed** - Changed deployment to use `:latest` tag
+- **✅ Workflow Updated** - All fixes implemented in `.github/workflows/deploy-backend.yml`
+- **🔄 Ready for Retry** - Next deployment should succeed
+
+### **Current Status:**
+- **Backend Code:** ✅ All critical fixes implemented
+- **Docker Image:** ✅ Latest tag available in ACR
+- **Workflow:** ✅ Image tag mismatch fixed
+- **Next Deployment:** 🟡 Ready to trigger
+
+---
+
+## 🔄 **DEPLOYMENT RETRY INSTRUCTIONS**
+
+### **1. Verify Current Status:**
+```bash
+# Check if latest image exists in ACR
+az acr repository show-tags --name acrteknotassen --repository teknotassen-backend
+
+# Should show: latest, [commit-hash]
+```
+
+### **2. Trigger New Deployment:**
+- **GitHub Actions** → **Actions** tab
+- **Select:** `Deploy Backend to Azure Web App (Container)`
+- **Click:** **Run workflow** → **Run workflow**
+
+### **3. Expected Result:**
+- **✅ Build Success** - Docker image built and pushed
+- **✅ Deploy Success** - Azure Web App updated with latest image
+- **✅ Health Check** - `/healthz` endpoint responds with 200
+- **✅ Backend Ready** - Ready for frontend integration
+
+---
+
+## 📊 **DEPLOYMENT HISTORY**
+
+### **Attempt 1: Initial Setup**
+- **Status:** ❌ Failed - Missing GitHub Secrets
+- **Fix:** Added AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID
+
+### **Attempt 2: ACR Access**
+- **Status:** ❌ Failed - ACR admin user not enabled
+- **Fix:** Added `az acr update --admin-enabled true`
+
+### **Attempt 3: Port Configuration**
+- **Status:** ❌ Failed - Port mismatch (container: 8181, Azure: 80)
+- **Fix:** Aligned ports to 8181 consistently
+
+### **Attempt 4: Import Errors**
+- **Status:** ❌ Failed - Import statements after usage
+- **Fix:** Moved all imports to top of file
+
+### **Attempt 5: Azure Services Crash**
+- **Status:** ❌ Failed - Services failed without environment variables
+- **Fix:** Added graceful fallback in initializeServices()
+
+### **Attempt 6: Image Tag Mismatch**
+- **Status:** ❌ Failed - Deploying with non-existent commit hash tag
+- **Fix:** Changed deployment to use `:latest` tag
+
+### **Attempt 7: Current**
+- **Status:** 🟡 Ready for retry
+- **All Fixes:** ✅ Implemented
+- **Expected:** ✅ Success
 
 **📝 Dette dokumentet oppdateres kontinuerlig med nye learnings og fixes!**

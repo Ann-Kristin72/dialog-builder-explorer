@@ -457,18 +457,23 @@ vercel env pull .env.local
 
 ## 🎉 **Deployment Status**
 
-### **Current Status: 🟡 READY FOR DEPLOYMENT**
+### **Current Status: 🔴 WAITING FOR BACKEND FIX**
 - **Frontend:** ✅ Komplett og testet
-- **Backend:** 🟡 Venter på Azure deployment
+- **Backend:** ❌ **LATEST DEPLOYMENT FAILED** - ImagePullFailure
 - **Infrastructure:** ✅ Azure resources klar
 - **Documentation:** ✅ Komplett
 
+### **Backend Issue: Image Tag Mismatch**
+**Problem:** GitHub Actions workflow was deploying with commit hash tag instead of `latest` tag.
+
+**Status:** ✅ Fix applied, ready for retry
+
 ### **Next Steps**
-1. **Backend Deployment** - Trigger GitHub Actions
-2. **Backend Health Check** - Verify `/healthz` endpoint
-3. **Frontend Deployment** - Deploy to Vercel
-4. **Integration Testing** - Test frontend-backend communication
-5. **Go-Live** - Production deployment
+1. **🔄 Backend Deployment Retry** - Trigger GitHub Actions workflow
+2. **✅ Backend Health Check** - Verify `/healthz` endpoint
+3. **🚀 Frontend Deployment** - Deploy to Vercel
+4. **🔗 Integration Testing** - Test frontend-backend communication
+5. **🎯 Go-Live** - Production deployment
 
 ---
 
