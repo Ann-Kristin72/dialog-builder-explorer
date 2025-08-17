@@ -15,6 +15,10 @@ const app = express();
 // Use port 8181 as per CTO's findings (container actually listens on 8181)
 const PORT = 8181;
 
+// CTO's simple health route (without DB/KeyVault calls)
+app.get("/healthz", (_req, res) => res.status(200).send("OK"));
+app.get("/", (_req, res) => res.status(200).send("Up"));
+
 // Security middleware
 app.use(helmet());
 
@@ -193,11 +197,11 @@ async function startServer() {
     }
     
     // Start server (even if database connection failed)
-    app.listen(PORT, () => {
+    app.listen(PORT, "0.0.0.0", () => {
       console.log(`✅ Server running on port ${PORT}`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`🔗 Health check: http://localhost:${PORT}/healthz`);
-      console.log(`📚 API docs: http://localhost:${PORT}/api/courses`);
+      console.log(`🔗 Health check: http://0.0.0.0:${PORT}/healthz`);
+      console.log(`📚 API docs: http://0.0.0.0:${PORT}/api/courses`);
       console.log(`💾 Database status: ${dbConnected ? 'Connected' : 'Not connected'}`);
     });
     
@@ -206,9 +210,9 @@ async function startServer() {
     // Don't exit, try to start server anyway
     console.log('🔄 Attempting to start server without full initialization...');
     
-    app.listen(PORT, () => {
+    app.listen(PORT, "0.0.0.0", () => {
       console.log(`✅ Server running on port ${PORT} (limited functionality)`);
-      console.log(`🔗 Health check: http://localhost:${PORT}/healthz`);
+      console.log(`🔗 Health check: http://0.0.0.0:${PORT}/healthz`);
       console.log(`⚠️ Some features may not work due to initialization errors`);
     });
   }
