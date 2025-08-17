@@ -33,7 +33,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
           cache-dependency-path: backend/package-lock.json
 
@@ -67,7 +67,7 @@ jobs:
           az webapp config set \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --linux-fx-version "NODE|18-lts"
+            --linux-fx-version "NODE|20-lts"
           
           # Set startup command
           az webapp config set \
@@ -114,5 +114,5 @@ jobs:
           echo "🎉 Backend deployed successfully!"
           echo "Web App: https://${HOSTNAME}"
           echo "Health: https://${HOSTNAME}/healthz"
-          echo "Runtime: Node.js 18 LTS"
+          echo "Runtime: Node.js 20 LTS"
           echo "Deployment: Code (no container)"

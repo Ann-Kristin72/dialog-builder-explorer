@@ -1,7 +1,6 @@
 # backend/Dockerfile
-# Using Node.js 18 for LangChain 0.1.x compatibility
-# LangChain 0.1.x has known issues with Node.js 20
-FROM node:18-alpine
+# Using Node.js 20 (Azure Web App runtime)
+FROM node:20-alpine
 
 WORKDIR /app
 ENV NODE_ENV=production

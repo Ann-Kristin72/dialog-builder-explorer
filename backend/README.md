@@ -838,7 +838,7 @@ console.log(`📚 API docs: http://0.0.0.0:${port}/api/courses`);
 - ✅ **Eliminates ImagePullFailure** completely
 - ✅ **Simpler deployment** pipeline
 - ✅ **More reliable** Azure hosting
-- ✅ **Standard Node.js** runtime
+- ✅ **Standard Node.js 20** runtime
 - ✅ **All features work** as expected
 
 ### **Changes Made:**
