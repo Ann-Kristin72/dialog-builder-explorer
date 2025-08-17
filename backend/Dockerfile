@@ -12,9 +12,9 @@ RUN npm ci --omit=dev
 # Copy backend files (build context is repository root)
 COPY backend/ .
 
-# Azure ruter til denne porten
-ENV PORT=8181
-EXPOSE 8181
+# Azure Web App standard port
+ENV PORT=80
+EXPOSE 80
 
 # Start appen (bruk npm start hvis du har start-script)
 CMD ["npm", "start"]

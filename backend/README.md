@@ -799,11 +799,11 @@ console.log(`📚 API docs: http://0.0.0.0:${port}/api/courses`);
 
 ## 🎯 **Status**
 
-### **Current Status: 🟡 CRITICAL FIXES APPLIED - READY FOR DEPLOYMENT**
+### **Current Status: 🚀 NEW STRATEGY - Azure Web App (Code) Deployment**
 - **Code Quality:** ✅ All critical fixes implemented
 - **Testing:** ✅ Local testing passed  
 - **Documentation:** ✅ Complete
-- **Deployment:** 🟡 Ready - Import error + Node.js compatibility fixed
+- **Deployment:** 🚀 Switching from Container to Code deployment
 
 ### **Latest Issue: Container Crash on Startup (RESOLVED)**
 **Problem:** Container started but crashed immediately with exit code 1 due to missing import and Node.js compatibility.
@@ -818,6 +818,34 @@ console.log(`📚 API docs: http://0.0.0.0:${port}/api/courses`);
 3. ✅ **Image Tag Fix:** GitHub Actions workflow uses `:latest` tag
 
 **Expected Result:** Container should now start successfully without crashing.
+
+---
+
+## 🚀 **NEW DEPLOYMENT STRATEGY: Azure Web App (Code)**
+
+### **Why the Change?**
+- **Container deployment:** Endless ImagePullFailure issues
+- **Azure Web App containers:** Known compatibility problems
+- **Code deployment:** More reliable and simpler
+
+### **New Approach:**
+1. **Direct Node.js hosting** in Azure Web App
+2. **No Docker containers** - pure Node.js runtime
+3. **Standard Azure Web App** deployment
+4. **All functionality preserved** - RAG, AI, Azure services
+
+### **Benefits:**
+- ✅ **Eliminates ImagePullFailure** completely
+- ✅ **Simpler deployment** pipeline
+- ✅ **More reliable** Azure hosting
+- ✅ **Standard Node.js** runtime
+- ✅ **All features work** as expected
+
+### **Changes Made:**
+1. **Port:** Changed from 8181 to 80 (standard Web App)
+2. **Workflow:** New GitHub Actions for code deployment
+3. **Configuration:** web.config for proper Node.js hosting
+4. **Build:** npm ci in Azure instead of Docker build
 
 **Root Cause:**
 ```yaml
