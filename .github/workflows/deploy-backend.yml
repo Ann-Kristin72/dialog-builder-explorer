@@ -128,15 +128,16 @@ jobs:
         run: |
           echo "🔍 Checking Azure CLI version and Web App type..."
           
-          # Check Azure CLI version
-          AZURE_CLI_VERSION=$(az version --query "azure-cli" -o tsv)
-          echo "Azure CLI version: $AZURE_CLI_VERSION"
+          # Check Azure CLI version (fixed syntax)
+          echo "Checking Azure CLI version..."
+          az version
           
           # Check Web App type and configuration
+          echo "Checking Web App config..."
           WEBAPP_CONFIG=$(az webapp config show \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --query "{kind:kind,reserved:reserved,linuxFxVersion:linuxFxVersion,containerConfig:containerConfig}" \
+            --query "{kind:kind,reserved:reserved,linuxFxVersion:linuxFxVersion}" \
             -o json)
           
           echo "Web App config: $WEBAPP_CONFIG"
