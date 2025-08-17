@@ -113,83 +113,40 @@ jobs:
       # Wait for deployment
       - name: Wait for deployment
         run: |
-          echo "Waiting for deployment to complete..."
-          sleep 60
-          echo "✅ Deployment wait completed"
+          echo "⏳ Waiting for deployment to complete..."
+          sleep 30
 
-      # Check Web App status
-      - name: Check Web App status
+      # CTO's Solution: Resolve actual hostname from Azure (not assume azurewebsites.net)
+      - name: Resolve Web App hostname
+        id: resolve-host
         run: |
-          echo "Checking Web App status..."
-          az webapp show --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_WEBAPP_NAME --query "{name:name, state:state, defaultHostName:defaultHostName}" --output table
-          echo "✅ Web App status checked"
+          HOSTNAME=$(az webapp show \
+            --resource-group "${{ env.AZURE_RESOURCE_GROUP }}" \
+            --name "${{ env.AZURE_WEBAPP_NAME }}" \
+            --query defaultHostName -o tsv)
+          echo "HOSTNAME=$HOSTNAME" >> $GITHUB_ENV
+          echo "🔍 Resolved host: $HOSTNAME"
 
-      # Wait for Web App to be ready
-      - name: Wait for Web App to be ready
+      # Wait for /healthz to respond with 200 (CTO's health check)
+      - name: Wait for /healthz
+        shell: bash
         run: |
-          echo "Waiting for Web App to be ready..."
-          max_attempts=30
-          attempt=1
-          while [ $attempt -le $max_attempts ]; do
-            echo "Attempt $attempt/$max_attempts: Checking if Web App is responding..."
-            if curl -f --max-time 10 "https://$AZURE_WEBAPP_NAME.azurewebsites.net" >/dev/null 2>&1; then
-              echo "✅ Web App is responding!"
-              break
-            else
-              echo "Web App not ready yet, waiting 10 seconds..."
-              sleep 10
-              attempt=$((attempt + 1))
+          echo "🏥 Waiting for https://${HOSTNAME}/healthz"
+          for i in {1..30}; do
+            if curl -fsS --max-time 10 "https://${HOSTNAME}/healthz" > /dev/null; then
+              echo "✅ Healthy at https://${HOSTNAME}/healthz"
+              exit 0
             fi
+            echo "🔄 Attempt $i/30 … not ready yet"; sleep 10
           done
-          
-          if [ $attempt -gt $max_attempts ]; then
-            echo "❌ Web App did not become ready after $max_attempts attempts"
-            echo "🔍 Debugging information:"
-            echo "1. Checking Web App container status..."
-            az webapp config container show --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_WEBAPP_NAME --output table
-            echo "2. Checking Web App logs..."
-            az webapp log tail --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_WEBAPP_NAME --provider docker || echo "Could not get logs"
-            echo "3. Checking Web App app settings..."
-            az webapp config appsettings list --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_WEBAPP_NAME --output table
-            echo "4. Testing container directly..."
-            curl -v --max-time 30 "https://$AZURE_WEBAPP_NAME.azurewebsites.net" || echo "Direct test failed"
-            exit 1
-          fi
+          echo "❌ App never became healthy"; exit 1
 
-      # Health check endpoint (Azure App Service)
-      - name: Health check
+      # Deployment success info with correct hostname
+      - name: Deployment success info
         run: |
-          echo "🏥 Testing health endpoint on port 8181..."
-          sleep 10  # Wait for container to fully start
-          
-          # Test health endpoint on port 8181 (WEBSITES_PORT setting)
-          HEALTH_URL="https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/healthz"
-          echo "🔍 Testing: $HEALTH_URL"
-          
-          # Try multiple times with increasing delays
-          for i in {1..5}; do
-            echo "🔄 Attempt $i/5..."
-            if curl -f -s "$HEALTH_URL" > /dev/null; then
-              echo "✅ Health check successful! Container is responding on port 8181"
-              break
-            else
-              echo "❌ Health check failed (attempt $i/5)"
-              if [ $i -lt 5 ]; then
-                echo "⏳ Waiting 10 seconds before retry..."
-                sleep 10
-              else
-                echo "🚨 All health check attempts failed!"
-                echo "🔍 Checking container status..."
-                az webapp log tail --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
-                exit 1
-              fi
-            fi
-          done
-
-      # Log deployment info
-      - name: Deployment info
-        run: |
-          echo "🚀 Backend deployed successfully!"
-          echo "Image: $AZURE_CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:${{ github.sha }}"
-          echo "Web App: https://$AZURE_WEBAPP_NAME.azurewebsites.net"
-          echo "Health: https://$AZURE_WEBAPP_NAME.azurewebsites.net/healthz"
+          echo "🎉 Backend deployed successfully!"
+          echo "Image: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          echo "Web App: https://${HOSTNAME}"
+          echo "Health: https://${HOSTNAME}/healthz"
+          echo "Port: 8181 (WEBSITES_PORT setting)"
+          echo "Environment: Production (NODE_ENV fixed)"

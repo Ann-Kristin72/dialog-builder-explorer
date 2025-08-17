@@ -149,12 +149,16 @@ curl https://web-teknotassen.azurewebsites.net/api/courses/azure/test-db
 
 ---
 
-**Deployment Status:** 🔧 **ALL CTO ISSUES FIXED** - Ready for final deployment test
+**Deployment Status:** 🔧 **CRITICAL HOSTNAME FIX** - CTO identified root cause
 
-**Fixes Implemented:**
+**Critical Fix Applied:**
+- ✅ **HOSTNAME RESOLUTION:** Use Azure's `defaultHostName` instead of assuming `azurewebsites.net`
 - ✅ WEBSITES_PORT=8181 (container compatibility)
 - ✅ NODE_ENV=production (fix typo)
-- ✅ Health check tests port 8181
+- ✅ Health check tests actual hostname on port 8181
 - ✅ All workflow cleanup done
 
-**Next:** Test deployment with all fixes applied → Success! 🎯
+**Root Cause:** We were pinging non-existent `azurewebsites.net` URLs
+**Solution:** Resolve actual hostname from Azure Web App properties
+
+**Next:** Test deployment with hostname resolution fix → Success! 🎯
