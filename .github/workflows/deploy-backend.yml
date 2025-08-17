@@ -123,18 +123,10 @@ jobs:
           
           echo "✅ Images verified in ACR"
 
-      # Deploy to Azure Web App
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          slot-name: 'production'
-          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
-
-      # Set container configuration
+      # Configure Web App for containers BEFORE deployment
       - name: Configure Web App for containers
         run: |
-          echo "🔧 Configuring Linux Web App for Containers"
+          echo "🔧 Configuring Linux Web App for Containers BEFORE deployment"
           
           # Set container runtime for Linux Web App for Containers
           az webapp config set \
@@ -159,7 +151,7 @@ jobs:
           
           echo "✅ Linux Web App for Containers configured with ACR authentication"
 
-      # Verify container configuration
+      # Verify container configuration BEFORE deployment
       - name: Verify container configuration
         run: |
           echo "🔍 Verifying Linux Web App for Containers configuration..."
@@ -195,6 +187,53 @@ jobs:
           fi
           
           echo "✅ Linux Web App for Containers configuration verified"
+
+      # Test container image pull from ACR (verify connectivity)
+      - name: Test container image pull
+        run: |
+          echo "🧪 Testing if container image can be pulled from ACR..."
+          
+          # Try to pull the image locally to verify ACR connectivity
+          if docker pull ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest; then
+            echo "✅ Container image pull test successful"
+          else
+            echo "❌ Container image pull test failed - ACR connectivity issue!"
+            exit 1
+          fi
+
+      # Final verification - ensure Web App is ready for deployment
+      - name: Final Web App verification
+        run: |
+          echo "🔍 Final verification - ensuring Web App is ready for deployment..."
+          
+          # Check if Web App is in a good state
+          WEBAPP_STATE=$(az webapp show \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --query "state" -o tsv)
+          
+          echo "Web App state: $WEBAPP_STATE"
+          
+          # Check if container config is properly set
+          CONTAINER_READY=$(az webapp config container show \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --query "dockerImageName" -o tsv)
+          
+          if [ "$CONTAINER_READY" = "${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest" ]; then
+            echo "✅ Web App container configuration verified - ready for deployment!"
+          else
+            echo "❌ Web App container configuration not ready - deployment will fail!"
+            exit 1
+          fi
+
+      # Deploy to Azure Web App (AFTER container config is set)
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          slot-name: 'production'
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
 
       # Wait for deployment
       - name: Wait for deployment
