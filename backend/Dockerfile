@@ -23,13 +23,13 @@ RUN mkdir -p uploads
 ENV NODE_ENV=production
 ENV TZ=Europe/Oslo
 
-# Force port 80 for Azure Web Apps (overrides any WEBSITES_PORT)
-ENV PORT=80
-EXPOSE 80
+# Use port 8181 as per CTO's findings (container actually listens on 8181)
+ENV PORT=8181
+EXPOSE 8181
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:80/healthz', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+  CMD node -e "require('http').get('http://localhost:8181/healthz', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
 
 # Start
 CMD ["node", "src/server.js"]

@@ -12,8 +12,8 @@ import { azureStorageService } from './services/azureStorageService.js';
 dotenv.config();
 
 const app = express();
-// Force port 80 for Azure Web App compatibility
-const PORT = 80;
+// Use port 8181 as per CTO's findings (container actually listens on 8181)
+const PORT = 8181;
 
 // Security middleware
 app.use(helmet());
