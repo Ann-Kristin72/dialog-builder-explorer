@@ -130,27 +130,51 @@ jobs:
           
           # Set container runtime for Linux Web App for Containers
           echo "Setting linux-fx-version..."
-          az webapp config set \
+          LINUX_FX_RESULT=$(az webapp config set \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --linux-fx-version "DOCKER|${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest"
+            --linux-fx-version "DOCKER|${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest" \
+            2>&1)
+          
+          if [ $? -eq 0 ]; then
+            echo "✅ linux-fx-version set successfully"
+          else
+            echo "❌ Failed to set linux-fx-version: $LINUX_FX_RESULT"
+            exit 1
+          fi
           
           # Set port configuration (Azure Web App standard)
           echo "Setting WEBSITES_PORT..."
-          az webapp config appsettings set \
+          PORT_RESULT=$(az webapp config appsettings set \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --settings WEBSITES_PORT=8181
+            --settings WEBSITES_PORT=8181 \
+            2>&1)
+          
+          if [ $? -eq 0 ]; then
+            echo "✅ WEBSITES_PORT set successfully"
+          else
+            echo "❌ Failed to set WEBSITES_PORT: $PORT_RESULT"
+            exit 1
+          fi
           
           # Set container registry credentials for Web App (using new Azure CLI syntax)
           echo "Setting container registry credentials..."
-          az webapp config container set \
+          CONTAINER_RESULT=$(az webapp config container set \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --container-image-name "${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest" \
             --container-registry-url "https://${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io" \
             --container-registry-user "${{ env.ACR_USERNAME }}" \
-            --container-registry-password "${{ env.ACR_PASSWORD }}"
+            --container-registry-password "${{ env.ACR_PASSWORD }}" \
+            2>&1)
+          
+          if [ $? -eq 0 ]; then
+            echo "✅ Container registry credentials set successfully"
+          else
+            echo "❌ Failed to set container registry credentials: $CONTAINER_RESULT"
+            exit 1
+          fi
           
           echo "✅ Linux Web App for Containers configured with ACR authentication"
 
@@ -177,6 +201,27 @@ jobs:
             -o json)
           
           echo "Container config: $CONTAINER_CONFIG"
+          
+          # Check individual container config values
+          echo "Checking individual container config values..."
+          CONTAINER_IMAGE=$(az webapp config container show \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --query "containerImageName" -o tsv)
+          
+          CONTAINER_REGISTRY=$(az webapp config container show \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --query "containerRegistryUrl" -o tsv)
+          
+          CONTAINER_USER=$(az webapp config container show \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --query "containerRegistryUser" -o tsv)
+          
+          echo "Container Image Name: '$CONTAINER_IMAGE'"
+          echo "Container Registry URL: '$CONTAINER_REGISTRY'"
+          echo "Container Registry User: '$CONTAINER_USER'"
           
           # Check app settings
           echo "Checking WEBSITES_PORT..."
