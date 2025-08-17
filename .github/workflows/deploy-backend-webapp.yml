@@ -1,9 +1,7 @@
 name: Deploy Backend to Azure Web App (Code)
 
 on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
+  workflow_dispatch:  # Kun manuell trigger - unngår dobbel deployment
 
 permissions:
   id-token: write
