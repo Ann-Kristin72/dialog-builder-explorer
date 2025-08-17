@@ -1,5 +1,5 @@
 import { OpenAIEmbeddings } from '@langchain/openai';
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { getPool } from '../utils/database.js';
 import MarkdownParserService from './markdownParserService.js';
 import dotenv from 'dotenv';
