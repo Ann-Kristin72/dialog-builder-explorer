@@ -123,6 +123,40 @@ jobs:
           
           echo "✅ Images verified in ACR"
 
+      # Check Azure CLI version and Web App type
+      - name: Check Azure CLI and Web App type
+        run: |
+          echo "🔍 Checking Azure CLI version and Web App type..."
+          
+          # Check Azure CLI version
+          AZURE_CLI_VERSION=$(az version --query "azure-cli" -o tsv)
+          echo "Azure CLI version: $AZURE_CLI_VERSION"
+          
+          # Check Web App type and configuration
+          WEBAPP_CONFIG=$(az webapp config show \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --query "{kind:kind,reserved:reserved,linuxFxVersion:linuxFxVersion,containerConfig:containerConfig}" \
+            -o json)
+          
+          echo "Web App config: $WEBAPP_CONFIG"
+          
+          # Check if this is a Linux Web App
+          WEBAPP_KIND=$(az webapp show \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --query "kind" -o tsv)
+          
+          echo "Web App kind: $WEBAPP_KIND"
+          
+          if [[ "$WEBAPP_KIND" != *"linux"* ]]; then
+            echo "❌ This is not a Linux Web App! Current kind: $WEBAPP_KIND"
+            echo "❌ Container deployment requires a Linux Web App for Containers"
+            exit 1
+          fi
+          
+          echo "✅ Web App type verified - Linux Web App detected"
+
       # Configure Web App for containers BEFORE deployment
       - name: Configure Web App for containers
         run: |
@@ -170,10 +204,27 @@ jobs:
             2>&1)
           
           if [ $? -eq 0 ]; then
-            echo "✅ Container registry credentials set successfully"
+            echo "✅ Container registry credentials set successfully with new syntax"
           else
-            echo "❌ Failed to set container registry credentials: $CONTAINER_RESULT"
-            exit 1
+            echo "⚠️ New syntax failed, trying deprecated syntax as fallback..."
+            echo "Error with new syntax: $CONTAINER_RESULT"
+            
+            # Fallback to deprecated syntax
+            CONTAINER_RESULT_FALLBACK=$(az webapp config container set \
+              --name ${{ env.AZURE_WEBAPP_NAME }} \
+              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+              --docker-custom-image-name "${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest" \
+              --docker-registry-server-url "https://${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io" \
+              --docker-registry-server-user "${{ env.ACR_USERNAME }}" \
+              --docker-registry-server-password "${{ env.ACR_PASSWORD }}" \
+              2>&1)
+            
+            if [ $? -eq 0 ]; then
+              echo "✅ Container registry credentials set successfully with deprecated syntax"
+            else
+              echo "❌ Both new and deprecated syntax failed: $CONTAINER_RESULT_FALLBACK"
+              exit 1
+            fi
           fi
           
           echo "✅ Linux Web App for Containers configured with ACR authentication"
@@ -204,20 +255,49 @@ jobs:
           
           # Check individual container config values
           echo "Checking individual container config values..."
+          
+          # Try new syntax first
           CONTAINER_IMAGE=$(az webapp config container show \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --query "containerImageName" -o tsv)
+          
+          # If empty, try deprecated syntax
+          if [ -z "$CONTAINER_IMAGE" ]; then
+            echo "New syntax returned empty, trying deprecated syntax..."
+            CONTAINER_IMAGE=$(az webapp config container show \
+              --name ${{ env.AZURE_WEBAPP_NAME }} \
+              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+              --query "dockerImageName" -o tsv)
+          fi
           
           CONTAINER_REGISTRY=$(az webapp config container show \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --query "containerRegistryUrl" -o tsv)
           
+          # If empty, try deprecated syntax
+          if [ -z "$CONTAINER_REGISTRY" ]; then
+            echo "New syntax returned empty, trying deprecated syntax..."
+            CONTAINER_REGISTRY=$(az webapp config container show \
+              --name ${{ env.AZURE_WEBAPP_NAME }} \
+              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+              --query "dockerRegistryServerUrl" -o tsv)
+          fi
+          
           CONTAINER_USER=$(az webapp config container show \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --query "containerRegistryUser" -o tsv)
+          
+          # If empty, try deprecated syntax
+          if [ -z "$CONTAINER_USER" ]; then
+            echo "New syntax returned empty, trying deprecated syntax..."
+            CONTAINER_USER=$(az webapp config container show \
+              --name ${{ env.AZURE_WEBAPP_NAME }} \
+              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+              --query "dockerRegistryServerUser" -o tsv)
+          fi
           
           echo "Container Image Name: '$CONTAINER_IMAGE'"
           echo "Container Registry URL: '$CONTAINER_REGISTRY'"
@@ -294,12 +374,23 @@ jobs:
           
           # Check if container config is properly set
           echo "Checking container image configuration..."
+          
+          # Try new syntax first
           CONTAINER_READY=$(az webapp config container show \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --query "containerImageName" -o tsv)
           
-          echo "Container image name: $CONTAINER_READY"
+          # If empty, try deprecated syntax
+          if [ -z "$CONTAINER_READY" ]; then
+            echo "New syntax returned empty, trying deprecated syntax..."
+            CONTAINER_READY=$(az webapp config container show \
+              --name ${{ env.AZURE_WEBAPP_NAME }} \
+              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+              --query "dockerImageName" -o tsv)
+          fi
+          
+          echo "Container image name: '$CONTAINER_READY'"
           echo "Expected image name: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest"
           
           if [ "$CONTAINER_READY" = "${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest" ]; then
