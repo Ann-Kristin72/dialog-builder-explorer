@@ -257,7 +257,7 @@ jobs:
           # Check individual container config values
           echo "Checking individual container config values..."
           
-          # Try to get container image name from app settings (since we can see it there)
+          # Get container image name from app settings (this is where it's actually stored)
           echo "Checking container image name from app settings..."
           CONTAINER_IMAGE_FROM_SETTINGS=$(az webapp config appsettings list \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
@@ -266,74 +266,19 @@ jobs:
           
           echo "Container Image Name from settings: '$CONTAINER_IMAGE_FROM_SETTINGS'"
           
-          # Try new syntax first
-          CONTAINER_IMAGE=$(az webapp config container show \
+          # Get container registry URL from app settings
+          CONTAINER_REGISTRY=$(az webapp config appsettings list \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --query "containerImageName" -o tsv)
+            --query "[?name=='DOCKER_REGISTRY_SERVER_URL'].value" -o tsv)
           
-          # If empty, try deprecated syntax
-          if [ -z "$CONTAINER_IMAGE" ]; then
-            echo "New syntax returned empty, trying deprecated syntax..."
-            CONTAINER_IMAGE=$(az webapp config container show \
-              --name ${{ env.AZURE_WEBAPP_NAME }} \
-              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-              --query "dockerImageName" -o tsv)
-          fi
-          
-          # If still empty, use the value from app settings
-          if [ -z "$CONTAINER_IMAGE" ] && [ -n "$CONTAINER_IMAGE_FROM_SETTINGS" ]; then
-            echo "Using container image name from app settings..."
-            CONTAINER_IMAGE="$CONTAINER_IMAGE_FROM_SETTINGS"
-          fi
-          
-          CONTAINER_REGISTRY=$(az webapp config container show \
+          # Get container registry user from app settings
+          CONTAINER_USER=$(az webapp config appsettings list \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --query "containerRegistryUrl" -o tsv)
+            --query "[?name=='DOCKER_REGISTRY_SERVER_USERNAME'].value" -o tsv)
           
-          # If empty, try deprecated syntax
-          if [ -z "$CONTAINER_REGISTRY" ]; then
-            echo "New syntax returned empty, trying deprecated syntax..."
-            CONTAINER_REGISTRY=$(az webapp config container show \
-              --name ${{ env.AZURE_WEBAPP_NAME }} \
-              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-              --query "dockerRegistryServerUrl" -o tsv)
-          fi
-          
-          # If still empty, use the value from app settings
-          if [ -z "$CONTAINER_REGISTRY" ]; then
-            echo "Using container registry URL from app settings..."
-            CONTAINER_REGISTRY=$(az webapp config appsettings list \
-              --name ${{ env.AZURE_WEBAPP_NAME }} \
-              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-              --query "[?name=='DOCKER_REGISTRY_SERVER_URL'].value" -o tsv)
-          fi
-          
-          CONTAINER_USER=$(az webapp config container show \
-            --name ${{ env.AZURE_WEBAPP_NAME }} \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --query "containerRegistryUser" -o tsv)
-          
-          # If empty, try deprecated syntax
-          if [ -z "$CONTAINER_USER" ]; then
-            echo "New syntax returned empty, trying deprecated syntax..."
-            CONTAINER_USER=$(az webapp config container show \
-              --name ${{ env.AZURE_WEBAPP_NAME }} \
-              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-              --query "dockerRegistryServerUser" -o tsv)
-          fi
-          
-          # If still empty, use the value from app settings
-          if [ -z "$CONTAINER_USER" ]; then
-            echo "Using container registry user from app settings..."
-            CONTAINER_USER=$(az webapp config appsettings list \
-              --name ${{ env.AZURE_WEBAPP_NAME }} \
-              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-              --query "[?name=='DOCKER_REGISTRY_SERVER_USERNAME'].value" -o tsv)
-          fi
-          
-          echo "Final Container Image Name: '$CONTAINER_IMAGE'"
+          echo "Final Container Image Name: '$CONTAINER_IMAGE_FROM_SETTINGS'"
           echo "Final Container Registry URL: '$CONTAINER_REGISTRY'"
           echo "Final Container Registry User: '$CONTAINER_USER'"
           
@@ -417,29 +362,11 @@ jobs:
           # Check if container config is properly set
           echo "Checking container image configuration..."
           
-          # Try new syntax first
-          CONTAINER_READY=$(az webapp config container show \
+          # Get container image name from app settings (this is where it's actually stored)
+          CONTAINER_READY=$(az webapp config appsettings list \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --query "containerImageName" -o tsv)
-          
-          # If empty, try deprecated syntax
-          if [ -z "$CONTAINER_READY" ]; then
-            echo "New syntax returned empty, trying deprecated syntax..."
-            CONTAINER_READY=$(az webapp config container show \
-              --name ${{ env.AZURE_WEBAPP_NAME }} \
-              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-              --query "dockerImageName" -o tsv)
-          fi
-          
-          # If still empty, try to get from app settings
-          if [ -z "$CONTAINER_READY" ]; then
-            echo "Container config empty, trying app settings..."
-            CONTAINER_READY=$(az webapp config appsettings list \
-              --name ${{ env.AZURE_WEBAPP_NAME }} \
-              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-              --query "[?name=='DOCKER_CUSTOM_IMAGE_NAME'].value" -o tsv)
-          fi
+            --query "[?name=='DOCKER_CUSTOM_IMAGE_NAME'].value" -o tsv)
           
           echo "Container image name: '$CONTAINER_READY'"
           echo "Expected image name: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest"
