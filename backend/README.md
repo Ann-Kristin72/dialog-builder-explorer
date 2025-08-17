@@ -799,14 +799,25 @@ console.log(`📚 API docs: http://0.0.0.0:${port}/api/courses`);
 
 ## 🎯 **Status**
 
-### **Current Status: 🔴 LATEST DEPLOYMENT FAILED**
+### **Current Status: 🟡 CRITICAL FIXES APPLIED - READY FOR DEPLOYMENT**
 - **Code Quality:** ✅ All critical fixes implemented
-- **Testing:** ✅ Local testing passed
+- **Testing:** ✅ Local testing passed  
 - **Documentation:** ✅ Complete
-- **Deployment:** ❌ Failed - ImagePullFailure (Image tag mismatch)
+- **Deployment:** 🟡 Ready - Import error + Node.js compatibility fixed
 
-### **Latest Issue: Image Tag Mismatch**
-**Problem:** GitHub Actions workflow was deploying with commit hash tag instead of `latest` tag.
+### **Latest Issue: Container Crash on Startup (RESOLVED)**
+**Problem:** Container started but crashed immediately with exit code 1 due to missing import and Node.js compatibility.
+
+**Root Cause:**
+1. **Missing Import:** `RecursiveCharacterTextSplitter` not imported in `embeddingService.js`
+2. **Node.js Compatibility:** LangChain 0.1.x has issues with Node.js 20
+
+**Solution Applied:**
+1. ✅ **Import Fix:** Added missing import for `RecursiveCharacterTextSplitter`
+2. ✅ **Node.js Version:** Changed Dockerfile to use Node.js 18 (LTS, stable with LangChain)
+3. ✅ **Image Tag Fix:** GitHub Actions workflow uses `:latest` tag
+
+**Expected Result:** Container should now start successfully without crashing.
 
 **Root Cause:**
 ```yaml
