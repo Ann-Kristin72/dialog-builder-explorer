@@ -9,7 +9,8 @@ ENV NODE_ENV=production
 COPY package*.json ./
 RUN npm ci --omit=dev
 
-COPY . .
+# Copy backend files (build context is repository root)
+COPY backend/ .
 
 # Azure ruter til denne porten
 ENV PORT=8181
