@@ -16,11 +16,9 @@ app.get("/healthz", (_req, res) => res.status(200).send("OK"));
 app.get("/", (_req, res) => res.status(200).send("Up"));
 
 // Start tidlig – så healthz fungerer selv om init under feiler
-// Azure Web App setter PORT automatisk - bruk process.env.PORT
 const port = process.env.PORT || 80;
 app.listen(port, "0.0.0.0", () => {
   console.log(`🚀 Server starting on port ${port}`);
-  console.log(`🌍 Azure Web App: ${process.env.WEBSITE_SITE_NAME || 'Local'}`);
 });
 
 /* --- legg evt. resten av init UNDER denne linjen ---

@@ -1,0 +1,149 @@
+name: Deploy Backend to Azure Web App (Container)
+
+on:
+  workflow_dispatch:  # Kun manuell trigger - unngår dobbel deployment
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AZURE_WEBAPP_NAME: web-teknotassen
+  AZURE_RESOURCE_GROUP: teknotassen-rg
+  AZURE_CONTAINER_REGISTRY: acrteknotassen
+  IMAGE_NAME: teknotassen-backend
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Login to Azure (OIDC)
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Create ACR if it doesn't exist
+      - name: Create ACR if not exists
+        run: |
+          echo "Checking if ACR exists..."
+          if ! az acr show --name $AZURE_CONTAINER_REGISTRY --resource-group $AZURE_RESOURCE_GROUP >/dev/null 2>&1; then
+            echo "ACR does not exist, creating..."
+            az acr create \
+              --resource-group $AZURE_RESOURCE_GROUP \
+              --name $AZURE_CONTAINER_REGISTRY \
+              --sku Basic \
+              --location norwayeast
+            echo "✅ ACR created successfully!"
+          else
+            echo "✅ ACR already exists!"
+          fi
+
+      # Enable admin user on ACR (required for credentials)
+      - name: Enable ACR admin user
+        run: |
+          echo "Enabling admin user on ACR..."
+          az acr update --name $AZURE_CONTAINER_REGISTRY --admin-enabled true
+          echo "✅ ACR admin user enabled!"
+
+      # Get ACR credentials
+      - name: Get ACR credentials
+        run: |
+          echo "Getting ACR credentials..."
+          ACR_USERNAME=$(az acr credential show --name $AZURE_CONTAINER_REGISTRY --query "username" -o tsv)
+          ACR_PASSWORD=$(az acr credential show --name $AZURE_CONTAINER_REGISTRY --query "passwords[0].value" -o tsv)
+          echo "ACR_USERNAME=$ACR_USERNAME" >> $GITHUB_ENV
+          echo "ACR_PASSWORD=$ACR_PASSWORD" >> $GITHUB_ENV
+          echo "✅ ACR credentials retrieved!"
+
+      # Login to ACR
+      - name: 'Login to ACR'
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io
+          username: ${{ env.ACR_USERNAME }}
+          password: ${{ env.ACR_PASSWORD }}
+
+      # Build and Push Docker image
+      - name: 'Build and Push Docker image'
+        working-directory: .
+        run: |
+          docker build -f backend/Dockerfile -t $AZURE_CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:${{ github.sha }} .
+          docker tag $AZURE_CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:${{ github.sha }} $AZURE_CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:latest
+          docker push $AZURE_CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:${{ github.sha }}
+          docker push $AZURE_CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:latest
+
+      # Deploy to Azure Web App
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          slot-name: 'production'
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
+          images: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
+
+      # Set container configuration
+      - name: Configure Web App for containers
+        run: |
+          echo "🔧 Configuring Web App for container deployment"
+          
+          # Set container runtime
+          az webapp config set \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --linux-fx-version "DOCKER|${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest"
+          
+          # Set port configuration
+          az webapp config appsettings set \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --settings WEBSITES_PORT=80
+          
+          echo "✅ Web App configured for containers"
+
+      # Wait for deployment
+      - name: Wait for deployment
+        run: |
+          echo "⏳ Waiting for deployment to complete..."
+          sleep 30
+
+      # Resolve Web App hostname
+      - name: Resolve Web App hostname
+        id: resolve-host
+        run: |
+          HOSTNAME=$(az webapp show \
+            --resource-group "${{ env.AZURE_RESOURCE_GROUP }}" \
+            --name "${{ env.AZURE_WEBAPP_NAME }}" \
+            --query defaultHostName -o tsv)
+          echo "HOSTNAME=$HOSTNAME" >> $GITHUB_ENV
+          echo "🔍 Resolved host: $HOSTNAME"
+
+      # Wait for /healthz to respond
+      - name: Wait for /healthz
+        shell: bash
+        run: |
+          echo "🏥 Waiting for https://${HOSTNAME}/healthz"
+          for i in {1..30}; do
+            if curl -fsS --max-time 10 "https://${HOSTNAME}/healthz" > /dev/null; then
+              echo "✅ Healthy at https://${HOSTNAME}/healthz"
+              exit 0
+            fi
+            echo "🔄 Attempt $i/30 … not ready yet"; sleep 10
+          done
+          echo "❌ App never became healthy"; exit 1
+
+      # Deployment success info
+      - name: Deployment success info
+        run: |
+          echo "🎉 Backend deployed successfully!"
+          echo "Image: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest"
+          echo "Web App: https://${HOSTNAME}"
+          echo "Health: https://${HOSTNAME}/healthz"
+          echo "Runtime: Container with Node.js 20"
+          echo "Port: 80 (WEBSITES_PORT setting)"

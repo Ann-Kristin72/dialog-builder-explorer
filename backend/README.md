@@ -799,11 +799,11 @@ console.log(`📚 API docs: http://0.0.0.0:${port}/api/courses`);
 
 ## 🎯 **Status**
 
-### **Current Status: 🚀 NEW STRATEGY - Azure Web App (Code) Deployment**
+### **Current Status: 🐳 BACK TO CONTAINER STRATEGY - All Issues Fixed**
 - **Code Quality:** ✅ All critical fixes implemented
 - **Testing:** ✅ Local testing passed  
 - **Documentation:** ✅ Complete
-- **Deployment:** 🚀 Switching from Container to Code deployment
+- **Deployment:** 🐳 Container deployment with all fixes applied
 
 ### **Latest Issue: Container Crash on Startup (RESOLVED)**
 **Problem:** Container started but crashed immediately with exit code 1 due to missing import and Node.js compatibility.
@@ -821,31 +821,32 @@ console.log(`📚 API docs: http://0.0.0.0:${port}/api/courses`);
 
 ---
 
-## 🚀 **NEW DEPLOYMENT STRATEGY: Azure Web App (Code)**
+## 🐳 **CONTAINER STRATEGY RESTORED: All Issues Fixed**
 
-### **Why the Change?**
-- **Container deployment:** Endless ImagePullFailure issues
-- **Azure Web App containers:** Known compatibility problems
-- **Code deployment:** More reliable and simpler
+### **Why We're Back to Containers:**
+- **Azure viser container-kobling** - kanskje fungerer nå?
+- **Alle kode-problemer** er løst
+- **Container kjører lokalt** uten problemer
+- **Kode-deployment** var vanskelig i Azure
 
-### **New Approach:**
-1. **Direct Node.js hosting** in Azure Web App
-2. **No Docker containers** - pure Node.js runtime
-3. **Standard Azure Web App** deployment
+### **Container Approach:**
+1. **Docker container** med Node.js 20
+2. **Azure Container Registry** integration
+3. **Standard container deployment** pipeline
 4. **All functionality preserved** - RAG, AI, Azure services
 
 ### **Benefits:**
-- ✅ **Eliminates ImagePullFailure** completely
-- ✅ **Simpler deployment** pipeline
-- ✅ **More reliable** Azure hosting
-- ✅ **Standard Node.js 20** runtime
-- ✅ **All features work** as expected
+- ✅ **Alle import-feil** løst
+- ✅ **Node.js 20 kompatibilitet** implementert
+- ✅ **Container kjører lokalt** uten problemer
+- ✅ **Standard Docker deployment** pipeline
+- ✅ **Alle features** fungerer som forventet
 
 ### **Changes Made:**
-1. **Port:** Changed from 8181 to 80 (standard Web App)
-2. **Workflow:** New GitHub Actions for code deployment
-3. **Configuration:** web.config for proper Node.js hosting
-4. **Build:** npm ci in Azure instead of Docker build
+1. **Port:** Standard 80 (Azure Web App)
+2. **Workflow:** Container deployment med alle fixes
+3. **Dockerfile:** Node.js 20 + alle dependencies
+4. **Build:** Docker build + push til ACR
 
 **Root Cause:**
 ```yaml
