@@ -100,6 +100,16 @@ jobs:
             --settings WEBSITES_PORT=8181
           echo "✅ WEBSITES_PORT set to 8181"
 
+      # Fix NODE_ENV typo (NOD_ENV = protection → NODE_ENV = production)
+      - name: Fix NODE_ENV typo in Azure settings
+        run: |
+          echo "🔧 Fixing NODE_ENV typo (NOD_ENV → NODE_ENV)"
+          az webapp config appsettings set \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --settings NODE_ENV=production
+          echo "✅ NODE_ENV set to production"
+
       # Wait for deployment
       - name: Wait for deployment
         run: |
@@ -146,33 +156,35 @@ jobs:
             exit 1
           fi
 
-      # Health check
+      # Health check endpoint (Azure App Service)
       - name: Health check
         run: |
-          echo "Testing health endpoint..."
-          max_attempts=5
-          attempt=1
-          while [ $attempt -le $max_attempts ]; do
-            echo "Health check attempt $attempt/$max_attempts..."
-            if curl -f --max-time 30 "https://$AZURE_WEBAPP_NAME.azurewebsites.net/healthz"; then
-              echo "✅ Health check passed!"
+          echo "🏥 Testing health endpoint on port 8181..."
+          sleep 10  # Wait for container to fully start
+          
+          # Test health endpoint on port 8181 (WEBSITES_PORT setting)
+          HEALTH_URL="https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/healthz"
+          echo "🔍 Testing: $HEALTH_URL"
+          
+          # Try multiple times with increasing delays
+          for i in {1..5}; do
+            echo "🔄 Attempt $i/5..."
+            if curl -f -s "$HEALTH_URL" > /dev/null; then
+              echo "✅ Health check successful! Container is responding on port 8181"
               break
             else
-              echo "Health check failed, attempt $attempt/$max_attempts"
-              if [ $attempt -lt $max_attempts ]; then
-                echo "Waiting 30 seconds before retry..."
-                sleep 30
+              echo "❌ Health check failed (attempt $i/5)"
+              if [ $i -lt 5 ]; then
+                echo "⏳ Waiting 10 seconds before retry..."
+                sleep 10
+              else
+                echo "🚨 All health check attempts failed!"
+                echo "🔍 Checking container status..."
+                az webapp log tail --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
+                exit 1
               fi
-              attempt=$((attempt + 1))
             fi
           done
-          
-          if [ $attempt -gt $max_attempts ]; then
-            echo "❌ Health check failed after $max_attempts attempts"
-            echo "Web App URL: https://$AZURE_WEBAPP_NAME.azurewebsites.net"
-            echo "Health endpoint: https://$AZURE_WEBAPP_NAME.azurewebsites.net/healthz"
-            exit 1
-          fi
 
       # Log deployment info
       - name: Deployment info
