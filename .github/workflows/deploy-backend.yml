@@ -129,25 +129,28 @@ jobs:
           echo "🔧 Configuring Linux Web App for Containers BEFORE deployment"
           
           # Set container runtime for Linux Web App for Containers
+          echo "Setting linux-fx-version..."
           az webapp config set \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --linux-fx-version "DOCKER|${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest"
           
           # Set port configuration (Azure Web App standard)
+          echo "Setting WEBSITES_PORT..."
           az webapp config appsettings set \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --settings WEBSITES_PORT=8181
           
-          # Set container registry credentials for Web App
+          # Set container registry credentials for Web App (using new Azure CLI syntax)
+          echo "Setting container registry credentials..."
           az webapp config container set \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --docker-custom-image-name "${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest" \
-            --docker-registry-server-url "https://${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io" \
-            --docker-registry-server-user "${{ env.ACR_USERNAME }}" \
-            --docker-registry-server-password "${{ env.ACR_PASSWORD }}"
+            --container-image-name "${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest" \
+            --container-registry-url "https://${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io" \
+            --container-registry-user "${{ env.ACR_USERNAME }}" \
+            --container-registry-password "${{ env.ACR_PASSWORD }}"
           
           echo "✅ Linux Web App for Containers configured with ACR authentication"
 
@@ -157,6 +160,7 @@ jobs:
           echo "🔍 Verifying Linux Web App for Containers configuration..."
           
           # Check linux-fx-version (for Linux Web App for Containers)
+          echo "Checking linux-fx-version..."
           LINUX_FX_VERSION=$(az webapp config show \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
@@ -165,15 +169,17 @@ jobs:
           echo "Linux FX Version: $LINUX_FX_VERSION"
           
           # Check container settings
+          echo "Checking container config..."
           CONTAINER_CONFIG=$(az webapp config container show \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --query "{image:dockerImageName,registry:dockerRegistryServerUrl,user:dockerRegistryServerUser}" \
+            --query "{image:containerImageName,registry:containerRegistryUrl,user:containerRegistryUser}" \
             -o json)
           
           echo "Container config: $CONTAINER_CONFIG"
           
           # Check app settings
+          echo "Checking WEBSITES_PORT..."
           PORT_SETTING=$(az webapp config appsettings list \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
@@ -187,6 +193,32 @@ jobs:
           fi
           
           echo "✅ Linux Web App for Containers configuration verified"
+
+      # Debug: Check current Web App configuration
+      - name: Debug Web App configuration
+        run: |
+          echo "🔍 Debug: Checking current Web App configuration..."
+          
+          # Show full Web App config
+          echo "Full Web App config:"
+          az webapp config show \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --output table
+          
+          # Show container config specifically
+          echo "Container config:"
+          az webapp config container show \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --output table
+          
+          # Show app settings
+          echo "App settings:"
+          az webapp config appsettings list \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --output table
 
       # Test container image pull from ACR (verify connectivity)
       - name: Test container image pull
@@ -207,6 +239,7 @@ jobs:
           echo "🔍 Final verification - ensuring Web App is ready for deployment..."
           
           # Check if Web App is in a good state
+          echo "Checking Web App state..."
           WEBAPP_STATE=$(az webapp show \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
@@ -215,15 +248,20 @@ jobs:
           echo "Web App state: $WEBAPP_STATE"
           
           # Check if container config is properly set
+          echo "Checking container image configuration..."
           CONTAINER_READY=$(az webapp config container show \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --query "dockerImageName" -o tsv)
+            --query "containerImageName" -o tsv)
+          
+          echo "Container image name: $CONTAINER_READY"
+          echo "Expected image name: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest"
           
           if [ "$CONTAINER_READY" = "${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest" ]; then
             echo "✅ Web App container configuration verified - ready for deployment!"
           else
             echo "❌ Web App container configuration not ready - deployment will fail!"
+            echo "Debug: Expected vs Actual container image names don't match"
             exit 1
           fi
 
