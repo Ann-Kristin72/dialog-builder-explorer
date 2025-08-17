@@ -25,15 +25,15 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: acrteknotassen.azurecr.io/
-          username: ${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_4E1435D7117D44FA8CA1763AF9783FB7 }}
-          password: ${{ secrets.AZUREAPPSERVICE_CONTAINERPASSWORD_71D8027D65AC4C90BBC27B2AE6CE0F12 }}
+          username: ${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_A4828F2DA4164988A843A719AE659A85 }}
+          password: ${{ secrets.AZUREAPPSERVICE_CONTAINERPASSWORD_ADA7A961E097404EA4A9E5DF34460739 }}
 
       - name: Build and push container image to registry
         uses: docker/build-push-action@v3
         with:
           context: .
           push: true
-          tags: acrteknotassen.azurecr.io/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_4E1435D7117D44FA8CA1763AF9783FB7 }}/teknotassen-backend:${{ github.sha }}
+          tags: acrteknotassen.azurecr.io/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_A4828F2DA4164988A843A719AE659A85 }}/teknotassen-backend:${{ github.sha }}
           file: ./Dockerfile
 
   deploy:
@@ -50,9 +50,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_0AB43153C1DD4B48BADBD5427E7E8AD9 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_AF89AB949DD440B3A79C706E6ADA795E }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_4B8E58FE46E04513A91CFF889783002A }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_CCB8D907233848658148E7634B26E648 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_458A3406D09D434C91C423E304CB2FCA }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_A56399FE480E4652A463225B5AC7AC35 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -60,5 +60,5 @@ jobs:
         with:
           app-name: 'web-teknotassen'
           slot-name: 'Production'
-          images: 'acrteknotassen.azurecr.io/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_4E1435D7117D44FA8CA1763AF9783FB7 }}/teknotassen-backend:${{ github.sha }}'
+          images: 'acrteknotassen.azurecr.io/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_A4828F2DA4164988A843A719AE659A85 }}/teknotassen-backend:${{ github.sha }}'
           
