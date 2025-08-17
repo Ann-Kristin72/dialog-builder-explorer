@@ -29,7 +29,7 @@ TeknoTassen er en intelligent AI-assistent som bruker **Retrieval-Augmented Gene
 - **PostgreSQL** + **pgvector** for vector storage
 
 ### **Infrastruktur**
-- **Azure Web App** (Backend)
+- **Azure Web App (Linux) for Containers** (Backend)
 - **Azure PostgreSQL** med pgvector
 - **Azure Blob Storage** for filer
 - **Azure Key Vault** for secrets

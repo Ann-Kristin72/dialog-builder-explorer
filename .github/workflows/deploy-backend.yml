@@ -1,4 +1,4 @@
-name: Deploy Backend to Azure Web App (Container)
+name: Deploy Backend to Azure Web App (Linux) for Containers
 
 on:
   workflow_dispatch:  # Kun manuell trigger - unngår dobbel deployment

@@ -1,66 +1,55 @@
-# 🚀 **AZURE WEB APP DEPLOYMENT GUIDE (Code-based)**
+# 🚀 **AZURE WEB APP (LINUX) FOR CONTAINERS DEPLOYMENT GUIDE**
 
 ## 📋 **OVERSIKT**
 
-Etter endeløse 503-feil med container-deployment, har vi byttet til **kodebasert deployment** i Azure Web App.
+Vi bruker **Azure Web App (Linux) for Containers** for backend deployment med Docker images fra Azure Container Registry (ACR).
 
-## 🔧 **HVA VI HAR GJORT**
+## 🔧 **HVA VI HAR**
 
-### **✅ Fjernet Container-ruiner:**
-- ❌ **Dockerfile** - slettet
-- ❌ **.dockerignore** - slettet  
-- ❌ **Container workflow** - slettet
-- ❌ **Docker referanser** - fjernet
+### **✅ Container-basert deployment:**
+- ✅ **Dockerfile** - Node.js 20 Alpine image
+- ✅ **Azure Container Registry** - for å lagre Docker images
+- ✅ **GitHub Actions workflow** - som bygger og pusher til ACR
+- ✅ **Port 8181** - som er riktig for Web App
 
-### **✅ Ny kodebasert strategi:**
-- **Azure Web App** med Node.js 20 runtime
-- **Direkte kode-deployment** (ingen containers)
-- **Standard npm start** som entry point
-
-## 🚀 **DEPLOYMENT PROSESS**
-
-### **1. GitHub Actions Workflow:**
-```yaml
-# .github/workflows/deploy-backend-webapp.yml
-- Setup Node.js 20
-- Install dependencies (npm ci)
-- Deploy code to Azure Web App
-- Configure Node.js runtime
-- Set startup command (npm start)
-```
-
-### **2. Azure Web App Konfigurasjon:**
-- **Stack:** Node.js 20 LTS
-- **Startup command:** `npm start`
-- **Port:** Azure setter automatisk (process.env.PORT)
+### **✅ Azure Web App (Linux) konfigurasjon:**
+- **Stack:** Linux med Docker runtime
+- **Container image:** `acrteknotassen.azurecr.io/teknotassen-backend:latest`
+- **Port:** 8181 (WEBSITES_PORT setting)
+- **Health check:** `/healthz` endpoint
 
 ## 🔐 **MILJØVARIABLER (App Settings)**
 
 ### **Kreves:**
 ```bash
-PORT                    # Azure setter automatisk
-OPENAI_API_KEY         # For AI-funksjonalitet
-POSTGRES_URL           # Database-tilkobling
+WEBSITES_PORT=8181                    # Container port
+DOCKER_REGISTRY_SERVER_URL           # ACR server URL
+DOCKER_REGISTRY_SERVER_USERNAME      # ACR username
+DOCKER_REGISTRY_SERVER_PASSWORD      # ACR password (fra Key Vault)
+OPENAI_API_KEY                       # For AI-funksjonalitet
+POSTGRES_URL                         # Database-tilkobling
 ```
 
 ### **Valgfritt:**
 ```bash
-AZURE_KEY_VAULT_URL    # Hvis du bruker Key Vault
-BLOB_CONNECTION_STRING # Hvis du bruker Blob Storage
+AZURE_KEY_VAULT_URL                  # Hvis du bruker Key Vault
+BLOB_CONNECTION_STRING               # Hvis du bruker Blob Storage
+WEBSITE_HEALTHCHECK_MAXPINGFAILURES # Health check konfigurasjon
 ```
 
 ## 🧹 **AZURE PORTAL OPPRYKDING**
 
 ### **1. Deployment Center:**
 - **Gå til:** Azure Portal → Web App → `web-teknotassen`
-- **Deployment Center:** Sjekk at det står "Code" (ikke Docker)
+- **Deployment Center:** Sjekk at det står "Docker" (container deployment)
 
 ### **2. Configuration → General settings:**
-- **Stack:** Node.js 20 LTS
-- **Startup command:** `npm start`
+- **Stack:** Linux med Docker runtime
+- **Startup command:** Container image fra ACR
 
 ### **3. Configuration → Application settings:**
 - **Legg til alle miljøvariabler** som App Settings
+- **Sjekk at WEBSITES_PORT=8181** er satt
 
 ## 🔍 **TROUBLESHOOTING**
 
@@ -69,13 +58,13 @@ BLOB_CONNECTION_STRING # Hvis du bruker Blob Storage
 #### **1. Sjekk Azure Web App logs:**
 ```bash
 # Azure Portal → Web App → Log stream
-# Se etter npm start feil
+# Se etter container pull feil
 ```
 
-#### **2. Sjekk Process Explorer:**
+#### **2. Sjekk Container Settings:**
 ```bash
-# Azure Portal → Web App → Advanced Tools → Kudu
-# Process Explorer → Se om npm start kjører
+# Azure Portal → Web App → Configuration → Container settings
+# Verifiser ACR credentials og image name
 ```
 
 #### **3. Diagnose & Solve Problems:**
@@ -86,35 +75,36 @@ BLOB_CONNECTION_STRING # Hvis du bruker Blob Storage
 
 ### **Vanlige problemer:**
 
+#### **Container pull feil:**
+- **Sjekk ACR permissions** for Web App
+- **Verifiser container image** eksisterer i ACR
+- **Sjekk ACR credentials** i App Settings
+
 #### **Port binding feil:**
 ```javascript
-// Bruk process.env.PORT (Azure setter automatisk)
-const port = process.env.PORT || 80;
+// Bruk process.env.PORT (Azure setter WEBSITES_PORT)
+const port = process.env.PORT || 8181;
 ```
 
 #### **Miljøvariabler mangler:**
 - **Sjekk App Settings** i Azure Portal
 - **Ingen .env fil** i production
 
-#### **Node.js runtime mismatch:**
-- **Azure:** Node.js 20 LTS
-- **GitHub Actions:** Node.js 20
-
 ## 📊 **FORVENTET RESULTAT**
 
 ### **Etter deployment:**
-1. ✅ **Web App starter** uten container-feil
-2. ✅ **npm start kjører** som forventet
+1. ✅ **Container starter** uten pull-feil
+2. ✅ **Web App kjører** med Docker runtime
 3. ✅ **/healthz endpoint** responderer med 200
 4. ✅ **Alle funksjoner** fungerer (RAG, AI, Azure services)
 
 ## 🎯 **NESTE STEG**
 
-1. **Deploy med ny workflow** (manuell trigger)
-2. **Verifiser Azure Portal** konfigurasjon
+1. **Deploy med container workflow** (manuell trigger)
+2. **Verifiser Azure Portal** container konfigurasjon
 3. **Test /healthz endpoint**
 4. **Verifiser alle funksjoner**
 
 ---
 
-**📝 Dette dokumentet oppdateres etter hvert som vi lærer mer om kodebasert deployment!**
+**📝 Dette dokumentet oppdateres etter hvert som vi lærer mer om container deployment!**

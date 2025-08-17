@@ -82,7 +82,7 @@ module appInsights 'applicationInsights.bicep' = {
 }
 
 // Container App (Backend)
-module containerApp 'containerApp.bicep' = {
+module webApp 'webApp.bicep' = {
   name: '${resourcePrefix}-backend-deploy'
   params: {
     appName: appName
@@ -105,14 +105,14 @@ module staticWebApp 'staticWebApp.bicep' = {
     environment: environment
     location: location
     tags: tags
-    backendApiUrl: containerApp.outputs.apiUrl
+    backendApiUrl: webApp.outputs.apiUrl
   }
 }
 
 // Outputs
 output keyVaultName string = keyVault.outputs.keyVaultName
 output postgresConnectionString string = postgresql.outputs.connectionString
-output backendApiUrl string = containerApp.outputs.apiUrl
+output backendApiUrl string = webApp.outputs.apiUrl
 output frontendUrl string = staticWebApp.outputs.appUrl
 output appInsightsConnectionString string = appInsights.outputs.connectionString
 
@@ -121,7 +121,7 @@ output deploymentInstructions string = '''
 
 📋 Neste steg:
 1. Oppdater DNS/domene til frontend: ${staticWebApp.outputs.appUrl}
-2. Test backend API: ${containerApp.outputs.apiUrl}
+2. Test backend API: ${webApp.outputs.apiUrl}
 3. Sjekk logging i Application Insights
 4. Verifiser database-tilkobling
 
