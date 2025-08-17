@@ -1,16 +1,14 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { DocumentUpload } from "./DocumentUpload";
-import { Trash2, FileText, Calendar, ChevronDown, ChevronUp } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Trash2, FileText, Calendar, ChevronDown, ChevronUp } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface Document {
   id: string;
   title: string;
-  description?: string;
+  description: string;
   content: string;
   created_at: string;
 }
@@ -23,15 +21,14 @@ export const KnowledgeManager = () => {
 
   const loadDocuments = async () => {
     setIsLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('knowledge_documents')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setDocuments(data || []);
-    } catch (error) {
+          try {
+        const response = await fetch('/api/courses');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data: Document[] = await response.json();
+        setDocuments(data);
+      } catch (error) {
       console.error('Error loading documents:', error);
       toast({
         title: "Kunne ikke laste dokumenter",
@@ -43,14 +40,14 @@ export const KnowledgeManager = () => {
     }
   };
 
-  const deleteDocument = async (id: string, title: string) => {
-    try {
-      const { error } = await supabase
-        .from('knowledge_documents')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
+      const deleteDocument = async (id: string, title: string) => {
+      try {
+        const response = await fetch(`/api/courses/${id}`, {
+          method: 'DELETE',
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
       setDocuments(docs => docs.filter(doc => doc.id !== id));
       toast({
@@ -81,8 +78,6 @@ export const KnowledgeManager = () => {
 
   return (
     <div className="space-y-6">
-      <DocumentUpload onDocumentUploaded={loadDocuments} />
-      
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

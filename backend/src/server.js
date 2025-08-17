@@ -16,7 +16,7 @@ app.get("/healthz", (_req, res) => res.status(200).send("OK"));
 app.get("/", (_req, res) => res.status(200).send("Up"));
 
 // Start tidlig – så healthz fungerer selv om init under feiler
-const port = process.env.PORT || 80;
+const port = process.env.PORT || 8181;
 app.listen(port, "0.0.0.0", () => {
   console.log(`🚀 Server starting on port ${port}`);
 });
@@ -31,7 +31,7 @@ app.use(helmet());
 // CORS configuration
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://teknotassen.vercel.app', 'https://web-teknotassen.azurewebsites.net']
+    ? ['https://teknotassen.vercel.app', 'https://web-teknotassen.azurewebsites.net', 'https://dialog-builder-explorer.vercel.app']
     : ['http://localhost:8080', 'http://localhost:8081', 'http://localhost:3000'],
   credentials: true,
 }));

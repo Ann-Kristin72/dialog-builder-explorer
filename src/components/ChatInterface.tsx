@@ -88,8 +88,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
     setIsLoading(true);
 
     try {
-      // Simulate API call to backend
-      const response = await fetch('/api/query', {
+      // API call to backend
+      const response = await fetch('/api/courses/query', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

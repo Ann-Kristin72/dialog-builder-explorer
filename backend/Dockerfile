@@ -11,8 +11,8 @@ RUN npm ci --omit=dev
 COPY . .
 
 # Azure Web App standard port
-ENV PORT=80
-EXPOSE 80
+ENV PORT=8181
+EXPOSE 8181
 
 # Start appen (bruk npm start hvis du har start-script)
 CMD ["npm", "start"]
