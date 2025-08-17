@@ -1,231 +1,168 @@
-# 🚀 TeknoTassen - Velferdsteknologi AI-Assistent
+# 🚀 **TeknoTassen - AI-Assistent for Teknisk Kunnskap**
 
-## 📋 Prosjektinfo
+> En RAG-drevet AI-assistent bygget med moderne teknologi for å hjelpe med teknisk kunnskap og kurs
 
-**TeknoTassen** er en intelligent AI-assistent som hjelper helsepersonell, prosjektledere og administratorer med å implementere velferdsteknologi i kommunal omsorg.
+## 📋 **Hva er TeknoTassen?**
 
-**Live Demo**: [TeknoTassen App](https://lovable.dev/projects/5b930ef5-a6a4-44b2-8bb3-c37d9e5df2c3)
+TeknoTassen er en intelligent AI-assistent som bruker **Retrieval-Augmented Generation (RAG)** for å gi presise, kontekstuelle svar basert på kursinnhold og teknisk dokumentasjon.
 
-## 🌟 Funksjoner
+### **🎯 Hovedfunksjoner**
+- **🤖 RAG-Powered AI Chat** - Intelligent samtale basert på kursinnhold
+- **📚 Kurs Opplasting** - Last opp markdown-filer med Nano/Unit struktur
+- **🔍 Semantisk Søk** - Finn relevant informasjon med AI-embeddings
+- **🎨 Moderne UI** - Responsivt design med Tailwind CSS og shadcn/ui
+- **🔐 Sikker Autentisering** - Azure AD B2C med OIDC
+- **☁️ Cloud-Native** - Bygget for Azure og Vercel
 
-### 🔐 **Autentisering & Roller**
-
-- **Magic Link Login** - Sikker innlogging uten passord
-- **Rollebasert tilgang** - helsepersonell, prosjektleder, admin
-- **Brukeradministrasjon** - Admin dashboard for brukerstyring
-
-### 📋 **Sjekkliste & Fremdrift**
-
-- **Helhetlig tjenestemodell** - Strukturert implementeringsprosess
-- **Fremdriftssporing** - Individuell progresjon for hver bruker
-- **Dynamiske AI-prompts** - Tilpasset basert på rolle og fremdrift
-
-### 🤖 **AI-Chat med TeknoTassen**
-
-- **Kontekstbevisst** - Forstår brukerens rolle og fremdrift
-- **Velferdsteknologi-ekspert** - Spesialiserte kunnskaper
-- **Lokal testing** - Fungerer offline med mock backend
-
-### 🏗️ **Infrastruktur**
-
-- **Azure Bicep** - Komplett infrastruktur som kode
-- **PostgreSQL** - Skalerbar database
-- **Container Apps** - Moderne backend hosting
-- **Static Web Apps** - Frontend hosting
-
-## 🛠️ Teknologier
+## 🏗️ **Teknologi Stack**
 
 ### **Frontend**
-
-- **React 18** - Moderne UI-bibliotek
-- **TypeScript** - Type-sikker utvikling
-- **Vite** - Rask build tool
-- **Tailwind CSS** - Utility-first CSS
-- **shadcn/ui** - Moderne komponenter
+- **React 18** + **TypeScript** + **Vite**
+- **Tailwind CSS** + **shadcn/ui** komponenter
+- **React Router** for navigasjon
+- **Lottie** for animasjoner
 
 ### **Backend**
-
-- **Node.js** - Server-side JavaScript
-- **Express.js** - Web framework
-- **Supabase** - Backend-as-a-Service
-- **OpenAI API** - AI-chat funksjonalitet
+- **Node.js** + **Express.js**
+- **LangChain** for RAG pipeline
+- **OpenAI API** for embeddings og chat
+- **PostgreSQL** + **pgvector** for vector storage
 
 ### **Infrastruktur**
+- **Azure Web App** (Backend)
+- **Azure PostgreSQL** med pgvector
+- **Azure Blob Storage** for filer
+- **Azure Key Vault** for secrets
+- **Vercel** (Frontend)
 
-- **Azure Bicep** - Infrastructure as Code
-- **Azure PostgreSQL** - Managed database
-- **Azure Container Apps** - Serverless containers
-- **Azure Key Vault** - Sikker secrets management
-
-## 🚀 Kom i gang
+## 🚀 **Hurtig Start**
 
 ### **Forutsetninger**
+- Node.js 18+
+- PostgreSQL med pgvector extension
+- Azure konto (for production)
+- OpenAI API key
 
-- **Node.js 18+** - [Last ned her](https://nodejs.org/)
-- **npm** eller **yarn** - Pakkehåndtering
-- **Git** - Versjonskontroll
-
-### **Installasjon**
-
+### **Lokalt Utvikling**
 ```bash
-# 1. Klone repository
-git clone https://github.com/Ann-Kristin72/dialog-builder-explorer.git
+# Klone repository
+git clone https://github.com/your-username/dialog-builder-explorer.git
 cd dialog-builder-explorer
 
-# 2. Installer avhengigheter
+# Installer dependencies
 npm install
+cd backend && npm install
 
-# 3. Start utviklingsserver
+# Start frontend (port 8080)
 npm run dev
+
+# Start backend (port 8181)
+cd backend && npm run dev
 ```
 
-### **Lokal Testing Setup**
-
+### **Environment Variables**
 ```bash
-# 1. Start backend server
-cd backend
-npm install
-npm run dev
-
-# 2. I ny terminal - start frontend
-npm run dev
-
-# 3. Åpne http://localhost:5173
-```
-
-### **Miljøvariabler**
-
-Opprett `.env` fil i `backend/` mappen:
-
-```bash
-# OpenAI API Key
-OPENAI_API_KEY=din-openai-api-nøkkel-her
-
-# Server konfigurasjon
-PORT=3001
+# Backend (.env)
+OPENAI_API_KEY=your-openai-key
+POSTGRES_URL=postgresql://user:pass@localhost:5432/teknotassen
 NODE_ENV=development
+
+# Frontend (.env.local)
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8181
 ```
 
-## 🔧 Utvikling
+## 📚 **Dokumentasjon**
 
-### **Tilgjengelige Scripts**
+### **📖 Komplett Teknisk Dokumentasjon**
+- **[AZURE_DEPLOYMENT.md](./AZURE_DEPLOYMENT.md)** - Detaljert Azure setup og deployment
+- **[VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md)** - Frontend deployment til Vercel
 
+### **🔧 Utvikling**
+- **[Backend API](./backend/README.md)** - Backend endpoints og services
+- **[Frontend Components](./src/components/)** - React komponenter
+- **[Database Schema](./AZURE_DEPLOYMENT.md#database-schema)** - PostgreSQL tabeller og indekser
+
+### **🚀 Deployment**
+- **[Azure Backend](./AZURE_DEPLOYMENT.md#azure-deployment-pipeline)** - GitHub Actions pipeline
+- **[Vercel Frontend](./VERCEL_DEPLOYMENT.md)** - Frontend deployment guide
+
+## 🎯 **Prosjekt Status**
+
+### **✅ Fullført**
+- [x] Frontend UI med React + TypeScript
+- [x] Backend API med Express + LangChain
+- [x] RAG pipeline med OpenAI embeddings
+- [x] Azure infrastruktur setup
+- [x] GitHub Actions deployment pipeline
+- [x] Alle kritiske kode-fixes implementert
+
+### **🚧 Under Utvikling**
+- [ ] Azure B2C autentisering
+- [ ] Database migrations
+- [ ] Kurs opplasting og parsing
+- [ ] TTS/STT integrasjon
+
+### **📋 Planlagt**
+- [ ] Analytics dashboard
+- [ ] Mobile app (React Native)
+- [ ] Advanced RAG features
+- [ ] Multi-modal support
+
+## 🐛 **Troubleshooting**
+
+### **Vanlige Problemer**
+- **Backend starter ikke:** Sjekk import statements og environment variables
+- **Database connection failed:** Verifiser PostgreSQL connection string
+- **Azure deployment feiler:** Sjekk GitHub Secrets og RBAC permissions
+
+### **Debug Commands**
 ```bash
-npm run dev          # Start utviklingsserver
-npm run build        # Bygg for produksjon
-npm run preview      # Forhåndsvis produksjonsbuild
-npm run lint         # Kjør ESLint
+# Backend health check
+curl http://localhost:8181/healthz
+
+# Database connection test
+curl http://localhost:8181/api/courses/test-db
+
+# Azure Web App logs
+az webapp log tail --name web-teknotassen --resource-group teknotassen-rg
 ```
 
-### **Prosjektstruktur**
+## 🤝 **Bidrag**
 
-```
-src/
-├── components/      # React komponenter
-│   ├── ChatInterface.tsx
-│   ├── ChecklistProgress.tsx
-│   ├── Header.tsx
-│   ├── Login.tsx
-│   ├── RoleGate.tsx
-│   └── AdminDashboard.tsx
-├── contexts/        # React Context (Auth)
-│   └── AuthContext.tsx
-├── pages/          # Side-komponenter
-│   └── Index.tsx
-├── utils/          # Hjelpefunksjoner
-│   └── chatPromptBuilder.ts
-└── integrations/   # Eksterne tjenester
-    └── supabase/
-        └── client.ts
+### **Utvikling**
+1. Fork repository
+2. Opprett feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit endringer (`git commit -m 'Add amazing feature'`)
+4. Push til branch (`git push origin feature/amazing-feature`)
+5. Opprett Pull Request
 
-backend/             # Lokal testing server
-├── server.js        # Express server
-├── package.json     # Backend avhengigheter
-└── config.js        # Server konfigurasjon
+### **Rapportere Bugs**
+- Bruk GitHub Issues
+- Inkluder detaljert beskrivelse og repro steps
+- Legg til logs og error messages
 
-infra/               # Azure Bicep infrastruktur
-├── main.bicep       # Hovedmodul
-├── postgresql.bicep # Database
-├── keyVault.bicep   # Secrets management
-└── ...              # Andre Azure ressurser
-```
+## 📄 **Lisens**
 
-## 🚀 Deployment
+Dette prosjektet er lisensiert under MIT License - se [LICENSE](LICENSE) filen for detaljer.
 
-### **Lokal Testing**
+## 📞 **Kontakt**
 
-- Backend: `http://localhost:3001`
-- Frontend: `http://localhost:5173`
-- Mock data og autentisering
+### **Team**
+- **Kristil** - Backend development, Azure infrastructure
+- **Ann-Kristin** - Frontend development, project management
 
-### **Produksjon (Azure)**
+### **Ressurser**
+- **GitHub:** [dialog-builder-explorer](https://github.com/your-username/dialog-builder-explorer)
+- **Azure Portal:** [web-teknotassen](https://web-teknotassen.azurewebsites.net)
+- **Vercel:** [teknotassen.vercel.app](https://teknotassen.vercel.app)
 
-```bash
-# Deploy infrastruktur
-cd infra
-az deployment group create --template-file main.bicep --parameters parameters.json
+---
 
-# Deploy backend
-az containerapp update --name teknotassen-backend --resource-group rg-teknotassen
+## 🎉 **Takk for at du bruker TeknoTassen!**
 
-# Deploy frontend
-az staticwebapp update --name teknotassen-frontend --resource-group rg-teknotassen
-```
+Hvis du liker dette prosjektet, vennligst gi det en ⭐ på GitHub!
 
-### **Lovable Platform**
+---
 
-- Åpne [Lovable Project](https://lovable.dev/projects/5b930ef5-a6a4-44b2-8bb3-c37d9e5df2c3)
-- Klikk Share → Publish for live demo
-
-## 📚 Dokumentasjon
-
-- **ARCHITECTURE.md** - Systemarkitektur og design
-- **README-LOCAL-TESTING.md** - Detaljerte instruksjoner for lokal testing
-- **OPENAI-SETUP.md** - Konfigurering av OpenAI API
-- **database-schema.sql** - Database struktur og RLS policies
-
-## 🤝 Bidrag
-
-1. **Fork** repository
-2. **Opprett feature branch**: `git checkout -b feature/ny-funksjon`
-3. **Commit endringer**: `git commit -m 'feat: legg til ny funksjon'`
-4. **Push til branch**: `git push origin feature/ny-funksjon`
-5. **Opprett Pull Request**
-
-## 📄 Lisens
-
-Dette prosjektet er lisensiert under MIT License.
-
-## 🛡️ Sikkerhet & Beste Praksis
-
-### **Miljøvariabler**
-
-- **ALDRIG committ .env filer** til Git
-- **Bruk .gitignore** for å ekskludere sensitive filer
-- **Azure Key Vault** for produksjonssecrets
-
-### **Git Beste Praksis**
-
-- **Ikke force push** til main branch
-- **Bruk feature branches** for nye funksjoner
-- **Sjekk .gitignore** før hver commit
-
-### **API Keys**
-
-- **OpenAI API Key** - Kun i backend .env
-- **Supabase Keys** - Miljøvariabler
-- **Azure Credentials** - Managed Identity
-
-## 🆘 Support
-
-- **Issues**: [GitHub Issues](https://github.com/Ann-Kristin72/dialog-builder-explorer/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/Ann-Kristin72/dialog-builder-explorer/discussions)
-- **Live Demo**: [TeknoTassen App](https://lovable.dev/projects/5b930ef5-a6a4-44b2-8bb3-c37d9e5df2c3)
-
-## 🎯 Status
-
-**✅ Komplett implementasjon** - Alle hovedfunksjoner implementert
-**✅ Lokal testing** - Fungerer offline med mock backend
-**✅ Azure infrastruktur** - Bicep templates klar for produksjon
-**✅ Sikkerhet** - Ingen sensitive filer i repository
-**✅ Dokumentasjon** - Omfattende README og instruksjoner
+**📝 Sist oppdatert:** August 2025  
+**🔧 Status:** Backend klar for deployment, Frontend klar for Vercel

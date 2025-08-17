@@ -6,6 +6,7 @@ import { Header } from "@/components/Header";
 import Login from "@/components/Login";
 import Index from "@/pages/Index";
 import NotFound from "@/pages/NotFound";
+import AulaPage from "@/pages/Aula";
 import "./App.css";
 
 // Protected route komponent
@@ -39,6 +40,9 @@ const AppContent: React.FC = () => {
           <Routes>
             {/* Login route */}
             <Route path="/login" element={<Login />} />
+            
+            {/* Public routes */}
+            <Route path="/aula" element={<AulaPage />} />
             
             {/* Protected routes */}
             <Route

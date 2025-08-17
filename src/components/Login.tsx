@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import AulaNotice from './AulaNotice';
 
 const Login: React.FC = () => {
   const { login, isLoading } = useAuth();
@@ -69,6 +70,9 @@ const Login: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+      
+      {/* Aula Notice - Privacy Policy */}
+      <AulaNotice />
     </div>
   );
 };

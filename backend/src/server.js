@@ -1,4 +1,14 @@
 import express from "express";
+import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import dotenv from 'dotenv';
+import multer from 'multer';
+import coursesRouter from './routes/courses.js';
+import ttsSttRouter from './routes/ttsStt.js';
+import { testConnection, initDatabase, initializeDatabasePool } from './utils/database.js';
+import { azureStorageService } from './services/azureStorageService.js';
+
 const app = express();
 
 // HELT DUM HEALTH: ingen DB/KeyVault/Blob her
@@ -38,17 +48,6 @@ app.use('/api/', limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Import remaining modules (after server is already listening)
-import cors from 'cors';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
-import dotenv from 'dotenv';
-import multer from 'multer';
-import coursesRouter from './routes/courses.js';
-import ttsSttRouter from './routes/ttsStt.js';
-import { testConnection, initDatabase, initializeDatabasePool } from './utils/database.js';
-import { azureStorageService } from './services/azureStorageService.js';
-
 // API routes
 app.use('/api/courses', coursesRouter);
 app.use('/api/tts-stt', ttsSttRouter);
@@ -81,6 +80,14 @@ app.use('*', (req, res) => {
 async function initializeServices() {
   try {
     console.log('🚀 Initializing TeknoTassen services...');
+    
+    // Check if Azure services are configured before attempting to initialize
+    const hasAzureConfig = process.env.AZURE_KEY_VAULT_URL || process.env.POSTGRES_URL || process.env.BLOB_CONNECTION_STRING;
+    
+    if (!hasAzureConfig) {
+      console.log('ℹ️ Azure services not configured, skipping initialization');
+      return;
+    }
     
     // Initialize database connection (but don't crash if it fails)
     let dbConnected = false;

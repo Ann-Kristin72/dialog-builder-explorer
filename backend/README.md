@@ -1,240 +1,817 @@
-# 🚀 TeknoTassen RAG Backend
+# 🚀 **TeknoTassen Backend - RAG API**
 
-En intelligent backend for TeknoTassen som kombinerer RAG (Retrieval-Augmented Generation) med moderne AI-teknologi for å gi presise svar basert på opplastet kunnskap.
+## 📋 **Oversikt**
 
-## 🌟 Funksjoner
+TeknoTassen Backend er en Node.js/Express.js API som implementerer en komplett RAG (Retrieval-Augmented Generation) pipeline for teknisk kunnskap og kurs.
 
-### **RAG (Retrieval-Augmented Generation) med Nano → Unit Struktur**
-- **Hierarkisk innhold** med Nano (##) og Unit (###) organisering
-- **Frontmatter parsing** fra `[//]: # ({...})` kommentarer
-- **Asset-ekstraksjon** for bilder, lyd og media
-- **Embedding-basert søk** med pgvector (1536 dimensions)
-- **Intelligent chunking** av markdown-dokumenter (max 1500 tokens)
-- **Kontekstbevisste AI-svar** basert på faktisk kunnskap
-- **Ingen hallucineringer** - AI svarer kun basert på opplastet materiale
-- **Strukturert resultat** gruppert etter Nano → Unit for pen presentasjon
-
-### **Kursadministrasjon**
-- **Markdown-opplasting** med validering
-- **Automatisk chunking** og embedding-generering
-- **Metadata-håndtering** (tittel, teknologi, tags)
-- **Søk og filtrering** av kurs
-
-### **AI-Chat Integration**
-- **Dynamiske prompts** basert på brukerrolle og teknologi
-- **Relevant kontekst** hentet fra kunnskapsbase
-- **Personlighet** - TeknoTassens vennlige og nerdete tone
-- **Chat-forslag** basert på tilgjengelige kurs
-
-### **Voice Integration (TTS/STT)**
-- **Text-to-Speech** med ElevenLabs naturlige stemmer
-- **Speech-to-Text** med 96.7% nøyaktighet
-- **Norsk språkstøtte** for lokale brukere
-- **Voice chat** for hands-free interaksjon
-
-## 🛠️ Teknologier
-
-- **Node.js** + **Express.js** - Moderne backend-framework
-- **PostgreSQL** + **pgvector** - Vektor-database for embeddings
-- **LangChain** - AI/ML pipeline for tekstbehandling
-- **OpenAI API** - Embeddings og chat-generering
-- **ElevenLabs API** - Text-to-Speech og Speech-to-Text
-- **Multer** - Filopplasting og validering
-- **Zod** - Runtime validering av data
-
-## 🚀 Kom i gang
-
-### **Forutsetninger**
-- Node.js 18+
-- PostgreSQL 14+ med pgvector extension
-- OpenAI API-nøkkel
-
-### **Installasjon**
-
-1. **Klon repository og naviger til backend-mappen**
-```bash
-cd backend
-```
-
-2. **Installer avhengigheter**
-```bash
-npm install
-```
-
-3. **Opprett .env-fil**
-```bash
-cp .env.example .env
-# Fyll ut dine verdier
-```
-
-4. **Start PostgreSQL og opprett database**
-```bash
-createdb teknotassen_dev
-psql teknotassen_dev -c "CREATE EXTENSION IF NOT EXISTS vector;"
-```
-
-5. **Start backend-serveren**
-```bash
-npm run dev
-```
-
-## 🔧 Konfigurasjon
-
-### **Miljøvariabler (.env)**
-```bash
-# Server
-PORT=3001
-NODE_ENV=development
-
-# Database
-DB_USER=ann-kristin
-DB_HOST=localhost
-DB_NAME=teknotassen_dev
-DB_PASSWORD=
-DB_PORT=5432
-
-# OpenAI
-OPENAI_API_KEY=your-openai-api-key-here
-
-# ElevenLabs (TTS/STT)
-ELEVENLABS_API_KEY=your-elevenlabs-api-key-here
-```
-
-### **Database Setup**
-```sql
--- Opprett pgvector extension
-CREATE EXTENSION IF NOT EXISTS vector;
-
--- Tabellene opprettes automatisk ved første kjøring
-```
-
-## 📚 API Endepunkter
-
-### **Kursadministrasjon**
-- `POST /api/courses/upload` - Last opp markdown-kurs
-- `POST /api/courses/ingest` - Ingest markdown med Nano/Unit struktur
-- `GET /api/courses` - Hent alle kurs
-- `GET /api/courses/:id` - Hent kurs etter ID
-- `DELETE /api/courses/:id` - Slett kurs
-
-### **RAG Chat**
-- `POST /api/courses/chat` - Chat med RAG-kontekst
-- `GET /api/courses/chat/suggestions` - Få chat-forslag
-- `GET /api/courses/technology/overview` - Teknologioversikt
-
-### **Voice Integration (TTS/STT)**
-- `GET /api/tts-stt/status` - Tjenestestatus
-- `GET /api/tts-stt/voices` - Tilgjengelige stemmer
-- `GET /api/tts-stt/voices/:id` - Stemme-detaljer
-- `POST /api/tts-stt/tts` - Text-to-Speech
-- `POST /api/tts-stt/stt` - Speech-to-Text
-- `GET /api/tts-stt/test-norwegian` - Test norsk TTS
-- `POST /api/tts-stt/chat-voice` - Voice chat demo
-
-### **System**
-- `GET /health` - Helsesjekk
-
-## 🧠 RAG-arkitektur
-
-### **1. Dokumentopplasting**
-```
-Markdown-fil → Validering → Chunking → Embedding → Lagring i pgvector
-```
-
-### **2. Chat-prosess**
-```
-Bruker-spørsmål → Embedding → Søk i pgvector → Kontekst → AI-svar
-```
-
-### **3. Embedding Pipeline**
-- **Chunking**: 1000 tegn per chunk med 200 tegn overlap
-- **Embedding**: OpenAI text-embedding-3-small (1536 dimensjoner)
-- **Søk**: Cosine similarity med pgvector
-
-## 📁 Prosjektstruktur
-
-```
-backend/
-├── src/
-│   ├── routes/
-│   │   └── courses.js          # API-ruter
-│   ├── services/
-│   │   ├── embeddingService.js # Embedding og database
-│   │   └── ragChatService.js   # RAG chat-logikk
-│   ├── utils/
-│   │   └── database.js         # Database-tilkobling
-│   └── server.js               # Hovedserver
-├── package.json
-└── README.md
-```
-
-## 🔍 Testing
-
-### **Test database-tilkobling**
-```bash
-curl http://localhost:3001/health
-```
-
-### **Test kurs-opplasting**
-```bash
-curl -X POST http://localhost:3001/api/courses/upload \
-  -F "file=@test-course.md" \
-  -F "title=Test Kurs" \
-  -F "technology=HEPRO Respons"
-```
-
-### **Test RAG-chat**
-```bash
-curl -X POST http://localhost:3001/api/courses/chat \
-  -H "Content-Type: application/json" \
-  -d '{"message": "Hvordan starter jeg med HEPRO Respons?", "role": "helsepersonell"}'
-```
-
-## 🚀 Deployment
-
-### **Lokal utvikling**
-```bash
-npm run dev
-```
-
-### **Produksjon**
-```bash
-npm start
-```
-
-### **Docker (kommer snart)**
-```bash
-docker build -t teknotassen-backend .
-docker run -p 3001:3001 teknotassen-backend
-```
-
-## 🔐 Sikkerhet
-
-- **Helmet.js** - Sikkerhets-headers
-- **Rate limiting** - Beskytter mot abuse
-- **CORS-konfigurasjon** - Begrenset tilgang
-- **Input validering** - Zod-schemas
-- **Filtype-validering** - Kun markdown/text
-
-## 📊 Monitoring
-
-- **Health checks** - `/health` endpoint
-- **Error logging** - Strukturert feilhåndtering
-- **Performance tracking** - Chunking og embedding metrics
-- **Database monitoring** - pgvector performance
-
-## 🤝 Bidrag
-
-1. Fork repository
-2. Opprett feature branch
-3. Commit endringer
-4. Push til branch
-5. Opprett Pull Request
-
-## 📄 Lisens
-
-MIT License
+### **🎯 Hovedfunksjoner**
+- **RAG Pipeline** - OpenAI embeddings + pgvector similarity search
+- **Kurs Ingest** - Markdown parsing og chunking
+- **Semantisk Søk** - AI-drevet informasjonsretrieval
+- **Azure Integration** - Blob Storage, Key Vault, PostgreSQL
+- **TTS/STT** - Text-to-Speech og Speech-to-Text
 
 ---
 
-**TeknoTassen RAG Backend** - Gjør AI-intelligens tilgjengelig med faktisk kunnskap! 🦉✨
+## 🏗️ **Arkitektur**
+
+### **Service Layer**
+```
+backend/src/
+├── services/
+│   ├── azureStorageService.js    # Azure Blob & Key Vault
+│   ├── embeddingService.js       # OpenAI embeddings
+│   ├── markdownParserService.js  # Markdown parsing
+│   ├── ragChatService.js         # RAG chat logic
+│   └── ttsSttService.js          # TTS/STT services
+├── routes/
+│   ├── courses.js                # Kurs API endpoints
+│   └── ttsStt.js                 # TTS/STT endpoints
+├── utils/
+│   └── database.js               # PostgreSQL + pgvector
+└── server.js                     # Express server entry point
+```
+
+### **Data Flow**
+```
+Markdown Upload → Parsing → Chunking → Embedding → Vector Storage
+                                                      ↓
+User Question → Semantic Search → Context Retrieval → AI Response
+```
+
+---
+
+## 🔧 **Kritiske Fixes Implementert**
+
+### **1. Import Order Problem (LØST)**
+**Problem:** Import statements kom etter bruk i `server.js`
+```javascript
+// ❌ FEIL - Imports etter bruk
+app.use(helmet());  // helmet ikke importert ennå!
+// ... senere ...
+import helmet from 'helmet';  // For sent!
+```
+
+**Løsning:** Flyttet alle imports til toppen
+```javascript
+// ✅ RIKTIG - Imports først
+import express from "express";
+import helmet from 'helmet';
+import cors from 'cors';
+// ... alle andre imports ...
+const app = express();
+app.use(helmet());  // Nå fungerer!
+```
+
+### **2. Azure Services Robustness (LØST)**
+**Problem:** Azure services krasjet uten environment variables
+```javascript
+// ❌ FEIL - Krasjet uten config
+if (!this.keyVaultUrl) {
+  throw new Error('AZURE_KEY_VAULT_URL environment variable is required');
+}
+```
+
+**Løsning:** Graceful fallback i `initializeServices()`
+```javascript
+// ✅ RIKTIG - Sjekk config først
+const hasAzureConfig = process.env.AZURE_KEY_VAULT_URL || 
+                       process.env.POSTGRES_URL || 
+                       process.env.BLOB_CONNECTION_STRING;
+
+if (!hasAzureConfig) {
+  console.log('ℹ️ Azure services not configured, skipping initialization');
+  return;
+}
+```
+
+### **3. Server Startup Order (LØST)**
+**Problem:** Heavy initialization blokkerte server startup
+```javascript
+// ❌ FEIL - Server ventet på DB/KeyVault
+await initializeServices();  // Blokkerende!
+app.listen(port, "0.0.0.0", () => { ... });
+```
+
+**Løsning:** Non-blocking startup i `server.js`
+```javascript
+// ✅ RIKTIG - Server starter først
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Listening on http://0.0.0.0:${port}`);
+});
+
+// Services initialiseres i bakgrunnen
+initializeServices();  // Non-blocking!
+```
+
+---
+
+## 🐳 **Docker Konfigurasjon**
+
+### **Dockerfile**
+```dockerfile
+FROM node:20-alpine
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+COPY . .
+
+# Azure Web App port configuration
+ENV PORT=8181
+EXPOSE 8181
+
+# Start appen
+CMD ["npm", "start"]
+```
+
+### **Port Configuration**
+- **Container Port:** 8181 (matching Azure Web App)
+- **Azure Setting:** `WEBSITES_PORT=8181`
+- **Binding:** `0.0.0.0:8181` (all interfaces)
+
+---
+
+## 🔌 **API Endpoints**
+
+### **Health Check**
+```http
+GET /healthz
+Response: "OK" (200)
+```
+
+### **Kurs API (`/api/courses`)**
+
+#### **Ingest Markdown**
+```http
+POST /api/courses/ingest
+Content-Type: multipart/form-data
+
+Body:
+- file: File (markdown)
+- courseId: string
+- technology: string
+- tenantId?: string
+
+Response:
+{
+  "success": true,
+  "courseId": "string",
+  "chunksCreated": number,
+  "assetsFound": number
+}
+```
+
+#### **RAG Query**
+```http
+POST /api/query
+Content-Type: application/json
+
+Body:
+{
+  "question": "string",
+  "courseId": "string?",
+  "technology": "string?",
+  "tenantId": "string?",
+  "maxResults": "number?"
+}
+
+Response:
+{
+  "answer": "string",
+  "sources": [
+    {
+      "nano_slug": "string",
+      "unit_slug": "string",
+      "content": "string",
+      "similarity": number
+    }
+  ],
+  "assets": [
+    {
+      "url": "string",
+      "kind": "string",
+      "alt": "string"
+    }
+  ]
+}
+```
+
+#### **List Courses**
+```http
+GET /api/courses
+Query Parameters:
+- technology?: string
+- tenantId?: string
+
+Response:
+{
+  "courses": [
+    {
+      "id": number,
+      "title": "string",
+      "description": "string",
+      "technology": "string",
+      "created_at": "string"
+    }
+  ]
+}
+```
+
+### **TTS/STT API (`/api/tts-stt`)**
+
+#### **Text-to-Speech**
+```http
+POST /api/tts-stt/speak
+Content-Type: application/json
+
+Body:
+{
+  "text": "string",
+  "voice": "string?",
+  "language": "string?"
+}
+
+Response:
+{
+  "audioUrl": "string",
+  "duration": number
+}
+```
+
+#### **Speech-to-Text**
+```http
+POST /api/tts-stt/transcribe
+Content-Type: multipart/form-data
+
+Body:
+- audio: File (audio file)
+
+Response:
+{
+  "text": "string",
+  "confidence": number,
+  "language": "string"
+}
+```
+
+---
+
+## 🗄️ **Database Schema**
+
+### **Core Tables**
+
+#### **Courses**
+```sql
+CREATE TABLE courses (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  technology VARCHAR(100),
+  tenant_id VARCHAR(100),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+#### **Course Chunks**
+```sql
+CREATE TABLE course_chunks (
+  id SERIAL PRIMARY KEY,
+  course_id INTEGER REFERENCES courses(id),
+  nano_slug VARCHAR(100),
+  unit_slug VARCHAR(100),
+  content TEXT NOT NULL,
+  embedding vector(1536),
+  meta JSONB,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+#### **Course Assets**
+```sql
+CREATE TABLE course_assets (
+  id SERIAL PRIMARY KEY,
+  course_id INTEGER REFERENCES courses(id),
+  nano_slug VARCHAR(100),
+  unit_slug VARCHAR(100),
+  url TEXT NOT NULL,
+  kind VARCHAR(50),
+  alt TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### **Indexes**
+```sql
+-- Vector similarity search
+CREATE INDEX ON course_chunks USING ivfflat (embedding vector_cosine_ops);
+
+-- Content search
+CREATE INDEX ON course_chunks USING gin(to_tsvector('norwegian', content));
+
+-- Slug lookups
+CREATE INDEX ON course_chunks (nano_slug, unit_slug);
+CREATE INDEX ON course_assets (nano_slug, unit_slug);
+```
+
+---
+
+## 🔄 **RAG Pipeline**
+
+### **Ingestion Flow**
+
+#### **1. Markdown Parsing**
+```javascript
+// markdownParserService.js
+class MarkdownParserService {
+  parseMarkdown(content) {
+    const sections = this.extractSections(content);
+    const frontmatter = this.extractFrontmatter(content);
+    const assets = this.extractAssets(content);
+    
+    return { sections, frontmatter, assets };
+  }
+  
+  extractSections(content) {
+    // Parse ## (Nano) and ### (Unit) headers
+    const nanoRegex = /^##\s+(.+)$/gm;
+    const unitRegex = /^###\s+(.+)$/gm;
+    
+    // Extract sections with content
+    return this.buildSectionHierarchy(content, nanoRegex, unitRegex);
+  }
+}
+```
+
+#### **2. Content Chunking**
+```javascript
+// embeddingService.js
+class EmbeddingService {
+  async chunkContent(sections, maxTokens = 2000) {
+    const chunks = [];
+    
+    for (const section of sections) {
+      if (section.content.length > maxTokens) {
+        // Sub-chunk large sections
+        const subChunks = this.createSubChunks(section.content, maxTokens);
+        chunks.push(...subChunks);
+      } else {
+        chunks.push(section);
+      }
+    }
+    
+    return chunks;
+  }
+}
+```
+
+#### **3. OpenAI Embeddings**
+```javascript
+// embeddingService.js
+class EmbeddingService {
+  async generateEmbeddings(text) {
+    const response = await openai.embeddings.create({
+      model: "text-embedding-3-small",
+      input: this.cleanTextForEmbedding(text),
+      dimensions: 1536
+    });
+    
+    return response.data[0].embedding;
+  }
+  
+  cleanTextForEmbedding(text) {
+    // Remove markdown, preserve meaning
+    return text
+      .replace(/[#*`]/g, '')  // Remove markdown syntax
+      .replace(/\s+/g, ' ')   // Normalize whitespace
+      .trim();
+  }
+}
+```
+
+### **Query Flow**
+
+#### **1. Semantic Search**
+```javascript
+// ragChatService.js
+class RAGChatService {
+  async searchSimilarChunks(question, options = {}) {
+    const questionEmbedding = await this.generateEmbedding(question);
+    
+    const query = `
+      SELECT 
+        cc.*,
+        c.title as course_title,
+        1 - (cc.embedding <=> $1) as similarity
+      FROM course_chunks cc
+      JOIN courses c ON cc.course_id = c.id
+      WHERE 1=1
+        ${options.courseId ? 'AND cc.course_id = $2' : ''}
+        ${options.technology ? 'AND c.technology = $3' : ''}
+        ${options.tenantId ? 'AND c.tenant_id = $4' : ''}
+      ORDER BY cc.embedding <=> $1
+      LIMIT $5
+    `;
+    
+    const params = [questionEmbedding, ...Object.values(options)];
+    const results = await this.db.query(query, params);
+    
+    return results.rows;
+  }
+}
+```
+
+#### **2. Context Assembly**
+```javascript
+// ragChatService.js
+class RAGChatService {
+  async assembleContext(chunks, question) {
+    const context = chunks.map(chunk => ({
+      content: chunk.content,
+      source: `${chunk.course_title} > ${chunk.nano_slug} > ${chunk.unit_slug}`,
+      similarity: chunk.similarity
+    }));
+    
+    const prompt = this.buildPrompt(question, context);
+    return { prompt, context };
+  }
+  
+  buildPrompt(question, context) {
+    return `Du er TeknoTassen, en ekspert på teknisk kunnskap.
+
+Kontekst fra kursmateriale:
+${context.map(c => `- ${c.content}\n  Kilde: ${c.source}`).join('\n')}
+
+Spørsmål: ${question}
+
+Svar basert på konteksten over. Bruk norsk språk og gi korte, praktiske svar.`;
+  }
+}
+```
+
+---
+
+## 🔐 **Azure Services Integration**
+
+### **Azure Storage Service**
+```javascript
+// azureStorageService.js
+class AzureStorageService {
+  constructor() {
+    this.credential = new DefaultAzureCredential();
+    this.keyVaultUrl = process.env.AZURE_KEY_VAULT_URL;
+    this.secretClient = null;
+    this.blobServiceClient = null;
+  }
+  
+  async initializeKeyVault() {
+    if (!this.keyVaultUrl) {
+      throw new Error('AZURE_KEY_VAULT_URL environment variable is required');
+    }
+    
+    this.secretClient = new SecretClient(this.keyVaultUrl, this.credential);
+  }
+  
+  async getStorageConnectionString() {
+    const secret = await this.secretClient.getSecret('StorageConnectionString');
+    return secret.value;
+  }
+  
+  async uploadCourseFile(fileName, fileBuffer, contentType = 'text/markdown') {
+    const blobName = `courses/${fileName}`;
+    const blockBlobClient = this.coursesContainer.getBlockBlobClient(blobName);
+    
+    await blockBlobClient.upload(fileBuffer, fileBuffer.length, {
+      blobHTTPHeaders: { blobContentType: contentType },
+      metadata: {
+        uploadedAt: new Date().toISOString(),
+        fileType: 'course'
+      }
+    });
+    
+    return blobName;
+  }
+}
+```
+
+### **Database Service**
+```javascript
+// utils/database.js
+export class DatabaseService {
+  constructor(connectionString) {
+    this.pool = new Pool({
+      connectionString,
+      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+    });
+  }
+  
+  async testConnection() {
+    try {
+      const client = await this.pool.connect();
+      await client.query('SELECT NOW()');
+      client.release();
+      return true;
+    } catch (error) {
+      console.error('Database connection test failed:', error);
+      return false;
+    }
+  }
+  
+  async initDatabase() {
+    const createTables = `
+      CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+      CREATE EXTENSION IF NOT EXISTS "vector";
+      
+      CREATE TABLE IF NOT EXISTS courses (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        technology VARCHAR(100),
+        tenant_id VARCHAR(100),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      
+      CREATE TABLE IF NOT EXISTS course_chunks (
+        id SERIAL PRIMARY KEY,
+        course_id INTEGER REFERENCES courses(id),
+        nano_slug VARCHAR(100),
+        unit_slug VARCHAR(100),
+        content TEXT NOT NULL,
+        embedding vector(1536),
+        meta JSONB,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      
+      CREATE TABLE IF NOT EXISTS course_assets (
+        id SERIAL PRIMARY KEY,
+        course_id INTEGER REFERENCES courses(id),
+        nano_slug VARCHAR(100),
+        unit_slug VARCHAR(100),
+        url TEXT NOT NULL,
+        kind VARCHAR(50),
+        alt TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+    
+    await this.pool.query(createTables);
+  }
+}
+```
+
+---
+
+## 🚨 **Error Handling**
+
+### **Global Error Handler**
+```javascript
+// server.js
+app.use((error, req, res, next) => {
+  console.error('Unhandled error:', error);
+  
+  if (error.name === 'MulterError') {
+    if (error.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ 
+        error: 'File too large', 
+        message: 'File size must be less than 10MB' 
+      });
+    }
+  }
+  
+  res.status(500).json({ 
+    error: 'Internal server error',
+    message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
+  });
+});
+```
+
+### **Service Error Handling**
+```javascript
+// azureStorageService.js
+async uploadCourseFile(fileName, fileBuffer, contentType = 'text/markdown') {
+  try {
+    // ... upload logic
+  } catch (error) {
+    console.error(`Failed to upload course file ${fileName}:`, error);
+    
+    if (error.code === 'BlobNotFound') {
+      throw new Error('Storage container not found');
+    } else if (error.code === 'AuthenticationFailed') {
+      throw new Error('Storage authentication failed');
+    } else {
+      throw new Error(`Upload failed: ${error.message}`);
+    }
+  }
+}
+```
+
+---
+
+## 🔧 **Development Setup**
+
+### **Local Development**
+```bash
+# Install dependencies
+npm install
+
+# Create .env file
+cp .env.example .env
+
+# Set environment variables
+OPENAI_API_KEY=your-openai-key
+POSTGRES_URL=postgresql://user:pass@localhost:5432/teknotassen
+NODE_ENV=development
+
+# Start development server
+npm run dev
+```
+
+### **Environment Variables**
+```bash
+# Required
+OPENAI_API_KEY=sk-...
+POSTGRES_URL=postgresql://...
+
+# Optional (Azure)
+AZURE_KEY_VAULT_URL=https://kv-name.vault.azure.net/
+BLOB_CONNECTION_STRING=DefaultEndpointsProtocol=https;...
+
+# Server
+NODE_ENV=development
+PORT=8181
+```
+
+### **Database Setup**
+```bash
+# Install PostgreSQL with pgvector
+# Ubuntu/Debian
+sudo apt-get install postgresql postgresql-contrib
+sudo apt-get install postgresql-14-pgvector
+
+# macOS
+brew install postgresql
+brew install pgvector
+
+# Create database
+createdb teknotassen
+
+# Run migrations
+psql -d teknotassen -f migrations/001_initial_schema.sql
+```
+
+---
+
+## 🧪 **Testing**
+
+### **Unit Tests**
+```bash
+# Run tests
+npm test
+
+# Run with coverage
+npm run test:coverage
+
+# Run specific test file
+npm test -- --grep "RAG"
+```
+
+### **Integration Tests**
+```bash
+# Start test database
+docker run -d --name test-postgres \
+  -e POSTGRES_PASSWORD=test \
+  -e POSTGRES_DB=teknotassen_test \
+  -p 5433:5432 \
+  postgres:15
+
+# Run integration tests
+POSTGRES_URL=postgresql://postgres:test@localhost:5433/teknotassen_test \
+npm run test:integration
+```
+
+### **API Testing**
+```bash
+# Test health endpoint
+curl http://localhost:8181/healthz
+
+# Test course ingest
+curl -X POST http://localhost:8181/api/courses/ingest \
+  -F "file=@test-course.md" \
+  -F "courseId=test-001" \
+  -F "technology=test"
+
+# Test RAG query
+curl -X POST http://localhost:8181/api/query \
+  -H "Content-Type: application/json" \
+  -d '{"question": "Hvordan fungerer test?"}'
+```
+
+---
+
+## 🚀 **Deployment**
+
+### **Azure Web App**
+- **Platform:** Linux Container
+- **Runtime:** Node.js 20
+- **Port:** 8181
+- **Health Check:** `/healthz`
+
+### **Environment Variables (Azure)**
+```bash
+# Database
+POSTGRES_URL=@Microsoft.KeyVault(SecretUri=https://kv-teknotassen.vault.azure.net/secrets/PostgresAppConnectionString/)
+
+# Storage
+BLOB_CONNECTION_STRING=@Microsoft.KeyVault(SecretUri=https://kv-teknotassen.vault.azure.net/secrets/StorageConnectionString/)
+
+# OpenAI
+OPENAI_API_KEY=@Microsoft.KeyVault(SecretUri=https://kv-teknotassen.vault.azure.net/secrets/OpenAIAPIKey/)
+
+# Server
+NODE_ENV=production
+WEBSITES_PORT=8181
+```
+
+### **GitHub Actions**
+- **Workflow:** `.github/workflows/deploy-backend.yml`
+- **Trigger:** Push to main branch
+- **Steps:** Build → Push to ACR → Deploy to Web App → Health Check
+
+---
+
+## 📊 **Monitoring og Logging**
+
+### **Health Check Endpoint**
+```javascript
+app.get("/healthz", (_req, res) => {
+  res.status(200).send("OK");
+});
+```
+
+### **Structured Logging**
+```javascript
+// server.js
+console.log('🚀 Starting TeknoTassen RAG Backend...');
+console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+console.log(`🔗 Health check: http://0.0.0.0:${port}/healthz`);
+console.log(`📚 API docs: http://0.0.0.0:${port}/api/courses`);
+```
+
+### **Performance Monitoring**
+- **Response Time:** Express middleware
+- **Database Queries:** Query timing
+- **Memory Usage:** Process monitoring
+- **Error Rates:** Error tracking
+
+---
+
+## 🔮 **Future Enhancements**
+
+### **Short Term**
+- **Rate Limiting:** Per-user API limits
+- **Caching:** Redis for frequent queries
+- **Webhooks:** Real-time notifications
+- **Batch Processing:** Bulk course ingestion
+
+### **Long Term**
+- **Multi-modal RAG:** Image, audio, video
+- **Conversation Memory:** Chat history
+- **Advanced Analytics:** Usage patterns
+- **Plugin System:** Extensible architecture
+
+---
+
+## 📞 **Support**
+
+### **Team**
+- **Backend Lead:** Kristil
+- **DevOps:** CTO
+- **Frontend:** Ann-Kristin
+
+### **Resources**
+- **Azure Portal:** [web-teknotassen](https://web-teknotassen.azurewebsites.net)
+- **GitHub:** [dialog-builder-explorer](https://github.com/your-username/dialog-builder-explorer)
+- **Documentation:** [AZURE_DEPLOYMENT.md](../AZURE_DEPLOYMENT.md)
+
+---
+
+## 🎯 **Status**
+
+### **Current Status: 🟡 Ready for Deployment**
+- **Code Quality:** ✅ All critical fixes implemented
+- **Testing:** ✅ Local testing passed
+- **Documentation:** ✅ Complete
+- **Deployment:** 🟡 Ready for GitHub Actions
+
+### **Next Steps**
+1. **Trigger Deployment** - GitHub Actions workflow
+2. **Health Check** - Verify `/healthz` endpoint
+3. **Integration Testing** - Test with frontend
+4. **Performance Testing** - Load testing
+5. **Go-Live** - Production deployment
+
+---
+
+**📝 Dette dokumentet oppdateres kontinuerlig med nye features og learnings!**
