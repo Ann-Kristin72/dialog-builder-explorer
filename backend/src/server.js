@@ -1,23 +1,19 @@
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
-import dotenv from 'dotenv';
-import multer from 'multer';
-import coursesRouter from './routes/courses.js';
-import ttsSttRouter from './routes/ttsStt.js';
-import { testConnection, initDatabase, initializeDatabasePool } from './utils/database.js';
-import { azureStorageService } from './services/azureStorageService.js';
-
-dotenv.config();
-
+import express from "express";
 const app = express();
-// Use port 8181 as per CTO's findings (container actually listens on 8181)
-const PORT = 8181;
 
-// CTO's simple health route (without DB/KeyVault calls)
+// HELT DUM HEALTH: ingen DB/KeyVault/Blob her
 app.get("/healthz", (_req, res) => res.status(200).send("OK"));
 app.get("/", (_req, res) => res.status(200).send("Up"));
+
+// Start tidlig – så healthz fungerer selv om init under feiler
+const port = process.env.PORT || 8181;
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Listening on http://0.0.0.0:${port}`);
+});
+
+/* --- legg evt. resten av init UNDER denne linjen ---
+   Koble til DB, KeyVault, Blob etc. Her kan det feile uten at /healthz dør.
+*/
 
 // Security middleware
 app.use(helmet());
@@ -42,50 +38,16 @@ app.use('/api/', limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Health check endpoint (Azure App Service)
-app.get('/healthz', async (req, res) => {
-  try {
-    // Check database connection if available
-    let dbStatus = 'unknown';
-    try {
-      const dbConnected = await testConnection();
-      dbStatus = dbConnected ? 'connected' : 'disconnected';
-    } catch (error) {
-      dbStatus = 'error';
-    }
-    
-    res.status(200).json({ 
-      status: 'healthy', 
-      timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV || 'development',
-      port: PORT,
-      database: dbStatus,
-      services: {
-        database: dbStatus === 'connected',
-        storage: !!process.env.BLOB_CONNECTION_STRING || !!process.env.AZURE_KEY_VAULT_URL,
-        keyvault: !!process.env.AZURE_KEY_VAULT_URL
-      }
-    });
-  } catch (error) {
-    res.status(200).json({ 
-      status: 'degraded', 
-      timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV || 'development',
-      port: PORT,
-      database: 'error',
-      error: error.message
-    });
-  }
-});
-
-// Legacy health endpoint
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'healthy', 
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
-  });
-});
+// Import remaining modules (after server is already listening)
+import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import dotenv from 'dotenv';
+import multer from 'multer';
+import coursesRouter from './routes/courses.js';
+import ttsSttRouter from './routes/ttsStt.js';
+import { testConnection, initDatabase, initializeDatabasePool } from './utils/database.js';
+import { azureStorageService } from './services/azureStorageService.js';
 
 // API routes
 app.use('/api/courses', coursesRouter);
@@ -115,10 +77,10 @@ app.use('*', (req, res) => {
   res.status(404).json({ error: 'Endpoint not found' });
 });
 
-// Initialize database and start server
-async function startServer() {
+// Initialize database and other services (AFTER server is already listening)
+async function initializeServices() {
   try {
-    console.log('🚀 Starting TeknoTassen RAG Backend...');
+    console.log('🚀 Initializing TeknoTassen services...');
     
     // Initialize database connection (but don't crash if it fails)
     let dbConnected = false;
@@ -196,27 +158,17 @@ async function startServer() {
       console.log('ℹ️ Azure Storage not configured (using local storage)');
     }
     
-    // Start server (even if database connection failed)
-    app.listen(PORT, "0.0.0.0", () => {
-      console.log(`✅ Server running on port ${PORT}`);
-      console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`🔗 Health check: http://0.0.0.0:${PORT}/healthz`);
-      console.log(`📚 API docs: http://0.0.0.0:${PORT}/api/courses`);
-      console.log(`💾 Database status: ${dbConnected ? 'Connected' : 'Not connected'}`);
-    });
+    console.log(`💾 Database status: ${dbConnected ? 'Connected' : 'Not connected'}`);
+    console.log('✅ Services initialization completed');
     
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
-    // Don't exit, try to start server anyway
-    console.log('🔄 Attempting to start server without full initialization...');
-    
-    app.listen(PORT, "0.0.0.0", () => {
-      console.log(`✅ Server running on port ${PORT} (limited functionality)`);
-      console.log(`🔗 Health check: http://0.0.0.0:${PORT}/healthz`);
-      console.log(`⚠️ Some features may not work due to initialization errors`);
-    });
+    console.error('❌ Services initialization failed:', error);
+    console.log('⚠️ Continuing with limited functionality');
   }
 }
+
+// Start services initialization (non-blocking)
+initializeServices();
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
@@ -228,6 +180,3 @@ process.on('SIGINT', () => {
   console.log('🛑 SIGINT received, shutting down gracefully...');
   process.exit(0);
 });
-
-// Start the server
-startServer();
