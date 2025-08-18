@@ -257,14 +257,14 @@ jobs:
           # Check individual container config values
           echo "Checking individual container config values..."
           
-          # Get container image name from app settings (this is where it's actually stored)
-          echo "Checking container image name from app settings..."
-          CONTAINER_IMAGE_FROM_SETTINGS=$(az webapp config appsettings list \
+          # Get container image name from container config (this is where it's actually stored)
+          echo "Checking container image name from container config..."
+          CONTAINER_IMAGE_FROM_CONFIG=$(az webapp config container show \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --query "[?name=='DOCKER_CUSTOM_IMAGE_NAME'].value" -o tsv)
+            --query "dockerImageName" -o tsv)
           
-          echo "Container Image Name from settings: '$CONTAINER_IMAGE_FROM_SETTINGS'"
+          echo "Container Image Name from container config: '$CONTAINER_IMAGE_FROM_CONFIG'"
           
           # Get container registry URL from app settings
           CONTAINER_REGISTRY=$(az webapp config appsettings list \
@@ -278,7 +278,7 @@ jobs:
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --query "[?name=='DOCKER_REGISTRY_SERVER_USERNAME'].value" -o tsv)
           
-          echo "Final Container Image Name: '$CONTAINER_IMAGE_FROM_SETTINGS'"
+          echo "Final Container Image Name: '$CONTAINER_IMAGE_FROM_CONFIG'"
           echo "Final Container Registry URL: '$CONTAINER_REGISTRY'"
           echo "Final Container Registry User: '$CONTAINER_USER'"
           
@@ -362,62 +362,22 @@ jobs:
           # Check if container config is properly set
           echo "Checking container image configuration..."
           
-          # Get container image name from app settings (this is where it's actually stored)
-          echo "Debug: Querying DOCKER_CUSTOM_IMAGE_NAME from app settings..."
-          
-          # Try different query approaches
-          echo "Debug: Method 1 - Direct query with tsv:"
-          CONTAINER_READY_1=$(az webapp config appsettings list \
+          # Get container image name from container config (this is where it's actually stored)
+          echo "Debug: Querying dockerImageName from container config..."
+          CONTAINER_READY=$(az webapp config container show \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --query "[?name=='DOCKER_CUSTOM_IMAGE_NAME'].value" -o tsv)
-          echo "Result 1: '$CONTAINER_READY_1'"
-          
-          echo "Debug: Method 2 - JSON output with jq:"
-          CONTAINER_READY_2=$(az webapp config appsettings list \
-            --name ${{ env.AZURE_WEBAPP_NAME }} \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --output json | jq -r '.[] | select(.name=="DOCKER_CUSTOM_IMAGE_NAME") | .value')
-          echo "Result 2: '$CONTAINER_READY_2'"
-          
-          echo "Debug: Method 3 - Simple contains query:"
-          CONTAINER_READY_3=$(az webapp config appsettings list \
-            --name ${{ env.AZURE_WEBAPP_NAME }} \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --query "[?contains(name, 'DOCKER_CUSTOM_IMAGE_NAME')].value" -o tsv)
-          echo "Result 3: '$CONTAINER_READY_3'"
-          
-          # Use the first non-empty result
-          if [ -n "$CONTAINER_READY_1" ]; then
-            CONTAINER_READY="$CONTAINER_READY_1"
-            echo "Using result from Method 1"
-          elif [ -n "$CONTAINER_READY_2" ]; then
-            CONTAINER_READY="$CONTAINER_READY_2"
-            echo "Using result from Method 2"
-          elif [ -n "$CONTAINER_READY_3" ]; then
-            CONTAINER_READY="$CONTAINER_READY_3"
-            echo "Using result from Method 3"
-          else
-            CONTAINER_READY=""
-            echo "All methods returned empty"
-          fi
+            --query "dockerImageName" -o tsv)
           
           echo "Debug: Raw query result: '$CONTAINER_READY'"
           echo "Debug: Query result length: ${#CONTAINER_READY}"
           
-          # Also try to get all app settings to see what's available
-          echo "Debug: All app settings containing 'DOCKER':"
-          az webapp config appsettings list \
+          # Also show the full container config for debugging
+          echo "Debug: Full container config:"
+          az webapp config container show \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --query "[?contains(name, 'DOCKER')]" -o table
-          
-          # Check if the value is actually set and what it contains
-          echo "Debug: Checking if DOCKER_CUSTOM_IMAGE_NAME is actually set:"
-          az webapp config appsettings list \
-            --name ${{ env.AZURE_WEBAPP_NAME }} \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --query "[?name=='DOCKER_CUSTOM_IMAGE_NAME']" -o json
+            --output json
           
           echo "Container image name: '$CONTAINER_READY'"
           echo "Expected image name: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest"
