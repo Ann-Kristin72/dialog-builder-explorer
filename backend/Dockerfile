@@ -8,6 +8,13 @@ ENV NODE_ENV=production
 COPY package*.json ./
 RUN npm ci --omit=dev
 
+# Debug: Check if package.json exists and show contents
+RUN echo "=== DEBUG: Checking package.json ===" && \
+    ls -la && \
+    cat package.json && \
+    echo "=== DEBUG: Available scripts ===" && \
+    npm run
+
 COPY . .
 
 # Azure Web App standard port
