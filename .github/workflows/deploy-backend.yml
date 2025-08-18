@@ -364,12 +364,22 @@ jobs:
           
           # Get container image name from linuxFxVersion (this is where it's actually stored)
           echo "Debug: Querying linuxFxVersion from container config..."
-          CONTAINER_READY=$(az webapp config show \
+          LINUX_FX_VERSION=$(az webapp config show \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --query "linuxFxVersion" -o tsv)
           
-          echo "Debug: Raw query result: '$CONTAINER_READY'"
+          echo "Debug: Raw linuxFxVersion: '$LINUX_FX_VERSION'"
+          
+          # Parse linuxFxVersion to extract just the image name (remove DOCKER| prefix)
+          if [[ "$LINUX_FX_VERSION" == DOCKER\|* ]]; then
+            CONTAINER_READY="${LINUX_FX_VERSION#DOCKER|}"
+            echo "Debug: Parsed image name (removed DOCKER| prefix): '$CONTAINER_READY'"
+          else
+            CONTAINER_READY="$LINUX_FX_VERSION"
+            echo "Debug: No DOCKER| prefix found, using as-is: '$CONTAINER_READY'"
+          fi
+          
           echo "Debug: Query result length: ${#CONTAINER_READY}"
           
           # Also show the full container config for debugging
