@@ -257,14 +257,14 @@ jobs:
           # Check individual container config values
           echo "Checking individual container config values..."
           
-          # Get container image name from container config (this is where it's actually stored)
-          echo "Checking container image name from container config..."
-          CONTAINER_IMAGE_FROM_CONFIG=$(az webapp config container show \
+          # Get container image name from linuxFxVersion (this is where it's actually stored)
+          echo "Checking container image name from linuxFxVersion..."
+          CONTAINER_IMAGE_FROM_CONFIG=$(az webapp config show \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --query "dockerImageName" -o tsv)
+            --query "linuxFxVersion" -o tsv)
           
-          echo "Container Image Name from container config: '$CONTAINER_IMAGE_FROM_CONFIG'"
+          echo "Container Image Name from linuxFxVersion: '$CONTAINER_IMAGE_FROM_CONFIG'"
           
           # Get container registry URL from app settings
           CONTAINER_REGISTRY=$(az webapp config appsettings list \
@@ -362,19 +362,19 @@ jobs:
           # Check if container config is properly set
           echo "Checking container image configuration..."
           
-          # Get container image name from container config (this is where it's actually stored)
-          echo "Debug: Querying dockerImageName from container config..."
-          CONTAINER_READY=$(az webapp config container show \
+          # Get container image name from linuxFxVersion (this is where it's actually stored)
+          echo "Debug: Querying linuxFxVersion from container config..."
+          CONTAINER_READY=$(az webapp config show \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --query "dockerImageName" -o tsv)
+            --query "linuxFxVersion" -o tsv)
           
           echo "Debug: Raw query result: '$CONTAINER_READY'"
           echo "Debug: Query result length: ${#CONTAINER_READY}"
           
           # Also show the full container config for debugging
           echo "Debug: Full container config:"
-          az webapp config container show \
+          az webapp config show \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --output json
