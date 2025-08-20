@@ -73,6 +73,7 @@ class AuthService {
       
       // Store in localStorage for demo
       localStorage.setItem('demoUser', JSON.stringify(demoUser));
+      console.log('✅ Demo user created and stored:', demoUser);
       return;
     }
 
@@ -117,8 +118,11 @@ class AuthService {
     if (this.demoMode) {
       const demoUser = localStorage.getItem('demoUser');
       if (demoUser) {
-        return JSON.parse(demoUser);
+        const user = JSON.parse(demoUser);
+        console.log('✅ Demo user retrieved:', user);
+        return user;
       }
+      console.log('❌ No demo user found in localStorage');
       return null;
     }
 

@@ -32,6 +32,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const currentUser = await authService.getUser();
       setUser(currentUser);
+      console.log('✅ User refreshed:', currentUser);
     } catch (error) {
       console.error('❌ Error refreshing user:', error);
       setUser(null);
@@ -40,7 +41,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async () => {
     try {
+      console.log('🔐 Starting login process...');
       await authService.login();
+      console.log('✅ Login completed, refreshing user...');
+      // After login, refresh user to get the updated state
+      await refreshUser();
+      console.log('✅ Login process completed successfully');
     } catch (error) {
       console.error('❌ Login error:', error);
       throw error;
