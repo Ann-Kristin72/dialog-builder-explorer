@@ -25,7 +25,7 @@ const Login: React.FC = () => {
             {/* TeknoTassen avatar */}
             <div className="w-24 h-24 rounded-full overflow-hidden shadow-avatar border-4 border-white">
               <img 
-                src="/src/assets/teknotassen-avatar-new.jpg" 
+                src="/teknotassen-avatar.jpg" 
                 alt="TeknoTassen AI Assistent"
                 className="w-full h-full object-cover"
               />

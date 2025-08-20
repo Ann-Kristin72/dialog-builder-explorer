@@ -24,7 +24,7 @@ export const Header: React.FC = () => {
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-lg overflow-hidden shadow-avatar">
               <img 
-                src="/src/assets/teknotassen-avatar-new.jpg" 
+                src="/teknotassen-avatar.jpg" 
                 alt="TeknoTassen"
                 className="w-full h-full object-cover"
               />

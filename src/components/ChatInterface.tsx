@@ -156,7 +156,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-full overflow-hidden shadow-avatar">
             <img 
-              src="/src/assets/teknotassen-avatar.jpg" 
+              src="/teknotassen-avatar.jpg" 
               alt="TeknoTassen"
               className="w-full h-full object-cover"
             />
@@ -198,7 +198,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
             <div key={message.id} className="flex space-x-3">
               <Avatar className="w-8 h-8">
                 <AvatarImage 
-                  src={message.role === 'assistant' ? '/src/assets/teknotassen-avatar.jpg' : '/src/assets/vera-avatar.jpg'} 
+                  src={message.role === 'assistant' ? '/teknotassen-avatar.jpg' : '/vera-avatar.jpg'} 
                   alt={message.role === 'assistant' ? 'TeknoTassen' : 'Bruker'}
                 />
                 <AvatarFallback>
@@ -249,7 +249,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
           {isLoading && (
             <div className="flex space-x-3">
               <Avatar className="w-8 h-8">
-                <AvatarImage src="/src/assets/teknotassen-avatar-new.jpg" alt="TeknoTassen" />
+                <AvatarImage src="/teknotassen-avatar.jpg" alt="TeknoTassen" />
                 <AvatarFallback><Bot className="w-4 h-4" /></AvatarFallback>
               </Avatar>
               <div className="flex-1">

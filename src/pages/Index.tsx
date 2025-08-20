@@ -117,7 +117,7 @@ const Index: React.FC = () => {
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 rounded-xl overflow-hidden shadow-avatar">
                 <img 
-                  src="/src/assets/teknotassen-avatar.jpg" 
+                  src="/teknotassen-avatar.jpg" 
                   alt="TeknoTassen"
                   className="w-full h-full object-cover"
                 />
