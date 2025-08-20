@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { ChatInterface } from '../components/ChatInterface';
 import { DocumentUpload } from '../components/DocumentUpload';
 import { FeatureCard } from '../components/FeatureCard';
 import { Button } from '../components/ui/button';
@@ -25,7 +24,7 @@ import {
 } from 'lucide-react';
 
 const Index: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('chat');
+  const [activeTab, setActiveTab] = useState('velkommen');
   const [showUpload, setShowUpload] = useState(false);
 
   const features = [
@@ -84,10 +83,10 @@ const Index: React.FC = () => {
     { name: 'Vite', version: '5.x', status: 'active' },
     { name: 'Tailwind CSS', version: '3.x', status: 'active' },
     { name: 'shadcn/ui', version: 'latest', status: 'active' },
-    { name: 'Express.js', version: '4.x', status: 'deploying' },
-    { name: 'PostgreSQL + pgvector', version: '15+', status: 'deploying' },
-    { name: 'LangChain', version: '0.1.x', status: 'deploying' },
-    { name: 'Azure Web App', version: 'Linux Container', status: 'deploying' },
+    { name: 'Express.js', version: '4.x', status: 'active' },
+    { name: 'PostgreSQL + pgvector', version: '15+', status: 'active' },
+    { name: 'LangChain', version: '0.1.x', status: 'active' },
+    { name: 'Azure Web App', version: 'Linux Container', status: 'active' },
     { name: 'ElevenLabs TTS/STT', version: 'API v1', status: 'planned' }
   ];
 
@@ -124,21 +123,21 @@ const Index: React.FC = () => {
                 />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">TeknoTassen Explorer</h1>
-                <p className="text-sm text-gray-600">AI-Powered Knowledge Management System</p>
+                <h1 className="text-2xl font-bold text-card-foreground">TeknoTassen Explorer</h1>
+                <p className="text-sm text-muted-foreground">Velkommen til din AI-assistent for velferdsteknologi</p>
               </div>
             </div>
             
             <div className="flex items-center space-x-4">
-              <Badge variant="outline" className="bg-tech-blue/10 text-tech-blue border-tech-blue/20">
-                Azure Deployment
+              <Badge variant="outline" className="bg-tech-green/10 text-tech-green border-tech-green/20">
+                Demo Mode
               </Badge>
               <Button 
-                onClick={() => setShowUpload(true)}
+                onClick={() => window.location.href = '/login'}
                 className="bg-gradient-to-r from-primary to-tech-blue hover:from-primary/90 hover:to-tech-blue/90 text-primary-foreground shadow-soft"
               >
-                <Upload className="w-4 h-4 mr-2" />
-                Last opp kurs
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Logg inn
               </Button>
             </div>
           </div>
@@ -148,11 +147,11 @@ const Index: React.FC = () => {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="chat" className="flex items-center space-x-2">
-              <MessageSquare className="w-4 h-4" />
-              <span>Chat</span>
-            </TabsTrigger>
+                      <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="velkommen" className="flex items-center space-x-2">
+                <MessageSquare className="w-4 h-4" />
+                <span>Velkommen</span>
+              </TabsTrigger>
             <TabsTrigger value="features" className="flex items-center space-x-2">
               <Zap className="w-4 h-4" />
               <span>Funksjoner</span>
@@ -163,28 +162,99 @@ const Index: React.FC = () => {
             </TabsTrigger>
           </TabsList>
 
-          {/* Chat Tab */}
-          <TabsContent value="chat" className="space-y-6">
-            <div className="text-center space-y-4">
-              <h2 className="text-3xl font-bold text-gray-900">
-                Chat med TeknoTassen AI
-              </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Stil spørsmål om teknisk kunnskap og få nøyaktige svar basert på oppdatert dokumentasjon.
-                TeknoTassen bruker RAG-teknologi for å gi deg de beste svarene.
-              </p>
+          {/* Velkommen Tab */}
+          <TabsContent value="velkommen" className="space-y-6">
+            <div className="text-center space-y-6">
+              {/* TeknoTassen velkomst */}
+              <div className="flex items-center justify-center space-x-4 mb-8">
+                <div className="w-20 h-20 rounded-full overflow-hidden shadow-avatar">
+                  <img 
+                    src="/src/assets/teknotassen-avatar.jpg" 
+                    alt="TeknoTassen"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="text-left">
+                  <h2 className="text-3xl font-bold text-card-foreground">
+                    Hei, jeg heter TeknoTassen! 👋
+                  </h2>
+                  <p className="text-lg text-muted-foreground max-w-2xl">
+                    Jeg er din vennlige AI-assistent som skal hjelpe deg med teknologi og velferdsteknologi.
+                    Men først trenger jeg at du logger deg inn - da sees vi på innsiden!
+                  </p>
+                </div>
+              </div>
+
+              {/* Onboarding punkter */}
+              <div className="bg-gradient-to-r from-primary/5 to-tech-blue/5 p-6 rounded-xl border border-primary/20">
+                <h3 className="text-xl font-semibold text-card-foreground mb-4">
+                  Hva kan jeg hjelpe deg med? 🚀
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-8 h-8 bg-tech-blue/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-tech-blue text-lg">🏥</span>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-card-foreground">HEPRO Respons</h4>
+                      <p className="text-sm text-muted-foreground">Implementering og bruk av HEPRO Respons systemet</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-3">
+                    <div className="w-8 h-8 bg-tech-green/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-tech-green text-lg">🌙</span>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-card-foreground">Digital Nattilsyn</h4>
+                      <p className="text-sm text-muted-foreground">Digitale løsninger for nattilsyn og overvåking</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-3">
+                    <div className="w-8 h-8 bg-tech-orange/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-tech-orange text-lg">💙</span>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-card-foreground">Varda Care</h4>
+                      <p className="text-sm text-muted-foreground">Opplæring og bruk av Varda Care systemet</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-3">
+                    <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-primary text-lg">📚</span>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-card-foreground">Aula</h4>
+                      <p className="text-sm text-muted-foreground">Læringsplattform og kursadministrasjon</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Login CTA */}
+              <div className="text-center space-y-4">
+                <p className="text-lg text-muted-foreground">
+                  Logg inn for å komme i gang med TeknoTassen! 🔐
+                </p>
+                <Button 
+                  onClick={() => window.location.href = '/login'}
+                  className="bg-gradient-to-r from-primary to-tech-blue hover:from-primary/90 hover:to-tech-blue/90 text-primary-foreground shadow-soft px-8 py-3 text-lg"
+                >
+                  Logg inn med TeknoTassen
+                </Button>
+              </div>
             </div>
-            
-            <ChatInterface onUpload={() => setShowUpload(true)} />
           </TabsContent>
 
           {/* Features Tab */}
           <TabsContent value="features" className="space-y-8">
             <div className="text-center space-y-4">
-              <h2 className="text-3xl font-bold text-gray-900">
+              <h2 className="text-3xl font-bold text-card-foreground">
                 Avanserte AI-Funksjoner
               </h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
                 TeknoTassen Explorer kombinerer moderne AI-teknologi med robust infrastruktur
                 for å gi deg en kraftfull kunnskapsplattform.
               </p>
@@ -203,9 +273,9 @@ const Index: React.FC = () => {
             </div>
 
             {/* Architecture Overview */}
-            <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+            <Card className="bg-gradient-to-r from-primary/5 to-tech-blue/5 border-primary/20">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2 text-blue-900">
+                <CardTitle className="flex items-center space-x-2 text-primary">
                   <Database className="w-5 h-5" />
                   <span>Systemarkitektur</span>
                 </CardTitle>
@@ -213,24 +283,24 @@ const Index: React.FC = () => {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                   <div className="space-y-2">
-                    <h4 className="font-semibold text-blue-800">Frontend</h4>
-                    <ul className="space-y-1 text-blue-700">
+                    <h4 className="font-semibold text-tech-blue">Frontend</h4>
+                    <ul className="space-y-1 text-tech-blue/80">
                       <li>• React + TypeScript</li>
                       <li>• Tailwind CSS + shadcn/ui</li>
                       <li>• Vite build system</li>
                     </ul>
                   </div>
                   <div className="space-y-2">
-                    <h4 className="font-semibold text-purple-800">Backend</h4>
-                    <ul className="space-y-1 text-purple-700">
+                    <h4 className="font-semibold text-primary">Backend</h4>
+                    <ul className="space-y-1 text-primary/80">
                       <li>• Express.js API</li>
                       <li>• LangChain + OpenAI</li>
                       <li>• Azure Web App</li>
                     </ul>
                   </div>
                   <div className="space-y-2">
-                    <h4 className="font-semibold text-green-800">Database</h4>
-                    <ul className="space-y-1 text-green-700">
+                    <h4 className="font-semibold text-tech-green">Database</h4>
+                    <ul className="space-y-1 text-tech-green/80">
                       <li>• PostgreSQL + pgvector</li>
                       <li>• Azure Database</li>
                       <li>• Managed Identity</li>
@@ -244,10 +314,10 @@ const Index: React.FC = () => {
           {/* Technology Tab */}
           <TabsContent value="tech" className="space-y-8">
             <div className="text-center space-y-4">
-              <h2 className="text-3xl font-bold text-gray-900">
+              <h2 className="text-3xl font-bold text-card-foreground">
                 Teknologistakk
               </h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
                 Oversikt over alle teknologier som brukes i TeknoTassen Explorer,
                 fra frontend til backend og infrastruktur.
               </p>
@@ -271,29 +341,34 @@ const Index: React.FC = () => {
               ))}
             </div>
 
-            {/* Deployment Status */}
-            <Card className="bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200">
+            {/* Velkommen Status */}
+            <Card className="bg-gradient-to-r from-primary/5 to-tech-blue/5 border-primary/20">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2 text-yellow-900">
-                  <Zap className="w-5 h-5" />
-                  <span>Deployment Status</span>
+                <CardTitle className="flex items-center space-x-2 text-primary">
+                  <MessageSquare className="w-5 h-5" />
+                  <span>Velkommen til TeknoTassen!</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm text-yellow-800">
-                    Azure Web App deployment i gang via GitHub Actions
+                  <div className="w-3 h-3 bg-tech-green rounded-full animate-pulse"></div>
+                  <span className="text-sm text-tech-green">
+                    Frontend kjører på Vercel, backend på Azure
                   </span>
                 </div>
-                <div className="text-sm text-yellow-700 space-y-1">
-                  <p>• Docker image bygges og pushes til ACR</p>
-                  <p>• Web App oppdateres med ny container</p>
-                  <p>• Health checks og database tilkobling verifiseres</p>
+                <div className="text-sm text-muted-foreground space-y-1">
+                  <p>• Moderne React-applikasjon med TypeScript</p>
+                  <p>• AI-assistent med RAG-teknologi</p>
+                  <p>• Sikker autentisering og datahåndtering</p>
                 </div>
                 <div className="pt-2">
-                  <Button variant="outline" size="sm" className="text-yellow-700 border-yellow-300">
-                    Se deployment logs
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-primary border-primary/30"
+                    onClick={() => window.location.href = '/login'}
+                  >
+                    Kom i gang
                   </Button>
                 </div>
               </CardContent>

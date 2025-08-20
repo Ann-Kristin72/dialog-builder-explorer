@@ -249,7 +249,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
           {isLoading && (
             <div className="flex space-x-3">
               <Avatar className="w-8 h-8">
-                <AvatarImage src="/src/assets/teknotassen-avatar.jpg" alt="TeknoTassen" />
+                <AvatarImage src="/src/assets/teknotassen-avatar-new.jpg" alt="TeknoTassen" />
                 <AvatarFallback><Bot className="w-4 h-4" /></AvatarFallback>
               </Avatar>
               <div className="flex-1">

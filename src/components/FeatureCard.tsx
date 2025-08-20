@@ -5,20 +5,26 @@ interface FeatureCardProps {
   icon: ReactNode;
   title: string;
   description: string;
-  accentColor: "blue" | "green" | "orange";
+  accentColor: "blue" | "green" | "orange" | "tech-blue" | "tech-green" | "tech-orange";
 }
 
 export const FeatureCard = ({ icon, title, description, accentColor }: FeatureCardProps) => {
   const borderColorClass = {
     blue: "border-tech-blue/30",
     green: "border-tech-green/30", 
-    orange: "border-tech-orange/30"
+    orange: "border-tech-orange/30",
+    "tech-blue": "border-tech-blue/30",
+    "tech-green": "border-tech-green/30",
+    "tech-orange": "border-tech-orange/30"
   }[accentColor];
 
   const iconColorClass = {
     blue: "text-tech-blue",
     green: "text-tech-green",
-    orange: "text-tech-orange"
+    orange: "text-tech-orange",
+    "tech-blue": "text-tech-blue",
+    "tech-green": "text-tech-green",
+    "tech-orange": "text-tech-orange"
   }[accentColor];
 
   return (
