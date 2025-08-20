@@ -22,7 +22,8 @@ export const KnowledgeManager = () => {
   const loadDocuments = async () => {
     setIsLoading(true);
           try {
-        const response = await fetch('/api/courses');
+        const backendUrl = import.meta.env.VITE_API_URL || 'https://web-teknotassen-erf2emgebjh7cydy.norwayeast-01.azurewebsites.net';
+        const response = await fetch(`${backendUrl}/api/courses`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -42,7 +43,8 @@ export const KnowledgeManager = () => {
 
       const deleteDocument = async (id: string, title: string) => {
       try {
-        const response = await fetch(`/api/courses/${id}`, {
+        const backendUrl = import.meta.env.VITE_API_URL || 'https://web-teknotassen-erf2emgebjh7cydy.norwayeast-01.azurewebsites.net';
+        const response = await fetch(`${backendUrl}/api/courses/${id}`, {
           method: 'DELETE',
         });
         if (!response.ok) {

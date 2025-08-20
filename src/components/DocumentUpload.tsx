@@ -41,7 +41,8 @@ export const DocumentUpload = ({ onDocumentUploaded }: DocumentUploadProps) => {
         created_at: new Date().toISOString(),
       };
 
-      const response = await fetch('/api/courses/upload', {
+      const backendUrl = import.meta.env.VITE_API_URL || 'https://web-teknotassen-erf2emgebjh7cydy.norwayeast-01.azurewebsites.net';
+      const response = await fetch(`${backendUrl}/api/courses/upload`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

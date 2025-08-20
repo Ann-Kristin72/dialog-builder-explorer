@@ -50,3 +50,4 @@ infra/config/secrets/
 *.njsproj
 *.sln
 *.sw?
+.vercel

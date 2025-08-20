@@ -19,13 +19,13 @@ class AuthService {
     this.userManager = new UserManager({
       authority: import.meta.env.VITE_OIDC_AUTHORITY || 'https://teknotassenb2c.b2clogin.com/teknotassenb2c.onmicrosoft.com/B2C_1A_SIGNIN',
       client_id: import.meta.env.VITE_OIDC_CLIENT_ID || '',
-      redirect_uri: import.meta.env.VITE_REDIRECT_URI || 'http://localhost:5173',
+      redirect_uri: import.meta.env.VITE_REDIRECT_URI || 'https://dialog-builder-explorer-qrrvdgk63-aino-frontend.vercel.app',
       response_type: 'id_token token',
       scope: 'openid profile email',
-      post_logout_redirect_uri: import.meta.env.VITE_REDIRECT_URI || 'http://localhost:5173',
+      post_logout_redirect_uri: import.meta.env.VITE_REDIRECT_URI || 'https://dialog-builder-explorer-qrrvdgk63-aino-frontend.vercel.app',
       userStore: new WebStorageStateStore({ store: window.localStorage }),
       automaticSilentRenew: true,
-      silent_redirect_uri: import.meta.env.VITE_REDIRECT_URI || 'http://localhost:5173',
+      silent_redirect_uri: import.meta.env.VITE_REDIRECT_URI || 'https://dialog-builder-explorer-qrrvdgk63-aino-frontend.vercel.app',
     });
 
     // Set up event handlers
@@ -92,7 +92,7 @@ class AuthService {
   async isAuthenticated(): Promise<boolean> {
     try {
       const user = await this.getUser();
-      return user !== null && !user.accessToken;
+      return user !== null && !!user.accessToken;
     } catch (error) {
       return false;
     }
@@ -102,15 +102,20 @@ class AuthService {
     return this.user?.access_token || null;
   }
 
+  // Get user profile info
+  getUserProfile() {
+    return this.user?.profile || null;
+  }
+
   private mapUserToAuthUser(user: User): AuthUser {
     return {
       id: user.profile.sub || '',
       email: user.profile.email || '',
-      givenName: user.profile.given_name || '',
+      givenName: user.profile.given_name || user.profile.name || '',
       surname: user.profile.family_name || '',
-      organization: user.profile.organization || undefined,
-      location: user.profile.location || undefined,
-      role: user.profile.role || undefined,
+      organization: user.profile.extension_Organization || undefined,
+      location: user.profile.extension_Location || undefined,
+      role: user.profile.extension_Role || undefined,
       accessToken: user.access_token || '',
     };
   }

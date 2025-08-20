@@ -89,7 +89,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
 
     try {
       // API call to backend
-      const response = await fetch('/api/courses/query', {
+      const backendUrl = import.meta.env.VITE_API_URL || 'https://web-teknotassen-erf2emgebjh7cydy.norwayeast-01.azurewebsites.net';
+      const response = await fetch(`${backendUrl}/api/courses/query`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

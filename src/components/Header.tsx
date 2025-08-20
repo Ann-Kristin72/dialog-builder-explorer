@@ -6,13 +6,13 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { LogOut, User, Settings, Shield, Brain } from "lucide-react";
 
 export const Header: React.FC = () => {
-  const { userProfile, logout, isAuthenticated } = useAuth();
+  const { user, logout, isAuthenticated } = useAuth();
 
   const handleLogout = async () => {
     await logout();
   };
 
-  if (!isAuthenticated || !userProfile) {
+  if (!isAuthenticated || !user) {
     return null;
   }
 
@@ -37,14 +37,14 @@ export const Header: React.FC = () => {
             <div className="flex items-center space-x-2">
               <Shield className="h-4 w-4 text-blue-500" />
               <span className="text-sm font-medium text-gray-700 capitalize">
-                {userProfile.role}
+                {user.role || 'Bruker'}
               </span>
             </div>
 
             {/* Organisasjon */}
-            {userProfile.organization && (
+            {user.organization && (
               <div className="hidden md:block text-sm text-gray-500">
-                {userProfile.organization}
+                {user.organization}
               </div>
             )}
 
@@ -53,9 +53,9 @@ export const Header: React.FC = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src="" alt={userProfile.name} />
+                    <AvatarImage src="" alt={`${user.givenName} ${user.surname}`} />
                     <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-sm font-semibold">
-                      {userProfile.name.charAt(0).toUpperCase()}
+                      {user.givenName.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -64,9 +64,9 @@ export const Header: React.FC = () => {
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{userProfile.name}</p>
+                    <p className="text-sm font-medium leading-none">{user.givenName} {user.surname}</p>
                     <p className="text-xs leading-none text-muted-foreground">
-                      {userProfile.email}
+                      {user.email}
                     </p>
                   </div>
                 </DropdownMenuLabel>
