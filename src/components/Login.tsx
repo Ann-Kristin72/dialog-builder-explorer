@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from './ui/button';
+import { Badge } from './ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import AulaNotice from './AulaNotice';
 
@@ -32,6 +33,11 @@ const Login: React.FC = () => {
           <CardDescription className="text-gray-600">
             Din vennlige velferdsteknologi ekspert
           </CardDescription>
+          <div className="mt-2">
+            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+              🔧 Demo Mode
+            </Badge>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-center text-sm text-gray-600 mb-6">
@@ -55,18 +61,18 @@ const Login: React.FC = () => {
                 <span>Logger inn...</span>
               </div>
             ) : (
-              <div className="flex items-center space-x-2">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                <span>Logg inn med Azure AD</span>
-              </div>
+                          <div className="flex items-center space-x-2">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span>Demo Login</span>
+            </div>
             )}
           </Button>
           
           <div className="text-center text-xs text-gray-500 mt-4">
-            <p>Du vil bli omdirigert til Microsoft Azure AD B2C</p>
-            <p>for sikker autentisering</p>
+            <p>🔧 Demo mode: Ingen ekstern autentisering nødvendig</p>
+            <p>Trykk "Logg inn" for å komme videre</p>
           </div>
         </CardContent>
       </Card>

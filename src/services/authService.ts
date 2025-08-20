@@ -14,8 +14,17 @@ export interface AuthUser {
 class AuthService {
   private userManager: UserManager;
   private user: User | null = null;
+  private demoMode: boolean = true; // Demo mode for testing
 
   constructor() {
+    // Check if we're in demo mode (no Azure AD B2C configured)
+    this.demoMode = !import.meta.env.VITE_OIDC_CLIENT_ID || import.meta.env.VITE_OIDC_CLIENT_ID === 'your-azure-b2c-client-id-here';
+    
+    if (this.demoMode) {
+      console.log('🔧 Demo mode enabled - using local authentication');
+      return;
+    }
+
     this.userManager = new UserManager({
       authority: import.meta.env.VITE_OIDC_AUTHORITY || 'https://teknotassenb2c.b2clogin.com/teknotassenb2c.onmicrosoft.com/B2C_1A_SIGNIN',
       client_id: import.meta.env.VITE_OIDC_CLIENT_ID || '',
@@ -49,6 +58,24 @@ class AuthService {
   }
 
   async login(): Promise<void> {
+    if (this.demoMode) {
+      // Demo login - create a mock user
+      const demoUser: AuthUser = {
+        id: 'demo-user-123',
+        email: 'demo@teknotassen.no',
+        givenName: 'Demo',
+        surname: 'Bruker',
+        organization: 'TeknoTassen',
+        location: 'Oslo',
+        role: 'Admin',
+        accessToken: 'demo-token-' + Date.now(),
+      };
+      
+      // Store in localStorage for demo
+      localStorage.setItem('demoUser', JSON.stringify(demoUser));
+      return;
+    }
+
     try {
       await this.userManager.signinRedirect();
     } catch (error) {
@@ -58,6 +85,10 @@ class AuthService {
   }
 
   async completeLogin(): Promise<AuthUser | null> {
+    if (this.demoMode) {
+      return null; // Demo mode doesn't use redirects
+    }
+
     try {
       const user = await this.userManager.signinRedirectCallback();
       this.user = user;
@@ -69,6 +100,11 @@ class AuthService {
   }
 
   async logout(): Promise<void> {
+    if (this.demoMode) {
+      localStorage.removeItem('demoUser');
+      return;
+    }
+
     try {
       await this.userManager.signoutRedirect();
     } catch (error) {
@@ -78,6 +114,14 @@ class AuthService {
   }
 
   async getUser(): Promise<AuthUser | null> {
+    if (this.demoMode) {
+      const demoUser = localStorage.getItem('demoUser');
+      if (demoUser) {
+        return JSON.parse(demoUser);
+      }
+      return null;
+    }
+
     try {
       if (!this.user) {
         this.user = await this.userManager.getUser();
@@ -99,6 +143,14 @@ class AuthService {
   }
 
   getAccessToken(): string | null {
+    if (this.demoMode) {
+      const demoUser = localStorage.getItem('demoUser');
+      if (demoUser) {
+        return JSON.parse(demoUser).accessToken;
+      }
+      return null;
+    }
+
     return this.user?.access_token || null;
   }
 
@@ -122,6 +174,8 @@ class AuthService {
 
   // Handle silent renew
   async startSilentRenew(): Promise<void> {
+    if (this.demoMode) return; // Demo mode doesn't need token renewal
+
     try {
       await this.userManager.startSilentRenew();
     } catch (error) {
