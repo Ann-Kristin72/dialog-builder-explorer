@@ -18,9 +18,9 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-secondary to-accent p-4">
-      <Card className="w-full max-w-md shadow-card">
-        <CardHeader className="text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-secondary to-accent p-4 sm:p-6">
+      <Card className="w-full max-w-lg shadow-card">
+        <CardHeader className="text-center p-4 sm:p-6">
           <div className="mx-auto mb-4">
             {/* TeknoTassen avatar */}
             <div className="w-24 h-24 rounded-full overflow-hidden shadow-avatar border-4 border-white">
@@ -31,10 +31,10 @@ const Login: React.FC = () => {
               />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold text-gray-900">
+          <CardTitle className="text-2xl font-bold text-card-foreground">
             Velkommen til TeknoTassen
           </CardTitle>
-          <CardDescription className="text-gray-600">
+          <CardDescription className="text-muted-foreground">
             Din vennlige velferdsteknologi ekspert
           </CardDescription>
           <div className="mt-2">
@@ -43,15 +43,53 @@ const Login: React.FC = () => {
             </Badge>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="text-center text-sm text-gray-600 mb-6">
-            <p>Logg inn med din Azure AD B2C-konto for å få tilgang til:</p>
-            <ul className="mt-2 space-y-1 text-left">
-              <li>• HEPRO Respons implementering</li>
-              <li>• Digital nattilsyn</li>
-              <li>• Varda Care opplæring</li>
-              <li>• GDPR og samtykkeveiledning</li>
-            </ul>
+        <CardContent className="space-y-6 p-4 sm:p-6">
+          {/* Onboarding Overview */}
+          <div className="text-center space-y-4">
+            <h3 className="text-lg font-semibold text-card-foreground">
+              Hva kan jeg hjelpe deg med? 🚀
+            </h3>
+            <div className="grid grid-cols-1 gap-3 text-left">
+              <div className="flex items-start space-x-3 p-3 bg-tech-blue/5 rounded-lg border border-tech-blue/20">
+                <div className="w-8 h-8 bg-tech-blue/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span className="text-tech-blue text-lg">🏥</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-semibold text-card-foreground">HEPRO Respons</h4>
+                  <p className="text-sm text-muted-foreground">Implementering og bruk av HEPRO Respons systemet</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3 p-3 bg-tech-green/5 rounded-lg border border-tech-green/20">
+                <div className="w-8 h-8 bg-tech-green/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span className="text-tech-green text-lg">🌙</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-semibold text-card-foreground">Digital Nattilsyn</h4>
+                  <p className="text-sm text-muted-foreground">Digitale løsninger for nattilsyn og overvåking</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3 p-3 bg-tech-orange/5 rounded-lg border border-tech-orange/20">
+                <div className="w-8 h-8 bg-tech-orange/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span className="text-tech-orange text-lg">💙</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-semibold text-card-foreground">Varda Care</h4>
+                  <p className="text-sm text-muted-foreground">Opplæring og bruk av Varda Care systemet</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
+                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span className="text-primary text-lg">📚</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-semibold text-card-foreground">Aula</h4>
+                  <p className="text-sm text-muted-foreground">Læringsplattform og kursadministrasjon</p>
+                </div>
+              </div>
+            </div>
           </div>
           
           <Button
@@ -74,7 +112,7 @@ const Login: React.FC = () => {
             )}
           </Button>
           
-          <div className="text-center text-xs text-gray-500 mt-4">
+          <div className="text-center text-xs text-muted-foreground mt-4">
             <p>🔧 Demo mode: Ingen ekstern autentisering nødvendig</p>
             <p>Trykk "Logg inn" for å komme videre</p>
           </div>
