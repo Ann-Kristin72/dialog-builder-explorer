@@ -33,49 +33,49 @@ const Index: React.FC = () => {
       icon: <Brain className="w-6 h-6" />,
       title: 'RAG-Powered AI',
       description: 'Retrieval-Augmented Generation med pgvector og LangChain for nøyaktige svar basert på oppdatert kunnskap.',
-      accentColor: 'blue' as const
+      accentColor: 'tech-blue' as const
     },
     {
       icon: <Database className="w-6 h-6" />,
       title: 'Vector Database',
       description: 'PostgreSQL med pgvector for effektiv lagring og søk i tekst-embeddings.',
-      accentColor: 'green' as const
+      accentColor: 'tech-green' as const
     },
     {
       icon: <Shield className="w-6 h-6" />,
       title: 'Azure Security',
       description: 'Managed Identity, Key Vault og RBAC for sikker tilgang til ressurser.',
-      accentColor: 'blue' as const
+      accentColor: 'tech-blue' as const
     },
     {
       icon: <Globe className="w-6 h-6" />,
       title: 'Multi-Tenant',
       description: 'Støtte for flere organisasjoner med isolerte kunnskapsbaser.',
-      accentColor: 'orange' as const
+      accentColor: 'tech-orange' as const
     },
     {
       icon: <Search className="w-6 h-6" />,
       title: 'Semantic Search',
       description: 'Intelligent tekstsøk basert på betydning, ikke bare nøkkelord.',
-      accentColor: 'blue' as const
+      accentColor: 'tech-blue' as const
     },
     {
       icon: <FileText className="w-6 h-6" />,
       title: 'Markdown Support',
       description: 'Støtte for strukturert innhold med Nano/Unit hierarki og frontmatter.',
-      accentColor: 'blue' as const
+      accentColor: 'tech-blue' as const
     },
     {
       icon: <Play className="w-6 h-6" />,
       title: 'Text-to-Speech',
       description: 'ElevenLabs TTS for naturlig, følelsesmessig tale med bred språkstøtte.',
-      accentColor: 'orange' as const
+      accentColor: 'tech-orange' as const
     },
     {
       icon: <Mic className="w-6 h-6" />,
       title: 'Speech-to-Text',
       description: 'ElevenLabs Scribe for høy nøyaktighet (96.7%) med språk- og talerstøtte.',
-      accentColor: 'green' as const
+      accentColor: 'tech-green' as const
     }
   ];
 
@@ -93,10 +93,10 @@ const Index: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'deploying': return 'bg-yellow-100 text-yellow-800';
-      case 'planned': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'active': return 'bg-tech-green/10 text-tech-green border-tech-green/20';
+      case 'deploying': return 'bg-tech-orange/10 text-tech-orange border-tech-orange/20';
+      case 'planned': return 'bg-muted text-muted-foreground border-border';
+      default: return 'bg-muted text-muted-foreground border-border';
     }
   };
 
@@ -110,14 +110,18 @@ const Index: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-secondary via-background to-accent">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+              <header className="bg-card shadow-card border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                <Brain className="w-7 h-7 text-white" />
+              <div className="w-12 h-12 rounded-xl overflow-hidden shadow-avatar">
+                <img 
+                  src="/src/assets/teknotassen-avatar.jpg" 
+                  alt="TeknoTassen"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">TeknoTassen Explorer</h1>
@@ -126,12 +130,12 @@ const Index: React.FC = () => {
             </div>
             
             <div className="flex items-center space-x-4">
-              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+              <Badge variant="outline" className="bg-tech-blue/10 text-tech-blue border-tech-blue/20">
                 Azure Deployment
               </Badge>
               <Button 
                 onClick={() => setShowUpload(true)}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                className="bg-gradient-to-r from-primary to-tech-blue hover:from-primary/90 hover:to-tech-blue/90 text-primary-foreground shadow-soft"
               >
                 <Upload className="w-4 h-4 mr-2" />
                 Last opp kurs

@@ -152,14 +152,18 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
   return (
     <div className="flex flex-col h-full max-w-4xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b bg-white">
+      <div className="flex items-center justify-between p-4 border-b bg-card">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-            <Sparkles className="w-6 h-6 text-white" />
+          <div className="w-10 h-10 rounded-full overflow-hidden shadow-avatar">
+            <img 
+              src="/src/assets/teknotassen-avatar.jpg" 
+              alt="TeknoTassen"
+              className="w-full h-full object-cover"
+            />
           </div>
           <div>
-            <h1 className="text-xl font-semibold text-gray-900">TeknoTassen AI</h1>
-            <p className="text-sm text-gray-600">Teknisk kunnskapsassistent</p>
+            <h1 className="text-xl font-semibold text-card-foreground">TeknoTassen AI</h1>
+            <p className="text-sm text-muted-foreground">Teknisk kunnskapsassistent</p>
           </div>
         </div>
         
@@ -172,7 +176,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
       </div>
 
       {/* Technology Filter */}
-      <div className="p-4 bg-gray-50 border-b">
+      <div className="p-4 bg-muted border-b">
         <div className="flex flex-wrap gap-2">
           {technologies.map((tech) => (
             <Badge
@@ -204,15 +208,15 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
               
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-1">
-                  <span className="font-medium text-sm">
+                  <span className="font-medium text-sm text-card-foreground">
                     {message.role === 'assistant' ? 'TeknoTassen' : 'Du'}
                   </span>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-muted-foreground">
                     {message.timestamp.toLocaleTimeString()}
                   </span>
                 </div>
                 
-                <Card className="bg-white">
+                <Card className="bg-card">
                   <CardContent className="p-3">
                     <div 
                       className="prose prose-sm max-w-none"
@@ -224,18 +228,18 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
                 {/* Sources */}
                 {message.sources && message.sources.length > 0 && (
                   <div className="mt-2 space-y-1">
-                    <p className="text-xs text-gray-500 font-medium">Kilder:</p>
-                    {message.sources.map((source, index) => (
-                      <div key={index} className="text-xs bg-gray-50 p-2 rounded">
-                        <p className="font-medium">{source.title}</p>
-                        {source.url && (
-                          <a href={source.url} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
-                            Se kilde
-                          </a>
-                        )}
-                        <p className="text-gray-600 mt-1">{source.content.substring(0, 100)}...</p>
-                      </div>
-                    ))}
+                                            <p className="text-xs text-muted-foreground font-medium">Kilder:</p>
+                        {message.sources.map((source, index) => (
+                          <div key={index} className="text-xs bg-muted p-2 rounded">
+                            <p className="font-medium">{source.title}</p>
+                            {source.url && (
+                              <a href={source.url} className="text-tech-blue hover:underline" target="_blank" rel="noopener noreferrer">
+                                Se kilde
+                              </a>
+                            )}
+                            <p className="text-muted-foreground mt-1">{source.content.substring(0, 100)}...</p>
+                          </div>
+                        ))}
                   </div>
                 )}
               </div>
@@ -250,13 +254,13 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
               </Avatar>
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-1">
-                  <span className="font-medium text-sm">TeknoTassen</span>
+                  <span className="font-medium text-sm text-card-foreground">TeknoTassen</span>
                 </div>
-                <Card className="bg-white">
+                <Card className="bg-card">
                   <CardContent className="p-3">
                     <div className="flex items-center space-x-2">
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span className="text-sm text-gray-600">Skriver...</span>
+                      <span className="text-sm text-muted-foreground">Skriver...</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -269,7 +273,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
       </ScrollArea>
 
       {/* Input */}
-      <div className="p-4 border-t bg-white">
+      <div className="p-4 border-t bg-card">
         <div className="flex space-x-2">
           <Input
             value={inputValue}
@@ -288,7 +292,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
           </Button>
         </div>
         
-        <div className="mt-2 text-xs text-gray-500 text-center">
+        <div className="mt-2 text-xs text-muted-foreground text-center">
           TeknoTassen bruker RAG-teknologi for å gi deg nøyaktige svar basert på oppdatert kunnskap
         </div>
       </div>

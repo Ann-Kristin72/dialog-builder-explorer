@@ -18,13 +18,17 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="w-full max-w-md shadow-xl">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-secondary to-accent p-4">
+      <Card className="w-full max-w-md shadow-card">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4">
-            {/* TeknoTassen avatar kan legges til her */}
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-              🦉
+            {/* TeknoTassen avatar */}
+            <div className="w-24 h-24 rounded-full overflow-hidden shadow-avatar border-4 border-white">
+              <img 
+                src="/src/assets/teknotassen-avatar.jpg" 
+                alt="TeknoTassen AI Assistent"
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
           <CardTitle className="text-2xl font-bold text-gray-900">
@@ -34,7 +38,7 @@ const Login: React.FC = () => {
             Din vennlige velferdsteknologi ekspert
           </CardDescription>
           <div className="mt-2">
-            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+            <Badge variant="secondary" className="bg-tech-blue/10 text-tech-blue border-tech-blue/20">
               🔧 Demo Mode
             </Badge>
           </div>
@@ -53,7 +57,7 @@ const Login: React.FC = () => {
           <Button
             onClick={handleLogin}
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105"
+            className="w-full bg-gradient-to-r from-primary to-tech-blue hover:from-primary/90 hover:to-tech-blue/90 text-primary-foreground font-semibold py-3 px-6 rounded-lg transition-smooth transform hover:scale-105 shadow-soft"
           >
             {isLoading ? (
               <div className="flex items-center space-x-2">
