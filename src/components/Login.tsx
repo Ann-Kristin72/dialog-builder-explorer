@@ -36,15 +36,13 @@ const Login: React.FC = () => {
       console.log('🏥 Avdeling:', formData.department);
       console.log('🔒 Privacy Consent:', formData.privacyConsent);
       
-      console.log('🔐 Calling login() function...');
-      await login();
-      console.log('✅ Login function completed successfully');
+      // For demo - lagre brukerdata og gå direkte til dashboard
+      localStorage.setItem('demoUserData', JSON.stringify(formData));
+      console.log('✅ Demo user data saved to localStorage');
       
-      // Check if we're authenticated now
-      console.log('🔍 Checking authentication status...');
-      console.log('🔍 Current user:', user);
-      console.log('🔍 Is authenticated:', isAuthenticated);
-      console.log('🔍 Is loading:', isLoading);
+      // Naviger direkte til dashboard
+      window.location.href = '/';
+      console.log('✅ Redirecting to dashboard...');
       
     } catch (error) {
       console.error('❌ Login failed:', error);

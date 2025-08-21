@@ -30,6 +30,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const refreshUser = async () => {
     try {
+      // Check for demo user data first
+      const demoUserData = localStorage.getItem('demoUserData');
+      if (demoUserData) {
+        const userData = JSON.parse(demoUserData);
+        const demoUser: AuthUser = {
+          id: 'demo-user-' + Date.now(),
+          email: userData.email,
+          givenName: userData.name,
+          surname: '',
+          organization: userData.workplace,
+          location: userData.department,
+          role: userData.role,
+          accessToken: 'demo-token-' + Date.now(),
+        };
+        
+        console.log('✅ Demo user created from form data:', demoUser);
+        setUser(demoUser);
+        setIsLoading(false);
+        return;
+      }
+      
+      // Fallback to authService
       const currentUser = await authService.getUser();
       console.log('🔄 Setting user in refreshUser:', currentUser);
       setUser(currentUser);
@@ -87,7 +109,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.log('🔍 Initializing auth...');
         console.log('🔍 Current URL:', window.location.href);
         
-        // Check if we're returning from login
+        // Check for demo user data first (priority for demo)
+        const demoUserData = localStorage.getItem('demoUserData');
+        if (demoUserData) {
+          console.log('🔍 Found demo user data, creating user...');
+          const userData = JSON.parse(demoUserData);
+          const demoUser: AuthUser = {
+            id: 'demo-user-' + Date.now(),
+            email: userData.email,
+            givenName: userData.name,
+            surname: '',
+            organization: userData.workplace,
+            location: userData.department,
+            role: userData.role,
+            accessToken: 'demo-token-' + Date.now(),
+          };
+          
+          console.log('✅ Demo user created from localStorage:', demoUser);
+          setUser(demoUser);
+          setIsLoading(false);
+          return;
+        }
+        
+        // Check if we're returning from OIDC login
         if (window.location.href.includes('id_token=') || window.location.href.includes('access_token=')) {
           console.log('🔍 Detected OIDC callback, completing login...');
           const newUser = await authService.completeLogin();
