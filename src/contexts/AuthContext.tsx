@@ -31,12 +31,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const refreshUser = async () => {
     try {
       const currentUser = await authService.getUser();
+      console.log('🔄 Setting user in refreshUser:', currentUser);
       setUser(currentUser);
       console.log('✅ User refreshed:', currentUser);
       
       // If we have a user, make sure we're not loading anymore
       if (currentUser) {
         setIsLoading(false);
+        console.log('✅ Loading set to false');
       }
     } catch (error) {
       console.error('❌ Error refreshing user:', error);
@@ -52,10 +54,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       if (newUser) {
         // Set user directly from login response
+        console.log('🔄 Setting user directly from login:', newUser);
         setUser(newUser);
         console.log('✅ User set directly from login');
       } else {
         // Fallback to refresh if no user returned
+        console.log('🔄 No user from login, calling refreshUser...');
         await refreshUser();
         console.log('✅ User refreshed after login');
       }
@@ -109,10 +113,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     initializeAuth();
   }, []);
 
+  const isAuthenticatedValue = !!user && !!user.accessToken;
+  
+  console.log('🔍 AuthContext value update:', {
+    user: user ? { id: user.id, email: user.email, hasAccessToken: !!user.accessToken } : null,
+    isLoading,
+    isAuthenticated: isAuthenticatedValue,
+    userAccessToken: user?.accessToken
+  });
+  
   const value: AuthContextType = {
     user,
     isLoading,
-    isAuthenticated: !!user && !!user.accessToken,
+    isAuthenticated: isAuthenticatedValue,
     login,
     logout,
     refreshUser,
