@@ -74,7 +74,7 @@ const Index: React.FC = () => {
       setSelectedFile(null);
       setDocumentTitle('');
       setDocumentDescription('');
-      const fileInput = document.getElementById('ai-file-upload') as HTMLInputElement;
+      const fileInput = document.getElementById('opplæring-file-upload') as HTMLInputElement;
       if (fileInput) fileInput.value = '';
 
       // Show success message
@@ -362,7 +362,7 @@ const Index: React.FC = () => {
                     </Button>
                     
                     {/* File Upload for AI Analysis - Under Opplæring */}
-                    <div className="mt-4 pt-4 border-t border-tech-green/20">
+                    <div className="mt-4 pt-4 border-t border-tech-green/20" style={{border: '2px solid red'}}>
                       <h5 className="font-medium text-tech-green mb-3 flex items-center">
                         <span className="text-lg mr-2">📁</span>
                         AI-dokumentanalyse
