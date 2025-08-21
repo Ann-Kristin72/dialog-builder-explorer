@@ -125,14 +125,6 @@ const Index: React.FC = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-card-foreground">
-                  {user ? `TeknoTassen Explorer - ${user.givenName}` : 'TeknoTassen Explorer'}
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  {user ? `Velkommen tilbake, ${user.givenName}!` : 'Velkommen til din AI-assistent for velferdsteknologi'}
-                </p>
-              </div>
             </div>
             
             <div className="flex items-center space-x-4">
