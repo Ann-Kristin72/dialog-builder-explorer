@@ -88,8 +88,7 @@ const Login: React.FC = () => {
               Hei, jeg heter TeknoTassen! 👋
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Jeg er din vennlige AI-assistent som skal hjelpe deg med teknologi og velferdsteknologi. 
-              Men først trenger jeg at du logger deg inn - da sees vi på innsiden!
+              Jeg digger alt som gjør livene våre lettere og teknologi er en av dem. Jeg er her for å hjelpe deg med alt du lurer på om velferdsteknologi og hvordan den kan tas i bruk. Men først trenger jeg litt informasjon om deg.
             </p>
             <div className="mt-4">
               <Badge variant="secondary" className="bg-tech-green/10 text-tech-green border-tech-green/20">
