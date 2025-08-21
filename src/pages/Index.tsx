@@ -5,6 +5,7 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Badge } from '../components/ui/badge';
+import { useAuth } from '../contexts/AuthContext';
 import { 
   MessageSquare, 
   Upload, 
@@ -26,6 +27,7 @@ import {
 const Index: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showUpload, setShowUpload] = useState(false);
+  const { user } = useAuth();
 
   const features = [
     {
@@ -123,8 +125,12 @@ const Index: React.FC = () => {
                 />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-card-foreground">TeknoTassen Explorer</h1>
-                <p className="text-sm text-muted-foreground">Velkommen til din AI-assistent for velferdsteknologi</p>
+                <h1 className="text-2xl font-bold text-card-foreground">
+                  {user ? `TeknoTassen Explorer - ${user.givenName}` : 'TeknoTassen Explorer'}
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  {user ? `Velkommen tilbake, ${user.givenName}!` : 'Velkommen til din AI-assistent for velferdsteknologi'}
+                </p>
               </div>
             </div>
             
@@ -180,7 +186,7 @@ const Index: React.FC = () => {
                 </div>
                 <div className="flex-1">
                   <h2 className="text-3xl font-bold text-card-foreground">
-                    Velkommen tilbake! 🎉
+                    Velkommen tilbake, {user?.givenName || 'venn'}! 🎉
                   </h2>
                   <p className="text-lg text-muted-foreground max-w-3xl">
                     Jeg er TeknoTassen, din personlige AI-assistent for velferdsteknologi. 
@@ -242,7 +248,7 @@ const Index: React.FC = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-muted-foreground">
-                    Som din AI-assistent kan jeg hjelpe deg med:
+                    {user ? `Som din AI-assistent kan jeg hjelpe deg, ${user.givenName}, med:` : 'Som din AI-assistent kan jeg hjelpe deg med:'}
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -263,7 +269,7 @@ const Index: React.FC = () => {
                       onClick={() => setActiveTab('velferdsteknologi')}
                       className="bg-tech-blue hover:bg-tech-blue/90 text-white"
                     >
-                      Start Veiledning →
+                      {user ? `Start Veiledning for ${user.givenName} →` : 'Start Veiledning →'}
                     </Button>
                   </div>
                 </CardContent>

@@ -96,6 +96,24 @@ const Login: React.FC = () => {
                 🔧 Demo Mode
               </Badge>
             </div>
+            
+            {/* Sjekk om bruker allerede er logget inn */}
+            {localStorage.getItem('demoUserData') && (
+              <div className="bg-tech-green/10 border border-tech-green/20 rounded-lg p-4 mt-4">
+                <p className="text-tech-green font-medium">
+                  🎉 Du er allerede logget inn! 
+                  <br />
+                  <span className="text-sm">
+                    Klikk <button 
+                      onClick={() => window.location.href = '/'} 
+                      className="underline hover:text-tech-green/80"
+                    >
+                      her
+                    </button> for å gå til dashboard
+                    </span>
+                </p>
+              </div>
+            )}
           </div>
         </CardHeader>
         <CardContent className="space-y-6 p-4 sm:p-6">
