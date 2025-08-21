@@ -18,9 +18,18 @@ const Login: React.FC = () => {
     department: '',
     privacyConsent: false
   });
+  
+  const [currentStep, setCurrentStep] = useState(0);
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // Gå til neste steg hvis feltet er fylt ut (unntatt privacy consent)
+    if (value && field !== 'privacyConsent' && currentStep < 5) {
+      setTimeout(() => {
+        setCurrentStep(prev => prev + 1);
+      }, 500); // 500ms forsinkelse for smooth overgang
+    }
   };
 
   const handleLogin = async () => {
@@ -37,6 +46,15 @@ const Login: React.FC = () => {
   };
 
   const isFormValid = formData.name && formData.email && formData.role && formData.workplace && formData.department && formData.privacyConsent;
+  
+  const formSteps = [
+    { field: 'name', label: 'Navn', placeholder: 'Ditt navn', type: 'text' },
+    { field: 'email', label: 'E-postadresse', placeholder: 'din.epost@eksempel.no', type: 'email' },
+    { field: 'role', label: 'Rolle', placeholder: 'Velg din rolle', type: 'select' },
+    { field: 'workplace', label: 'Hvor jobber du?', placeholder: 'Navn på arbeidsplass', type: 'text' },
+    { field: 'department', label: 'Avdeling/Seksjon', placeholder: 'F.eks. Omsorg, Sykepleie, IT', type: 'text' },
+    { field: 'privacyConsent', label: 'Personvern og databehandling', type: 'privacy' }
+  ];
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-secondary to-accent p-4 sm:p-6">
@@ -70,124 +88,122 @@ const Login: React.FC = () => {
           </div>
         </CardHeader>
         <CardContent className="space-y-6 p-4 sm:p-6">
-          {/* Login Form */}
+          {/* Progress Indicator */}
+          <div className="flex justify-center space-x-2 mb-6">
+            {formSteps.map((step, index) => (
+              <div
+                key={index}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  index <= currentStep 
+                    ? 'bg-tech-blue' 
+                    : 'bg-gray-300'
+                }`}
+              />
+            ))}
+          </div>
+          
+          {/* Dynamic Form Field */}
           <div className="space-y-4">
             <h3 className="text-xl font-semibold text-card-foreground text-center">
-              Fortell meg litt om deg selv
+              {formSteps[currentStep].label}
             </h3>
             
             <div className="space-y-4">
-              <div>
-                <Label htmlFor="name" className="text-sm font-medium text-card-foreground">
-                  Navn
-                </Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="Ditt navn"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  className="mt-1"
-                />
-              </div>
+              {formSteps[currentStep].type === 'text' && (
+                <div>
+                  <Label htmlFor={formSteps[currentStep].field} className="text-sm font-medium text-card-foreground">
+                    {formSteps[currentStep].label}
+                  </Label>
+                  <Input
+                    id={formSteps[currentStep].field}
+                    type="text"
+                    placeholder={formSteps[currentStep].placeholder}
+                    value={formData[formSteps[currentStep].field as keyof typeof formData] as string}
+                    onChange={(e) => handleInputChange(formSteps[currentStep].field, e.target.value)}
+                    className="mt-1"
+                    autoFocus
+                  />
+                </div>
+              )}
               
-              <div>
-                <Label htmlFor="email" className="text-sm font-medium text-card-foreground">
-                  E-postadresse
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="din.epost@eksempel.no"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  className="mt-1"
-                />
-              </div>
+              {formSteps[currentStep].type === 'email' && (
+                <div>
+                  <Label htmlFor={formSteps[currentStep].field} className="text-sm font-medium text-card-foreground">
+                    {formSteps[currentStep].label}
+                  </Label>
+                  <Input
+                    id={formSteps[currentStep].field}
+                    type="email"
+                    placeholder={formSteps[currentStep].placeholder}
+                    value={formData[formSteps[currentStep].field as keyof typeof formData] as string}
+                    onChange={(e) => handleInputChange(formSteps[currentStep].field, e.target.value)}
+                    className="mt-1"
+                    autoFocus
+                  />
+                </div>
+              )}
               
-              <div>
-                <Label htmlFor="role" className="text-sm font-medium text-card-foreground">
-                  Rolle
-                </Label>
-                <Select value={formData.role} onValueChange={(value) => handleInputChange('role', value)}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Velg din rolle" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="prosjektleder">Prosjektleder i velferdsteknologi</SelectItem>
-                    <SelectItem value="helsearbeider">Helsearbeider</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              {formSteps[currentStep].type === 'select' && (
+                <div>
+                  <Label htmlFor={formSteps[currentStep].field} className="text-sm font-medium text-card-foreground">
+                    {formSteps[currentStep].label}
+                  </Label>
+                  <Select 
+                    value={formData[formSteps[currentStep].field as keyof typeof formData] as string} 
+                    onValueChange={(value) => handleInputChange(formSteps[currentStep].field, value)}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder={formSteps[currentStep].placeholder} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="prosjektleder">Prosjektleder i velferdsteknologi</SelectItem>
+                      <SelectItem value="helsearbeider">Helsearbeider</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
               
-              <div>
-                <Label htmlFor="workplace" className="text-sm font-medium text-card-foreground">
-                  Hvor jobber du?
-                </Label>
-                <Input
-                  id="workplace"
-                  type="text"
-                  placeholder="Navn på arbeidsplass"
-                  value={formData.workplace}
-                  onChange={(e) => handleInputChange('workplace', e.target.value)}
-                  className="mt-1"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="department" className="text-sm font-medium text-card-foreground">
-                  Avdeling/Seksjon
-                </Label>
-                <Input
-                  id="department"
-                  type="text"
-                  placeholder="F.eks. Omsorg, Sykepleie, IT"
-                  value={formData.department}
-                  onChange={(e) => handleInputChange('department', e.target.value)}
-                  className="mt-1"
-                />
-              </div>
-              
-              {/* Privacy Policy Field */}
-              <div className="bg-gradient-to-r from-tech-green/5 to-tech-green/10 p-4 rounded-lg border border-tech-green/20">
-                <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-tech-green/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-tech-green text-sm">🔒</span>
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-card-foreground text-sm mb-2">
-                      Personvern og databehandling
-                    </h4>
-                    <p className="text-xs text-muted-foreground mb-3">
-                      Vi samler kun det som er nødvendig for kursene dine (navn, e-post, progresjon). 
-                      Alt lagres trygt i EU (Azure), kryptert og beskyttet. 
-                      Du har alltid rett til innsyn og sletting.
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <Button 
-                        type="button"
-                        variant="outline" 
-                        size="sm" 
-                        className="text-tech-green border-tech-green/30 hover:bg-tech-green/10 text-xs"
-                      >
-                        Les mer →
-                      </Button>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="privacy-consent"
-                          checked={formData.privacyConsent}
-                          onChange={(e) => handleInputChange('privacyConsent', e.target.checked)}
-                          className="w-4 h-4 text-tech-green border-gray-300 rounded focus:ring-tech-green focus:ring-offset-0"
-                        />
-                        <Label htmlFor="privacy-consent" className="text-xs text-muted-foreground">
-                          Jeg godtar personvernerklæringen
-                        </Label>
+              {formSteps[currentStep].type === 'privacy' && (
+                <div className="bg-gradient-to-r from-tech-green/5 to-tech-green/10 p-4 rounded-lg border border-tech-green/20">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-tech-green/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-tech-green text-sm">🔒</span>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-card-foreground text-sm mb-2">
+                        Personvern og databehandling
+                      </h4>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        Vi samler kun det som er nødvendig for kursene dine (navn, e-post, progresjon). 
+                        Alt lagres trygt i EU (Azure), kryptert og beskyttet. 
+                        Du har alltid rett til innsyn og sletting.
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <Button 
+                          type="button"
+                          variant="outline" 
+                          size="sm" 
+                          className="text-tech-green border-tech-green/30 hover:bg-tech-green/10 text-xs"
+                        >
+                          Les mer →
+                        </Button>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="privacy-consent"
+                            checked={formData.privacyConsent}
+                            onChange={(e) => handleInputChange('privacyConsent', e.target.checked)}
+                            className="w-4 h-4 text-tech-green border-gray-300 rounded focus:ring-tech-green focus:ring-offset-0"
+                          />
+                          <Label htmlFor="privacy-consent" className="text-xs text-muted-foreground">
+                            Jeg godtar personvernerklæringen
+                          </Label>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
           
