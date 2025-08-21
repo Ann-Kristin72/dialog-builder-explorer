@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import AulaNotice from './AulaNotice';
+
 
 const Login: React.FC = () => {
   const { login, isLoading } = useAuth();
@@ -218,8 +218,7 @@ const Login: React.FC = () => {
         </CardContent>
       </Card>
       
-      {/* Aula Notice - Privacy Policy */}
-      <AulaNotice />
+      {/* Privacy Policy er nå integrert i form-en */}
     </div>
   );
 };
