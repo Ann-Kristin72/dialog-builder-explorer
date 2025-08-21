@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 
 const Index: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('velkommen');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [showUpload, setShowUpload] = useState(false);
 
   const features = [
@@ -111,7 +111,7 @@ const Index: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-secondary via-background to-accent">
       {/* Header */}
-              <header className="bg-card shadow-card border-b">
+      <header className="bg-card shadow-card border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-3">
@@ -147,11 +147,15 @@ const Index: React.FC = () => {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-                      <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="velkommen" className="flex items-center space-x-2">
-                <MessageSquare className="w-4 h-4" />
-                <span>Velkommen</span>
-              </TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="dashboard" className="flex items-center space-x-2">
+              <MessageSquare className="w-4 h-4" />
+              <span>Dashboard</span>
+            </TabsTrigger>
+            <TabsTrigger value="velferdsteknologi" className="flex items-center space-x-2">
+              <Brain className="w-4 h-4" />
+              <span>Velferdsteknologi</span>
+            </TabsTrigger>
             <TabsTrigger value="features" className="flex items-center space-x-2">
               <Zap className="w-4 h-4" />
               <span>Funksjoner</span>
@@ -162,89 +166,205 @@ const Index: React.FC = () => {
             </TabsTrigger>
           </TabsList>
 
-          {/* Velkommen Tab */}
-          <TabsContent value="velkommen" className="space-y-6">
-            <div className="text-center space-y-6">
-              {/* TeknoTassen velkomst */}
-              <div className="flex items-center justify-center space-x-4 mb-8">
-                <div className="w-20 h-20 rounded-full overflow-hidden shadow-avatar">
+          {/* Dashboard Tab - Personlig for innloggede brukere */}
+          <TabsContent value="dashboard" className="space-y-6">
+            <div className="space-y-6">
+              {/* TeknoTassen velkomst for innloggede brukere */}
+              <div className="flex items-center space-x-6 mb-8">
+                <div className="w-24 h-24 rounded-full overflow-hidden shadow-avatar border-4 border-white">
                   <img 
-                    src="/src/assets/teknotassen-avatar.jpg" 
+                    src="/teknotassen-avatar.jpg" 
                     alt="TeknoTassen"
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="text-left">
+                <div className="flex-1">
                   <h2 className="text-3xl font-bold text-card-foreground">
-                    Hei, jeg heter TeknoTassen! 👋
+                    Velkommen tilbake! 🎉
                   </h2>
-                  <p className="text-lg text-muted-foreground max-w-2xl">
-                    Jeg er din vennlige AI-assistent som skal hjelpe deg med teknologi og velferdsteknologi.
-                    Men først trenger jeg at du logger deg inn - da sees vi på innsiden!
+                  <p className="text-lg text-muted-foreground max-w-3xl">
+                    Jeg er TeknoTassen, din personlige AI-assistent for velferdsteknologi. 
+                    Jeg er her for å veilede deg gjennom hele prosessen med implementering av velferdsteknologi.
                   </p>
                 </div>
               </div>
 
-              {/* Onboarding punkter */}
-              <div className="bg-gradient-to-r from-primary/5 to-tech-blue/5 p-6 rounded-xl border border-primary/20">
-                <h3 className="text-xl font-semibold text-card-foreground mb-4">
-                  Hva kan jeg hjelpe deg med? 🚀
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
-                  <div className="flex items-start space-x-3">
-                    <div className="w-8 h-8 bg-tech-blue/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <span className="text-tech-blue text-lg">🏥</span>
+              {/* Quick Actions */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <Card className="hover:shadow-md transition-shadow cursor-pointer border-tech-blue/20 hover:border-tech-blue/40">
+                  <CardContent className="p-4 text-center">
+                    <div className="w-12 h-12 bg-tech-blue/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <span className="text-tech-blue text-2xl">🏥</span>
                     </div>
-                    <div>
-                      <h4 className="font-semibold text-card-foreground">HEPRO Respons</h4>
-                      <p className="text-sm text-muted-foreground">Implementering og bruk av HEPRO Respons systemet</p>
+                    <h3 className="font-semibold text-card-foreground mb-2">HEPRO Respons</h3>
+                    <p className="text-sm text-muted-foreground">Implementering og bruk</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="hover:shadow-md transition-shadow cursor-pointer border-tech-green/20 hover:border-tech-green/40">
+                  <CardContent className="p-4 text-center">
+                    <div className="w-12 h-12 bg-tech-green/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <span className="text-tech-green text-2xl">🌙</span>
                     </div>
-                  </div>
-                  
-                  <div className="flex items-start space-x-3">
-                    <div className="w-8 h-8 bg-tech-green/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <span className="text-tech-green text-lg">🌙</span>
+                    <h3 className="font-semibold text-card-foreground mb-2">Digital Nattilsyn</h3>
+                    <p className="text-sm text-muted-foreground">Digitale løsninger</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="hover:shadow-md transition-shadow cursor-pointer border-tech-orange/20 hover:border-tech-orange/40">
+                  <CardContent className="p-4 text-center">
+                    <div className="w-12 h-12 bg-tech-orange/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <span className="text-tech-orange text-2xl">💙</span>
                     </div>
-                    <div>
-                      <h4 className="font-semibold text-card-foreground">Digital Nattilsyn</h4>
-                      <p className="text-sm text-muted-foreground">Digitale løsninger for nattilsyn og overvåking</p>
+                    <h3 className="font-semibold text-card-foreground mb-2">Varda Care</h3>
+                    <p className="text-sm text-muted-foreground">Opplæring og bruk</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="hover:shadow-md transition-shadow cursor-pointer border-primary/20 hover:border-primary/40">
+                  <CardContent className="p-4 text-center">
+                    <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <span className="text-primary text-2xl">📚</span>
                     </div>
-                  </div>
-                  
-                  <div className="flex items-start space-x-3">
-                    <div className="w-8 h-8 bg-tech-orange/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <span className="text-tech-orange text-lg">💙</span>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-card-foreground">Varda Care</h4>
-                      <p className="text-sm text-muted-foreground">Opplæring og bruk av Varda Care systemet</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start space-x-3">
-                    <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <span className="text-primary text-lg">📚</span>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-card-foreground">Aula</h4>
-                      <p className="text-sm text-muted-foreground">Læringsplattform og kursadministrasjon</p>
-                    </div>
-                  </div>
-                </div>
+                    <h3 className="font-semibold text-card-foreground mb-2">Aula</h3>
+                    <p className="text-sm text-muted-foreground">Læringsplattform</p>
+                  </CardContent>
+                </Card>
               </div>
 
-              {/* Login CTA */}
+              {/* Personal Guidance Section */}
+              <Card className="bg-gradient-to-r from-tech-blue/5 to-tech-green/5 border-tech-blue/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2 text-tech-blue">
+                    <Brain className="w-5 h-5" />
+                    <span>Personlig Veiledning</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-muted-foreground">
+                    Som din AI-assistent kan jeg hjelpe deg med:
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <h4 className="font-semibold text-tech-blue">📋 DPIA & ROS Analyse</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Veiledning gjennom Data Protection Impact Assessment og Risk & Opportunity Screening
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="font-semibold text-tech-green">👥 Pasientbehov & Opplæring</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Kartlegging av pasientbehov og riktig opplæring til ansatte på riktig tid
+                      </p>
+                    </div>
+                  </div>
+                  <div className="pt-2">
+                    <Button 
+                      onClick={() => setActiveTab('velferdsteknologi')}
+                      className="bg-tech-blue hover:bg-tech-blue/90 text-white"
+                    >
+                      Start Veiledning →
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Velferdsteknologi Tab - Ny tab for spesifikk veiledning */}
+          <TabsContent value="velferdsteknologi" className="space-y-6">
+            <div className="space-y-6">
               <div className="text-center space-y-4">
-                <p className="text-lg text-muted-foreground">
-                  Logg inn for å komme i gang med TeknoTassen! 🔐
+                <h2 className="text-3xl font-bold text-card-foreground">
+                  Velferdsteknologi Veiledning 🚀
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                  La meg veilede deg gjennom hele prosessen med implementering av velferdsteknologi.
+                  Vi starter med de viktigste stegene og bygger videre derfra.
                 </p>
-                <Button 
-                  onClick={() => window.location.href = '/login'}
-                  className="bg-gradient-to-r from-primary to-tech-blue hover:from-primary/90 hover:to-tech-blue/90 text-primary-foreground shadow-soft px-8 py-3 text-lg"
-                >
-                  Logg inn med TeknoTassen
-                </Button>
               </div>
+
+              {/* Step-by-step guidance */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="border-tech-blue/20">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2 text-tech-blue">
+                      <span className="text-2xl">📋</span>
+                      <span>DPIA & ROS Analyse</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      Data Protection Impact Assessment og Risk & Opportunity Screening er grunnleggende for sikker implementering.
+                    </p>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      <li>• Identifiser personopplysninger som behandles</li>
+                      <li>• Vurder risikoer og muligheter</li>
+                      <li>• Dokumenter beslutninger og tiltak</li>
+                    </ul>
+                    <Button className="w-full mt-3 bg-tech-blue hover:bg-tech-blue/90 text-white">
+                      Start DPIA →
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-tech-green/20">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2 text-tech-green">
+                      <span className="text-2xl">👥</span>
+                      <span>Pasientbehov & Opplæring</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      Kartlegg pasientbehov og planlegg riktig opplæring til ansatte på riktig tid.
+                    </p>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      <li>• Analyser eksisterende arbeidsflyt</li>
+                      <li>• Identifiser opplæringsbehov</li>
+                      <li>• Planlegg implementeringsfase</li>
+                    </ul>
+                    <Button className="w-full mt-3 bg-tech-green hover:bg-tech-green/90 text-white">
+                      Start Kartlegging →
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Implementation roadmap */}
+              <Card className="bg-gradient-to-r from-primary/5 to-tech-blue/5 border-primary/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2 text-primary">
+                    <Brain className="w-5 h-5" />
+                    <span>Implementeringsplan</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-tech-blue/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <span className="text-tech-blue text-2xl">1️⃣</span>
+                      </div>
+                      <h4 className="font-semibold text-card-foreground">Planlegging</h4>
+                      <p className="text-sm text-muted-foreground">DPIA, ROS, behovsanalyse</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-tech-green/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <span className="text-tech-green text-2xl">2️⃣</span>
+                      </div>
+                      <h4 className="font-semibold text-card-foreground">Implementering</h4>
+                      <p className="text-sm text-muted-foreground">Fasevis utrulling</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-tech-orange/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <span className="text-tech-orange text-2xl">3️⃣</span>
+                      </div>
+                      <h4 className="font-semibold text-card-foreground">Opplæring</h4>
+                      <p className="text-sm text-muted-foreground">Ansatte og brukere</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
 
