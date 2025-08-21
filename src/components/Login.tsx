@@ -53,11 +53,11 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-secondary to-accent p-4 sm:p-6">
-      <Card className="w-full max-w-xl shadow-card">
+      <Card className="w-full max-w-2xl shadow-card">
         <CardHeader className="text-center p-4 sm:p-6">
-          <div className="mx-auto mb-6">
-            {/* TeknoTassen avatar */}
-            <div className="w-32 h-32 rounded-full overflow-hidden shadow-avatar border-4 border-white">
+          <div className="mx-auto mb-8">
+            {/* TeknoTassen avatar - mye større og mer tilstede */}
+            <div className="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-full overflow-hidden shadow-avatar border-4 border-white transform hover:scale-105 transition-transform duration-300">
               <img 
                 src="/teknotassen-avatar.jpg" 
                 alt="TeknoTassen AI Assistent"
@@ -233,25 +233,37 @@ const Login: React.FC = () => {
             </div>
           </div>
           
-          <Button
-            onClick={handleLogin}
-            disabled={isLoading || !isFormValid}
-            className="w-full bg-gradient-to-r from-primary to-tech-blue hover:from-primary/90 hover:to-tech-blue/90 text-primary-foreground font-semibold py-3 px-6 rounded-lg transition-smooth transform hover:scale-105 shadow-soft disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? (
-              <div className="flex items-center space-x-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                <span>Logger inn...</span>
+          {/* Logg inn knapp - vises når alle feltene er fylt ut */}
+          {isFormValid && (
+            <div className="space-y-4">
+              <div className="text-center">
+                <div className="inline-flex items-center space-x-2 bg-tech-green/10 text-tech-green px-4 py-2 rounded-full border border-tech-green/20">
+                  <span className="text-sm">✅</span>
+                  <span className="text-sm font-medium">Alle feltene er fylt ut!</span>
+                </div>
               </div>
-            ) : (
-                          <div className="flex items-center space-x-2">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span>Logg inn</span>
+              
+              <Button
+                onClick={handleLogin}
+                disabled={isLoading}
+                className="w-full bg-gradient-to-r from-primary to-tech-blue hover:from-primary/90 hover:to-tech-blue/90 text-primary-foreground font-semibold py-3 px-6 rounded-lg transition-smooth transform hover:scale-105 shadow-soft"
+              >
+                {isLoading ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    <span>Logger inn...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center space-x-2">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span>Logg inn</span>
+                  </div>
+                )}
+              </Button>
             </div>
-            )}
-          </Button>
+          )}
           
           <div className="text-center text-xs text-muted-foreground mt-4">
             <p>🔧 Demo mode: Fyll ut alle 6 feltene for å aktivere "Logg inn"</p>
