@@ -25,10 +25,18 @@ interface ChatInterfaceProps {
 }
 
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
+  // Dynamisk hilsen basert på tid på døgnet
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'God morgen';
+    if (hour < 17) return 'God ettermiddag';
+    return 'God kveld';
+  };
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: 'Hei! Jeg er TeknoTassen, din AI-assistent for teknisk kunnskap. Hvordan kan jeg hjelpe deg i dag?',
+      content: `${getGreeting()}! Hva kan jeg hjelpe deg med?`,
       role: 'assistant',
       timestamp: new Date(),
     }
@@ -38,15 +46,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [selectedTechnology, setSelectedTechnology] = useState<string>('all');
-
-  const technologies = [
-    { id: 'all', name: 'Alle teknologier', color: 'bg-blue-100 text-blue-800' },
-    { id: 'react', name: 'React', color: 'bg-cyan-100 text-cyan-800' },
-    { id: 'node', name: 'Node.js', color: 'bg-green-100 text-green-800' },
-    { id: 'azure', name: 'Azure', color: 'bg-blue-100 text-blue-800' },
-    { id: 'postgres', name: 'PostgreSQL', color: 'bg-purple-100 text-purple-800' },
-    { id: 'ai', name: 'AI/ML', color: 'bg-orange-100 text-orange-800' },
-  ];
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -175,21 +174,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
         )}
       </div>
 
-      {/* Technology Filter */}
-      <div className="p-4 bg-muted border-b">
-        <div className="flex flex-wrap gap-2">
-          {technologies.map((tech) => (
-            <Badge
-              key={tech.id}
-              variant={selectedTechnology === tech.id ? 'default' : 'secondary'}
-              className={`cursor-pointer hover:opacity-80 ${tech.color}`}
-              onClick={() => setSelectedTechnology(tech.id)}
-            >
-              {tech.name}
-            </Badge>
-          ))}
-        </div>
-      </div>
+
 
       {/* Messages */}
       <ScrollArea className="flex-1 p-4">
