@@ -119,10 +119,44 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
     } catch (error) {
       console.error('Error sending message:', error);
       
-      // Fallback response for demo
+      // Smart demo responses for TeknoTassen
+      const demoResponses = [
+        {
+          keywords: ['dpia', 'personvern', 'gdpr', 'data protection'],
+          response: 'For DPIA (Data Protection Impact Assessment) anbefaler jeg at du starter med å identifisere hvilke personopplysninger som behandles. Bruk planleggingsverktøyet under Velferdsteknologi-tabben for å strukturere prosessen. 📋'
+        },
+        {
+          keywords: ['ros', 'risiko', 'opportunity', 'screening'],
+          response: 'ROS (Risk & Opportunity Screening) er viktig for å vurdere både risikoer og muligheter. Start med å definere risikonivået og velg beregningsmetode. Verktøyet finner du under planleggingsseksjonen. 🔍'
+        },
+        {
+          keywords: ['behovsanalyse', 'pasient', 'ansatt', 'opplæring'],
+          response: 'Behovsanalyse er grunnleggende! Fokus på både pasient- og ansattbehov. Bruk verktøyet for å velge fokusområde og metode. Dette er nøkkelen til vellykket implementering. 🎯'
+        },
+        {
+          keywords: ['velferdsteknologi', 'implementering', 'start'],
+          response: 'Velkommen til velferdsteknologi! Start med planleggingsfasen (DPIA, ROS, behovsanalyse) under Velferdsteknologi-tabben. Jeg kan veilede deg gjennom hele prosessen. 🚀'
+        },
+        {
+          keywords: ['hepro', 'digital nattilsyn', 'varda care', 'aula'],
+          response: 'Flott at du er interessert i disse områdene! HEPRO Respons, Digital Nattilsyn, Varda Care og Aula er alle viktige komponenter. La oss starte med planlegging og så kan vi gå videre til implementering. 💪'
+        }
+      ];
+
+      // Find best matching response
+      const userQuery = inputValue.toLowerCase();
+      let bestResponse = 'Hei! Jeg er TeknoTassen, din AI-assistent for velferdsteknologi. Jeg kan hjelpe deg med DPIA, ROS, behovsanalyse og implementering. Hva lurer du på? 🤖✨';
+      
+      for (const demoResponse of demoResponses) {
+        if (demoResponse.keywords.some(keyword => userQuery.includes(keyword))) {
+          bestResponse = demoResponse.response;
+          break;
+        }
+      }
+
       const fallbackMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: 'Beklager, jeg kan ikke koble til backend-systemet akkurat nå. Dette er en demo-versjon. I produksjon ville jeg ha koblet til RAG-systemet med pgvector og LangChain.',
+        content: bestResponse,
         role: 'assistant',
         timestamp: new Date(),
       };
@@ -163,6 +197,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
           <div>
             <h1 className="text-xl font-semibold text-card-foreground">TeknoTassen AI</h1>
             <p className="text-sm text-muted-foreground">Teknisk kunnskapsassistent</p>
+            <Badge variant="secondary" className="bg-tech-green/10 text-tech-green border-tech-green/20 text-xs mt-1">
+              🔧 Demo Mode - Smart Responses
+            </Badge>
           </div>
         </div>
         
