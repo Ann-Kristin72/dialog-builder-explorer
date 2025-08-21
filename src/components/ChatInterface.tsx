@@ -167,25 +167,52 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
       } else if (userQuery.includes('varda') && (userQuery.includes('opplæring') || userQuery.includes('implementering'))) {
         bestResponse = '**Varda Care - Opplæring og Implementering:** 💙\n\n**Fase 1: Forberedelse**\n• Identifiser opplæringsbehov hos ansatte\n• Velg riktig teknologi for organisasjonen\n• Planlegg opplæringsprogram\n\n**Fase 2: Implementering**\n• Start med en pilotgruppe\n• Opprett brukervennlige prosedyrer\n• Gjennomfør opplæring i små grupper\n\n**Fase 3: Oppfølging**\n• Kontinuerlig støtte og veiledning\n• Regelmessig evaluering av bruk\n• Justering av prosedyrer etter behov\n\n**Start med planleggingsverktøyene** under Velferdsteknologi-tabben! 🎯';
       } else {
-        // Check uploaded documents first
+        // Check uploaded documents first with improved search
         const uploadedDocs = JSON.parse(localStorage.getItem('uploadedDocuments') || '[]');
         let documentResponse = '';
+        let bestMatchScore = 0;
+        let bestMatchDoc = null;
         
-        for (const doc of uploadedDocs) {
-          if (doc.content.toLowerCase().includes(userQuery.toLowerCase())) {
-            const relevantContent = doc.content
-              .toLowerCase()
-              .split('\n')
-              .filter(line => line.includes(userQuery.toLowerCase()))
-              .slice(0, 3)
-              .join('\n');
+        if (uploadedDocs.length > 0) {
+          console.log('Searching in uploaded documents:', uploadedDocs.length, 'documents');
+          
+          for (const doc of uploadedDocs) {
+            const docContent = doc.content.toLowerCase();
+            const queryWords = userQuery.toLowerCase().split(' ').filter(word => word.length > 2);
+            let matchScore = 0;
+            let relevantLines = [];
             
-            documentResponse = `**Fra opplastet dokument "${doc.title}":** 📚\n\n${relevantContent}\n\n*Dette er basert på dokumentet du lastet opp. Vil du vite mer om noe spesifikt?*`;
-            break;
+            // Calculate match score based on word frequency
+            for (const word of queryWords) {
+              if (docContent.includes(word)) {
+                matchScore += 1;
+                // Find lines containing this word
+                const lines = doc.content.split('\n');
+                for (const line of lines) {
+                  if (line.toLowerCase().includes(word) && line.trim().length > 10) {
+                    relevantLines.push(line.trim());
+                  }
+                }
+              }
+            }
+            
+            // If we have a good match
+            if (matchScore > 0 && matchScore > bestMatchScore) {
+              bestMatchScore = matchScore;
+              bestMatchDoc = doc;
+              
+              // Get most relevant content (up to 5 lines)
+              const uniqueLines = [...new Set(relevantLines)].slice(0, 5);
+              const relevantContent = uniqueLines.join('\n');
+              
+              documentResponse = `**Fra opplastet dokument "${doc.title}":** 📚\n\n${relevantContent}\n\n*Dette er basert på dokumentet du lastet opp. Match-score: ${matchScore}/${queryWords.length} ord.*`;
+            }
           }
+          
+          console.log('Best document match:', bestMatchDoc?.title, 'Score:', bestMatchScore);
         }
         
-        if (documentResponse) {
+        if (documentResponse && bestMatchScore > 0) {
           bestResponse = documentResponse;
         } else {
           // Standard keyword matching

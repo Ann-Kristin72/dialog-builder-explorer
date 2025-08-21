@@ -431,6 +431,25 @@ const Index: React.FC = () => {
                             </>
                           )}
                         </Button>
+                        
+                        {/* Show uploaded documents count */}
+                        <div className="text-center">
+                          <p className="text-xs text-tech-green/70">
+                            📚 Opplastede dokumenter: {JSON.parse(localStorage.getItem('uploadedDocuments') || '[]').length}
+                          </p>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            className="text-xs text-tech-green/70 hover:text-tech-green mt-1"
+                            onClick={() => {
+                              const docs = JSON.parse(localStorage.getItem('uploadedDocuments') || '[]');
+                              console.log('Uploaded documents:', docs);
+                              alert(`Opplastede dokumenter:\n${docs.map((doc: any, i: number) => `${i+1}. ${doc.title} (${doc.content.length} tegn)`).join('\n')}`);
+                            }}
+                          >
+                            🔍 Se dokumenter
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
