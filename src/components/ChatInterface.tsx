@@ -130,13 +130,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
           if (imageMatch) {
             const altText = imageMatch[1] || 'Bilde';
             const imageUrl = imageMatch[2];
-            formatted += `🖼️ **${altText}**\n`;
-            formatted += `📷 ${imageUrl}\n\n`;
+            formatted += `🖼️ **${altText}**<br />📷 ${imageUrl}\n\n`;
           }
         } else if (line.match(/^https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp)/i)) {
           // Handle direct image URLs
-          formatted += `🖼️ **Bilde**\n`;
-          formatted += `📷 ${line}\n\n`;
+          formatted += `🖼️ **Bilde**<br />📷 ${line}\n\n`;
         } else if (line.match(/^https?:\/\/[^\s]+/)) {
           // Handle other URLs
           formatted += `🔗 ${line}\n`;
@@ -293,6 +291,15 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
       
       console.log('Response source:', responseSource);
       console.log('Final response length:', bestResponse.length);
+      
+      // Debug: Check if response contains image patterns
+      if (bestResponse.includes('🖼️') || bestResponse.includes('📷')) {
+        console.log('Image patterns found in response:', {
+          hasImageIcon: bestResponse.includes('🖼️'),
+          hasCameraIcon: bestResponse.includes('📷'),
+          responsePreview: bestResponse.substring(0, 200)
+        });
+      }
 
       const fallbackMessage: Message = {
         id: (Date.now() + 1).toString(),
