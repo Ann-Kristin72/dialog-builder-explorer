@@ -110,7 +110,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
     return sections;
   };
   
-  // Format Markdown section for display
+  // Format Markdown section for display with image support
   const formatMarkdownSection = (section: {level: number, title: string, content: string}) => {
     const headerPrefix = '#'.repeat(section.level);
     let formatted = `${headerPrefix} ${section.title}\n\n`;
@@ -124,6 +124,22 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
           formatted += `• ${line.substring(line.indexOf(' ') + 1)}\n`;
         } else if (line.match(/^\d+\.\s/)) {
           formatted += `${line}\n`;
+        } else if (line.match(/^!\[([^\]]*)\]\(([^)]+)\)/)) {
+          // Handle Markdown images: ![alt text](url)
+          const imageMatch = line.match(/^!\[([^\]]*)\]\(([^)]+)\)/);
+          if (imageMatch) {
+            const altText = imageMatch[1] || 'Bilde';
+            const imageUrl = imageMatch[2];
+            formatted += `🖼️ **${altText}**\n`;
+            formatted += `📷 ${imageUrl}\n\n`;
+          }
+        } else if (line.match(/^https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp)/i)) {
+          // Handle direct image URLs
+          formatted += `🖼️ **Bilde**\n`;
+          formatted += `📷 ${line}\n\n`;
+        } else if (line.match(/^https?:\/\/[^\s]+/)) {
+          // Handle other URLs
+          formatted += `🔗 ${line}\n`;
         } else {
           formatted += `${line}\n`;
         }
@@ -312,11 +328,13 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
   };
 
   const formatMessage = (content: string) => {
-    // Simple markdown-like formatting
+    // Enhanced markdown-like formatting with image support
     return content
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
       .replace(/`(.*?)`/g, '<code class="bg-gray-100 px-1 py-0.5 rounded text-sm">$1</code>')
+      .replace(/🖼️ \*\*(.*?)\*\*<br \/>📷 (https?:\/\/[^<]+)/g, '<div class="my-3"><strong>$1</strong><br/><img src="$2" alt="$1" class="max-w-full h-auto rounded-lg shadow-md border border-gray-200" onerror="this.style.display=\'none\'" /></div>')
+      .replace(/📷 (https?:\/\/[^<]+)/g, '<div class="my-3"><img src="$1" alt="Bilde" class="max-w-full h-auto rounded-lg shadow-md border border-gray-200" onerror="this.style.display=\'none\'" /></div>')
       .replace(/\n/g, '<br />');
   };
 
