@@ -167,11 +167,33 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
       } else if (userQuery.includes('varda') && (userQuery.includes('opplæring') || userQuery.includes('implementering'))) {
         bestResponse = '**Varda Care - Opplæring og Implementering:** 💙\n\n**Fase 1: Forberedelse**\n• Identifiser opplæringsbehov hos ansatte\n• Velg riktig teknologi for organisasjonen\n• Planlegg opplæringsprogram\n\n**Fase 2: Implementering**\n• Start med en pilotgruppe\n• Opprett brukervennlige prosedyrer\n• Gjennomfør opplæring i små grupper\n\n**Fase 3: Oppfølging**\n• Kontinuerlig støtte og veiledning\n• Regelmessig evaluering av bruk\n• Justering av prosedyrer etter behov\n\n**Start med planleggingsverktøyene** under Velferdsteknologi-tabben! 🎯';
       } else {
-        // Standard keyword matching
-        for (const demoResponse of demoResponses) {
-          if (demoResponse.keywords.some(keyword => userQuery.includes(keyword))) {
-            bestResponse = demoResponse.response;
+        // Check uploaded documents first
+        const uploadedDocs = JSON.parse(localStorage.getItem('uploadedDocuments') || '[]');
+        let documentResponse = '';
+        
+        for (const doc of uploadedDocs) {
+          if (doc.content.toLowerCase().includes(userQuery.toLowerCase())) {
+            const relevantContent = doc.content
+              .toLowerCase()
+              .split('\n')
+              .filter(line => line.includes(userQuery.toLowerCase()))
+              .slice(0, 3)
+              .join('\n');
+            
+            documentResponse = `**Fra opplastet dokument "${doc.title}":** 📚\n\n${relevantContent}\n\n*Dette er basert på dokumentet du lastet opp. Vil du vite mer om noe spesifikt?*`;
             break;
+          }
+        }
+        
+        if (documentResponse) {
+          bestResponse = documentResponse;
+        } else {
+          // Standard keyword matching
+          for (const demoResponse of demoResponses) {
+            if (demoResponse.keywords.some(keyword => userQuery.includes(keyword))) {
+              bestResponse = demoResponse.response;
+              break;
+            }
           }
         }
       }

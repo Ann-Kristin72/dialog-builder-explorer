@@ -24,13 +24,68 @@ import {
   FileText,
   Play,
   Mic,
-  Volume2
+  Volume2,
+  Loader2
 } from 'lucide-react';
 
 const Index: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showUpload, setShowUpload] = useState(false);
+  const [documentTitle, setDocumentTitle] = useState('');
+  const [documentDescription, setDocumentDescription] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const { user } = useAuth();
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      // Auto-fill title from filename
+      const fileName = file.name.replace(/\.[^/.]+$/, "");
+      setDocumentTitle(fileName);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile || !documentTitle.trim()) {
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      const text = await selectedFile.text();
+      
+      // For demo purposes, we'll store in localStorage
+      const documentData = {
+        title: documentTitle,
+        description: documentDescription,
+        content: text,
+        created_at: new Date().toISOString(),
+      };
+
+      // Store in localStorage for demo
+      const existingDocs = JSON.parse(localStorage.getItem('uploadedDocuments') || '[]');
+      existingDocs.push(documentData);
+      localStorage.setItem('uploadedDocuments', JSON.stringify(existingDocs));
+
+      // Reset form
+      setSelectedFile(null);
+      setDocumentTitle('');
+      setDocumentDescription('');
+      const fileInput = document.getElementById('ai-file-upload') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
+
+      // Show success message
+      alert(`Dokument "${documentTitle}" er lastet opp! TeknoTassen kan nå svare basert på innholdet.`);
+    } catch (error) {
+      console.error('Error reading file:', error);
+      alert('Feil ved opplasting av fil. Prøv igjen!');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const features = [
     {
@@ -522,7 +577,7 @@ const Index: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* File Upload for AI Analysis - Lovable.dev Integration */}
+                  {/* File Upload for AI Analysis - Functional Integration */}
                   <div className="bg-gradient-to-r from-tech-orange/5 to-tech-blue/5 border border-tech-orange/20 rounded-lg p-4">
                     <div className="flex items-center space-x-3 mb-4">
                       <div className="w-10 h-10 bg-tech-orange/20 rounded-full flex items-center justify-center">
@@ -541,6 +596,8 @@ const Index: React.FC = () => {
                           <Input 
                             placeholder="F.eks. HEPRO Respons Guide, Digital Tilsyn Prosedyre"
                             className="border-tech-orange/20 focus:border-tech-orange"
+                            value={documentTitle}
+                            onChange={(e) => setDocumentTitle(e.target.value)}
                           />
                         </div>
                         <div className="space-y-2">
@@ -548,6 +605,8 @@ const Index: React.FC = () => {
                           <Input 
                             placeholder="Kort beskrivelse av dokumentet"
                             className="border-tech-orange/20 focus:border-tech-orange"
+                            value={documentDescription}
+                            onChange={(e) => setDocumentDescription(e.target.value)}
                           />
                         </div>
                       </div>
@@ -557,7 +616,7 @@ const Index: React.FC = () => {
                         <div className="border-2 border-dashed border-tech-orange/30 rounded-lg p-6 text-center hover:border-tech-orange/50 transition-colors">
                           <Upload className="w-8 h-8 text-tech-orange mx-auto mb-2" />
                           <p className="text-sm text-muted-foreground mb-2">
-                            Dra og slipp filer hit, eller klikk for å velge
+                            {selectedFile ? `Valgt: ${selectedFile.name}` : 'Dra og slipp filer hit, eller klikk for å velge'}
                           </p>
                           <p className="text-xs text-muted-foreground">
                             Støtter: .txt, .md, .pdf, .docx
@@ -567,6 +626,7 @@ const Index: React.FC = () => {
                             accept=".txt,.md,.pdf,.docx"
                             className="hidden"
                             id="ai-file-upload"
+                            onChange={handleFileSelect}
                           />
                           <Button 
                             variant="outline" 
@@ -580,11 +640,28 @@ const Index: React.FC = () => {
                       </div>
 
                       <div className="flex space-x-3">
-                        <Button className="flex-1 bg-tech-orange hover:bg-tech-orange/90 text-white">
-                          <Upload className="w-4 h-4 mr-2" />
-                          Last opp til AI
+                        <Button 
+                          className="flex-1 bg-tech-orange hover:bg-tech-orange/90 text-white"
+                          onClick={handleUpload}
+                          disabled={!selectedFile || !documentTitle.trim() || isUploading}
+                        >
+                          {isUploading ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Laster opp...
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="w-4 h-4 mr-2" />
+                              Last opp til AI
+                            </>
+                          )}
                         </Button>
-                        <Button variant="outline" className="border-tech-orange/30 text-tech-orange hover:bg-tech-orange/10">
+                        <Button 
+                          variant="outline" 
+                          className="border-tech-orange/30 text-tech-orange hover:bg-tech-orange/10"
+                          onClick={() => setShowUpload(true)}
+                        >
                           <FileText className="w-4 h-4 mr-2" />
                           Se opplastede filer
                         </Button>
