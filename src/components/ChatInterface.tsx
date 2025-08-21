@@ -204,147 +204,95 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
     } catch (error) {
       console.error('Error sending message:', error);
       
-      // Smart demo responses for TeknoTassen with MD content integration
-      const demoResponses = [
-        {
-          keywords: ['dpia', 'personvern', 'gdpr', 'data protection'],
-          response: 'For DPIA (Data Protection Impact Assessment) anbefaler jeg at du starter med å identifisere hvilke personopplysninger som behandles. Bruk planleggingsverktøyet under Velferdsteknologi-tabben for å strukturere prosessen. 📋'
-        },
-        {
-          keywords: ['ros', 'risiko', 'opportunity', 'screening'],
-          response: 'ROS (Risk & Opportunity Screening) er viktig for å vurdere både risikoer og muligheter. Start med å definere risikonivået og velg beregningsmetode. Verktøyet finner du under planleggingsseksjonen. 🔍'
-        },
-        {
-          keywords: ['behovsanalyse', 'pasient', 'ansatt', 'opplæring'],
-          response: 'Behovsanalyse er grunnleggende! Fokus på både pasient- og ansattbehov. Bruk verktøyet for å velge fokusområde og metode. Dette er nøkkelen til vellykket implementering. 🎯'
-        },
-        {
-          keywords: ['velferdsteknologi', 'implementering', 'start'],
-          response: 'Velkommen til velferdsteknologi! Start med planleggingsfasen (DPIA, ROS, behovsanalyse) under Velferdsteknologi-tabben. Jeg kan veilede deg gjennom hele prosessen. 🚀'
-        },
-        {
-          keywords: ['hepro', 'hepro respons'],
-          response: 'HEPRO Respons er et avansert pasientvarslingssystem! 🏥\n\n**Hovedfunksjoner:**\n• Pasientovervåking med kontinuerlig overvåking av vitale tegn\n• Automatiske varsler ved avvik\n• Real-time dataoppdateringer\n\n**Implementering (3 steg):**\n1️⃣ **Systemoppsett**: Installer server, konfigurer database, sett opp Azure AD\n2️⃣ **Brukeropprettelse**: Opprett brukere i Azure AD, tildel roller\n3️⃣ **Pasientregistrering**: Registrer pasienter, konfigurer overvåking\n\n**Beste praksis**: Test grundig, opprett prosedyrer, opplær brukere, regelmessig backup.\n\nVil du at jeg skal veilede deg gjennom et spesifikt steg? 📋'
-        },
-        {
-          keywords: ['digital tilsyn', 'digitalt tilsyn', 'nattilsyn', 'kamera'],
-          response: 'Digitalt tilsyn er en enkel og ressursbesparende måte å sjekke hvordan innbygger har det! 🌙\n\n**Hva er det?**\nÅ se til innbyggere via kamera på avstand, uten å være fysisk til stede.\n\n**Viktige funksjoner:**\n• **Anonymisering**: Fargelagt versjon uten identifiserbare detaljer\n• **Toveis kommunikasjon**: Snakk med og lytt til innbyggeren\n• **Sensorer**: Varsler ved mistenkelig aktivitet og avvik\n\n**Lovlig bruk (3 kriterier):**\n1️⃣ Skriftlig samtykke fra innbygger\n2️⃣ Nødvendig for å hindre/begrense skade\n3️⃣ I innbyggers interesse, minst inngripende\n\n**Din rolle**: Du kan utføre digitale tilsyn eller følge opp med fysisk tilsyn.\n\nVil du lære mer om implementering eller lovlig bruk? 🔍'
-        },
-        {
-          keywords: ['varda care', 'varda'],
-          response: 'Varda Care fokuserer på opplæring og bruk av velferdsteknologi! 💙\n\n**Hovedområder:**\n• Opplæring av ansatte i bruk av teknologi\n• Implementering av brukervennlige løsninger\n• Kontinuerlig støtte og veiledning\n\n**Start med planleggingsverktøyene** under Velferdsteknologi-tabben for å strukturere implementeringen. 🎯'
-        },
-        {
-          keywords: ['aula', 'læringsplattform'],
-          response: 'Aula er din læringsplattform for velferdsteknologi! 📚\n\n**Funksjoner:**\n• Strukturerte læringsmoduler\n• Interaktive oppgaver og tester\n• Sporing av progresjon\n• Tilgang til alle kurs og ressurser\n\n**Start med:**\n1️⃣ Logg inn på Aula\n2️⃣ Velg relevant kurs (f.eks. Digital Tilsyn eller HEPRO)\n3️⃣ Gjennomfør modulene steg for steg\n\nVil du at jeg skal veilede deg gjennom et spesifikt kurs? 🚀'
-        }
-      ];
-
-      // Find best matching response with enhanced matching
+      // Simplified and logical response selection
       const userQuery = inputValue.toLowerCase();
       console.log('User query:', userQuery);
       
-      let bestResponse = 'Hei! Jeg er TeknoTassen, din AI-assistent for velferdsteknologi. Jeg kan hjelpe deg med DPIA, ROS, behovsanalyse, HEPRO Respons, Digital Tilsyn og mye mer! Hva lurer du på? 🤖✨';
+      let bestResponse = '';
+      let responseSource = '';
       
-      // Enhanced matching for more specific queries
-      if (userQuery.includes('hepro') && (userQuery.includes('implementering') || userQuery.includes('oppsett') || userQuery.includes('start'))) {
-        bestResponse = '**HEPRO Respons Implementering - Steg for steg:** 🚀\n\n**Steg 1: Systemoppsett**\n1. Installer HEPRO Respons server\n2. Konfigurer database-tilkobling (PostgreSQL)\n3. Sett opp Azure AD-integrasjon\n4. Test grunnleggende funksjonalitet\n\n**Steg 2: Brukeropprettelse**\n1. Opprett brukere i Azure AD\n2. Tildel roller i HEPRO Respons (Admin, Bruker, Observer)\n3. Konfigurer varslingspreferanser\n4. Test innlogging og tilgang\n\n**Steg 3: Pasientregistrering**\n1. Registrer pasienter i systemet\n2. Konfigurer overvåkningsparametere\n3. Test varslingssystemet\n4. Opprett varslingsprosedyrer\n\n**Vil du at jeg skal veilede deg gjennom et spesifikt steg?** 📋';
-      } else if (userQuery.includes('digital') && (userQuery.includes('tilsyn') || userQuery.includes('nattilsyn')) && (userQuery.includes('lovlig') || userQuery.includes('rettigheter'))) {
-        bestResponse = '**Digitalt Tilsyn - Lovlig bruk og rettigheter:** ⚖️\n\n**3 kritiske kriterier som MÅ være oppfylt:**\n\n1️⃣ **Skriftlig samtykke** fra innbygger\n   - Må være spesifikt for digitalt tilsyn\n   - Kan trekkes tilbake når som helst\n\n2️⃣ **Nødvendighet** for å hindre/begrense skade\n   - Må være et reelt behov\n   - Kan ikke brukes "bare for sikkerhets skyld"\n\n3️⃣ **I innbyggers interesse** og minst inngripende\n   - Må være til beste for innbyggeren\n   - Ingen andre alternativer som er mindre inngripende\n\n**Viktig**: Se §4-6a i pasient- og brukerrettighetsloven.\n\n**Vil du lære mer om implementering eller beste praksis?** 🔍';
-      } else if (userQuery.includes('varda') && (userQuery.includes('opplæring') || userQuery.includes('implementering'))) {
-        bestResponse = '**Varda Care - Opplæring og Implementering:** 💙\n\n**Fase 1: Forberedelse**\n• Identifiser opplæringsbehov hos ansatte\n• Velg riktig teknologi for organisasjonen\n• Planlegg opplæringsprogram\n\n**Fase 2: Implementering**\n• Start med en pilotgruppe\n• Opprett brukervennlige prosedyrer\n• Gjennomfør opplæring i små grupper\n\n**Fase 3: Oppfølging**\n• Kontinuerlig støtte og veiledning\n• Regelmessig evaluering av bruk\n• Justering av prosedyrer etter behov\n\n**Start med planleggingsverktøyene** under Velferdsteknologi-tabben! 🎯';
-      } else {
-        // Check uploaded documents first with improved search
-        const uploadedDocs = JSON.parse(localStorage.getItem('uploadedDocuments') || '[]');
-        let documentResponse = '';
-        let bestOverallScore = 0;
-        let bestOverallSection = null;
-        let bestOverallDoc = null;
+      // PRIORITY 1: Check uploaded documents first (most relevant)
+      const uploadedDocs = JSON.parse(localStorage.getItem('uploadedDocuments') || '[]');
+      if (uploadedDocs.length > 0) {
+        console.log('Searching in uploaded documents:', uploadedDocs.length, 'documents');
         
-        if (uploadedDocs.length > 0) {
-          console.log('Searching in uploaded documents:', uploadedDocs.length, 'documents');
+        let bestDocScore = 0;
+        let bestDocSection = null;
+        let bestDoc = null;
+        
+        for (const doc of uploadedDocs) {
+          const sections = parseMarkdownSections(doc.content);
+          const queryWords = userQuery.toLowerCase().split(' ').filter(word => word.length > 2);
           
-          // Improved search with better scoring and context
-          for (const doc of uploadedDocs) {
-            const docContent = doc.content;
-            const queryWords = userQuery.toLowerCase().split(' ').filter(word => word.length > 2);
+          for (const section of sections) {
+            let score = 0;
+            const sectionText = section.content.toLowerCase();
+            const sectionTitle = section.title.toLowerCase();
             
-            // Parse Markdown structure to find relevant sections
-            const sections = parseMarkdownSections(docContent);
-            
-            // Score each section with improved algorithm
-            for (const section of sections) {
-              let score = 0;
-              const sectionText = section.content.toLowerCase();
-              const sectionTitle = section.title.toLowerCase();
-              
-              // Boost score for title matches
-              for (const word of queryWords) {
-                if (sectionTitle.includes(word)) {
-                  score += 3; // Title matches are more important
-                }
-                if (sectionText.includes(word)) {
-                  score += 1;
-                }
-              }
-              
-              // Bonus for exact phrase matches
-              if (sectionText.includes(userQuery.toLowerCase())) {
-                score += 5;
-              }
-              
-              // Bonus for longer, more detailed sections
-              if (section.content.length > 100) {
-                score += 1;
-              }
-              
-              // Update best overall match
-              if (score > bestOverallScore) {
-                bestOverallScore = score;
-                bestOverallSection = section;
-                bestOverallDoc = doc;
-              }
+            // Score based on content relevance
+            for (const word of queryWords) {
+              if (sectionTitle.includes(word)) score += 3;
+              if (sectionText.includes(word)) score += 1;
             }
-          }
-          
-          // Only use document response if we have a good match
-          if (bestOverallSection && bestOverallScore >= 2) {
-            const formattedSection = formatMarkdownSection(bestOverallSection);
-            documentResponse = `**Fra opplastet dokument "${bestOverallDoc.title}":** 📚\n\n${formattedSection}\n\n*Dette er basert på dokumentet du lastet opp. Relevans: ${bestOverallScore} poeng.*`;
-            console.log('Using document response with score:', bestOverallScore);
-          } else {
-            console.log('No good document match found. Best score:', bestOverallScore);
+            
+            // Bonus for exact matches
+            if (sectionText.includes(userQuery.toLowerCase())) score += 5;
+            
+            if (score > bestDocScore) {
+              bestDocScore = score;
+              bestDocSection = section;
+              bestDoc = doc;
+            }
           }
         }
         
-        if (documentResponse) {
-          bestResponse = documentResponse;
-          console.log('Using document response from:', documentResponse.substring(0, 50) + '...');
-        } else {
-          // Standard keyword matching with improved fallback
-          let foundDemoResponse = false;
-          for (const demoResponse of demoResponses) {
-            if (demoResponse.keywords.some(keyword => userQuery.includes(keyword))) {
-              bestResponse = demoResponse.response;
-              console.log('Using demo response for keyword match');
-              foundDemoResponse = true;
-              break;
-            }
-          }
-          
-          // If no demo response found, provide helpful guidance
-          if (!foundDemoResponse) {
-            const uploadedDocs = JSON.parse(localStorage.getItem('uploadedDocuments') || '[]');
-            if (uploadedDocs.length > 0) {
-              bestResponse = `Jeg forstår spørsmålet ditt, men fant ikke spesifikk informasjon i mine opplastede dokumenter. Jeg har ${uploadedDocs.length} dokument(er) tilgjengelig. Prøv å:\n\n• Stille spørsmålet på en annen måte\n• Bruke andre ord eller termer\n• Spørre om noe mer generelt\n\nEller last opp flere relevante dokumenter så kan jeg hjelpe deg bedre! 📚`;
-            } else {
-              bestResponse = `Jeg forstår spørsmålet ditt, men har ingen opplastede dokumenter å søke i ennå. Last opp relevante dokumenter (f.eks. HEPRO Respons guide, Digital Tilsyn prosedyre) så kan jeg gi deg presise svar basert på faktisk innhold! 📁\n\nDu kan laste opp dokumenter under Velferdsteknologi-tabben.`;
-            }
-          }
+        // Use document response if we have a good match
+        if (bestDocSection && bestDocScore >= 2) {
+          const formattedSection = formatMarkdownSection(bestDocSection);
+          bestResponse = `**Fra opplastet dokument "${bestDoc.title}":** 📚\n\n${formattedSection}\n\n*Relevans: ${bestDocScore} poeng*`;
+          responseSource = 'document';
+          console.log('Using document response with score:', bestDocScore);
         }
       }
       
-      console.log('Final best response:', bestResponse.substring(0, 100) + '...');
+      // PRIORITY 2: If no document response, use predefined responses
+      if (!bestResponse) {
+        console.log('No document response, checking predefined responses');
+        
+        // Simple keyword matching
+        if (userQuery.includes('hepro')) {
+          bestResponse = '**HEPRO Respons - Pasientvarslingssystem:** 🏥\n\n**Hovedfunksjoner:**\n• Kontinuerlig overvåking av vitale tegn\n• Automatiske varsler ved avvik\n• Real-time dataoppdateringer\n\n**Implementering:**\n1️⃣ Systemoppsett (server, database, Azure AD)\n2️⃣ Brukeropprettelse med roller\n3️⃣ Pasientregistrering og konfigurasjon\n\nVil du at jeg skal veilede deg gjennom et spesifikt steg? 📋';
+          responseSource = 'predefined';
+        } else if (userQuery.includes('digital') && userQuery.includes('tilsyn')) {
+          bestResponse = '**Digitalt Tilsyn - Lovlig bruk:** ⚖️\n\n**3 kritiske kriterier:**\n1️⃣ Skriftlig samtykke fra innbygger\n2️⃣ Nødvendig for å hindre skade\n3️⃣ I innbyggers interesse, minst inngripende\n\n**Funksjoner:**\n• Anonymisert kamera\n• Toveis kommunikasjon\n• Sensorer for avvik\n\nVil du lære mer om implementering? 🔍';
+          responseSource = 'predefined';
+        } else if (userQuery.includes('dpia')) {
+          bestResponse = '**DPIA - Data Protection Impact Assessment:** 📋\n\n**Start med:**\n• Identifiser personopplysninger som behandles\n• Bruk planleggingsverktøyet under Velferdsteknologi-tabben\n• Strukturer prosessen systematisk\n\nVil du at jeg skal veilede deg? 🎯';
+          responseSource = 'predefined';
+        } else if (userQuery.includes('ros')) {
+          bestResponse = '**ROS - Risk & Opportunity Screening:** 🔍\n\n**Fokus:**\n• Definer risikonivå\n• Velg beregningsmetode\n• Bruk planleggingsverktøyet\n\nVil du at jeg skal veilede deg? 📊';
+          responseSource = 'predefined';
+        } else if (userQuery.includes('varda')) {
+          bestResponse = '**Varda Care - Opplæring:** 💙\n\n**Faser:**\n1️⃣ Forberedelse (identifiser behov)\n2️⃣ Implementering (pilotgruppe)\n3️⃣ Oppfølging (kontinuerlig støtte)\n\nStart med planleggingsverktøyene! 🎯';
+          responseSource = 'predefined';
+        } else if (userQuery.includes('aula')) {
+          bestResponse = '**Aula - Læringsplattform:** 📚\n\n**Funksjoner:**\n• Strukturerte læringsmoduler\n• Interaktive oppgaver\n• Sporing av progresjon\n\n**Start:**\n1️⃣ Logg inn på Aula\n2️⃣ Velg kurs (Digital Tilsyn, HEPRO)\n3️⃣ Gjennomfør modulene\n\nVil du at jeg skal veilede deg? 🚀';
+          responseSource = 'predefined';
+        }
+      }
+      
+      // PRIORITY 3: Fallback response if nothing else matches
+      if (!bestResponse) {
+        if (uploadedDocs.length > 0) {
+          bestResponse = `Jeg forstår spørsmålet ditt, men fant ikke spesifikk informasjon i mine ${uploadedDocs.length} opplastede dokument(er). Prøv å:\n\n• Stille spørsmålet på en annen måte\n• Bruke andre ord eller termer\n• Spørre om noe mer generelt\n\nEller last opp flere relevante dokumenter! 📚`;
+        } else {
+          bestResponse = `Jeg forstår spørsmålet ditt, men har ingen opplastede dokumenter ennå. Last opp relevante dokumenter (f.eks. HEPRO Respons guide, Digital Tilsyn prosedyre) så kan jeg gi deg presise svar! 📁\n\nDu kan laste opp dokumenter under Velferdsteknologi-tabben.`;
+        }
+        responseSource = 'fallback';
+      }
+      
+      console.log('Response source:', responseSource);
+      console.log('Final response length:', bestResponse.length);
 
       const fallbackMessage: Message = {
         id: (Date.now() + 1).toString(),
