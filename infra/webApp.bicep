@@ -54,7 +54,7 @@ resource webApp 'Microsoft.Web/sites@2023-01-01' = {
         }
         {
           name: 'WEBSITES_PORT'
-          value: '8181'
+          value: '80'
         }
         {
           name: 'NODE_ENV'

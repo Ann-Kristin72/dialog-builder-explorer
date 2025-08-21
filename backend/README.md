@@ -120,17 +120,17 @@ RUN npm ci --omit=dev
 COPY . .
 
 # Azure Web App port configuration
-ENV PORT=8181
-EXPOSE 8181
+ENV PORT=80
+EXPOSE 80
 
 # Start appen
 CMD ["npm", "start"]
 ```
 
 ### **Port Configuration**
-- **Container Port:** 8181 (matching Azure Web App)
-- **Azure Setting:** `WEBSITES_PORT=8181`
-- **Binding:** `0.0.0.0:8181` (all interfaces)
+- **Container Port:** 80 (matching Azure Web App)
+- **Azure Setting:** `WEBSITES_PORT=80`
+- **Binding:** `0.0.0.0:80` (all interfaces)
 
 ---
 
@@ -694,16 +694,16 @@ npm run test:integration
 ### **API Testing**
 ```bash
 # Test health endpoint
-curl http://localhost:8181/healthz
+curl http://localhost:80/healthz
 
 # Test course ingest
-curl -X POST http://localhost:8181/api/courses/ingest \
+curl -X POST http://localhost:80/api/courses/ingest \
   -F "file=@test-course.md" \
   -F "courseId=test-001" \
   -F "technology=test"
 
 # Test RAG query
-curl -X POST http://localhost:8181/api/query \
+curl -X POST http://localhost:80/api/query \
   -H "Content-Type: application/json" \
   -d '{"question": "Hvordan fungerer test?"}'
 ```
@@ -715,7 +715,7 @@ curl -X POST http://localhost:8181/api/query \
 ### **Azure Web App**
 - **Platform:** Linux Container
 - **Runtime:** Node.js 20
-- **Port:** 8181
+- **Port:** 80
 - **Health Check:** `/healthz`
 
 ### **Environment Variables (Azure)**
@@ -731,7 +731,7 @@ OPENAI_API_KEY=@Microsoft.KeyVault(SecretUri=https://kv-teknotassen.vault.azure.
 
 # Server
 NODE_ENV=production
-WEBSITES_PORT=8181
+WEBSITES_PORT=80
 ```
 
 ### **GitHub Actions**

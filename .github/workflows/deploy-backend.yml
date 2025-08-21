@@ -91,9 +91,9 @@ jobs:
 
       # Build and Push Docker image
       - name: 'Build and Push Docker image'
-        working-directory: .
+        working-directory: ./backend
         run: |
-          docker build -f backend/Dockerfile -t $AZURE_CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:${{ github.sha }} .
+          docker build -t $AZURE_CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:${{ github.sha }} .
           docker tag $AZURE_CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:${{ github.sha }} $AZURE_CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:latest
           docker push $AZURE_CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:${{ github.sha }}
           docker push $AZURE_CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:latest
@@ -342,6 +342,22 @@ jobs:
             echo "✅ Container image pull test successful"
           else
             echo "❌ Container image pull test failed - ACR connectivity issue!"
+            exit 1
+          fi
+          
+          # Test container startup locally
+          echo "🧪 Testing container startup locally..."
+          if docker run --rm -d -p 8080:80 --name test-container ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest; then
+            echo "✅ Container started successfully locally"
+            sleep 10
+            if curl -f http://localhost:8080/healthz; then
+              echo "✅ Health check passed locally"
+            else
+              echo "⚠️ Health check failed locally"
+            fi
+            docker stop test-container
+          else
+            echo "❌ Container failed to start locally"
             exit 1
           fi
 

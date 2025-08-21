@@ -59,7 +59,7 @@ cd backend && npm install
 # Start frontend (port 8080)
 npm run dev
 
-# Start backend (port 8181)
+# Start backend (port 80)
 cd backend && npm run dev
 ```
 
@@ -71,7 +71,7 @@ POSTGRES_URL=postgresql://user:pass@localhost:5432/teknotassen
 NODE_ENV=development
 
 # Frontend (.env.local)
-NEXT_PUBLIC_BACKEND_URL=http://localhost:8181
+NEXT_PUBLIC_BACKEND_URL=http://localhost:80
 ```
 
 ## 🤖 **TeknoTassen AI-Assistent**
@@ -168,10 +168,10 @@ TeknoTassen er en intelligent AI-assistent som kan:
 ### **Debug Commands**
 ```bash
 # Backend health check
-curl http://localhost:8181/healthz
+curl http://localhost:80/healthz
 
 # Database connection test
-curl http://localhost:8181/api/courses/test-db
+curl http://localhost:80/api/courses/test-db
 
 # Azure Web App logs
 az webapp log tail --name web-teknotassen --resource-group teknotassen-rg

@@ -10,19 +10,19 @@ Vi bruker **Azure Web App (Linux) for Containers** for backend deployment med Do
 - ✅ **Dockerfile** - Node.js 20 Alpine image
 - ✅ **Azure Container Registry** - for å lagre Docker images
 - ✅ **GitHub Actions workflow** - som bygger og pusher til ACR
-- ✅ **Port 8181** - som er riktig for Web App
+- ✅ **Port 80** - som er riktig for Web App
 
 ### **✅ Azure Web App (Linux) konfigurasjon:**
 - **Stack:** Linux med Docker runtime
 - **Container image:** `acrteknotassen.azurecr.io/teknotassen-backend:latest`
-- **Port:** 8181 (WEBSITES_PORT setting)
+- **Port:** 80 (WEBSITES_PORT setting)
 - **Health check:** `/healthz` endpoint
 
 ## 🔐 **MILJØVARIABLER (App Settings)**
 
 ### **Kreves:**
 ```bash
-WEBSITES_PORT=8181                    # Container port
+WEBSITES_PORT=80                    # Container port
 DOCKER_REGISTRY_SERVER_URL           # ACR server URL
 DOCKER_REGISTRY_SERVER_USERNAME      # ACR username
 DOCKER_REGISTRY_SERVER_PASSWORD      # ACR password (fra Key Vault)
@@ -49,7 +49,7 @@ WEBSITE_HEALTHCHECK_MAXPINGFAILURES # Health check konfigurasjon
 
 ### **3. Configuration → Application settings:**
 - **Legg til alle miljøvariabler** som App Settings
-- **Sjekk at WEBSITES_PORT=8181** er satt
+- **Sjekk at WEBSITES_PORT=80** er satt
 
 ## 🔍 **TROUBLESHOOTING**
 
@@ -83,7 +83,7 @@ WEBSITE_HEALTHCHECK_MAXPINGFAILURES # Health check konfigurasjon
 #### **Port binding feil:**
 ```javascript
 // Bruk process.env.PORT (Azure setter WEBSITES_PORT)
-const port = process.env.PORT || 8181;
+const port = process.env.PORT || 80;
 ```
 
 #### **Miljøvariabler mangler:**

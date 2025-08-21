@@ -269,8 +269,8 @@ RUN npm ci --omit=dev
 COPY . .
 
 # Azure Web App port configuration
-ENV PORT=8181
-EXPOSE 8181
+ENV PORT=80
+EXPOSE 80
 
 # Start appen
 CMD ["npm", "start"]
@@ -282,9 +282,9 @@ CMD ["npm", "start"]
 - **Build Context:** `.` (includes all files)
 
 ### **Port Configuration**
-- **Container Port:** 8181 (matching Azure Web App)
-- **Azure Setting:** `WEBSITES_PORT=8181`
-- **Binding:** `0.0.0.0:8181` (all interfaces)
+- **Container Port:** 80 (matching Azure Web App)
+- **Azure Setting:** `WEBSITES_PORT=80`
+- **Binding:** `0.0.0.0:80` (all interfaces)
 
 ---
 
