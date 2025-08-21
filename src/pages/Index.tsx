@@ -312,29 +312,7 @@ const Index: React.FC = () => {
               </div>
 
               {/* Step-by-step guidance */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="border-tech-blue/20">
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2 text-tech-blue">
-                      <span className="text-2xl">📋</span>
-                      <span>DPIA & ROS Analyse</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <p className="text-sm text-muted-foreground">
-                      Data Protection Impact Assessment og Risk & Opportunity Screening er grunnleggende for sikker implementering.
-                    </p>
-                    <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Identifiser personopplysninger som behandles</li>
-                      <li>• Vurder risikoer og muligheter</li>
-                      <li>• Dokumenter beslutninger og tiltak</li>
-                    </ul>
-                    <Button className="w-full mt-3 bg-tech-blue hover:bg-tech-blue/90 text-white">
-                      Start DPIA →
-                    </Button>
-                  </CardContent>
-                </Card>
-
+              <div className="grid grid-cols-1 gap-6">
                 <Card className="border-tech-green/20">
                   <CardHeader>
                     <CardTitle className="flex items-center space-x-2 text-tech-green">
