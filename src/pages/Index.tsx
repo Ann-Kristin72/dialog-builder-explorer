@@ -3,9 +3,10 @@ import { DocumentUpload } from '../components/DocumentUpload';
 import { FeatureCard } from '../components/FeatureCard';
 import { ChatInterface } from '../components/ChatInterface';
 import { Button } from '../components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Badge } from '../components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { useAuth } from '../contexts/AuthContext';
 import { 
   MessageSquare, 
@@ -337,6 +338,186 @@ const Index: React.FC = () => {
                       </div>
                       <h4 className="font-semibold text-card-foreground">Opplæring</h4>
                       <p className="text-sm text-muted-foreground">Ansatte og brukere</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Interactive Planning Tools - Lovable.dev Integration */}
+              <Card className="bg-gradient-to-r from-tech-blue/5 to-tech-green/5 border-tech-blue/20 mt-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2 text-tech-blue">
+                    <Brain className="w-5 h-5" />
+                    <span>Interaktive Planleggingsverktøy</span>
+                  </CardTitle>
+                  <CardDescription>
+                    Bruk AI-assisterte verktøy for å planlegge DPIA, ROS og behovsanalyse
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  
+                  {/* DPIA Planning Tool */}
+                  <div className="border border-tech-blue/20 rounded-lg p-4 bg-tech-blue/5">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className="w-10 h-10 bg-tech-blue/20 rounded-full flex items-center justify-center">
+                        <span className="text-tech-blue text-lg">📋</span>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-card-foreground">DPIA Planleggingsverktøy</h4>
+                        <p className="text-sm text-muted-foreground">Data Protection Impact Assessment</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-card-foreground">Organisasjonstype</label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Velg type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="helse">Helsevesen</SelectItem>
+                            <SelectItem value="omsorg">Omsorg</SelectItem>
+                            <SelectItem value="kommune">Kommune</SelectItem>
+                            <SelectItem value="privat">Privat sektor</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-card-foreground">Datakategori</label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Velg kategori" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="helse">Helsedata</SelectItem>
+                            <SelectItem value="person">Personopplysninger</SelectItem>
+                            <SelectItem value="sensitive">Sensitive data</SelectItem>
+                            <SelectItem value="anonym">Anonymiserte data</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <Button className="w-full bg-tech-blue hover:bg-tech-blue/90 text-white">
+                      Start DPIA Planlegging →
+                    </Button>
+                  </div>
+
+                  {/* ROS Analysis Tool */}
+                  <div className="border border-tech-green/20 rounded-lg p-4 bg-tech-green/5">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className="w-10 h-10 bg-tech-green/20 rounded-full flex items-center justify-center">
+                        <span className="text-tech-green text-lg">🔍</span>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-card-foreground">ROS Analyseverktøy</h4>
+                        <p className="text-sm text-muted-foreground">Risk & Opportunity Screening</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-card-foreground">Risikonivå</label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Velg nivå" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="lav">Lav risiko</SelectItem>
+                            <SelectItem value="medium">Medium risiko</SelectItem>
+                            <SelectItem value="høy">Høy risiko</SelectItem>
+                            <SelectItem value="kritisk">Kritisk risiko</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-card-foreground">Beregningsmetode</label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Velg metode" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="kvalitativ">Kvalitativ</SelectItem>
+                            <SelectItem value="kvantitativ">Kvantitativ</SelectItem>
+                            <SelectItem value="hybrid">Hybrid tilnærming</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <Button className="w-full bg-tech-green hover:bg-tech-green/90 text-white">
+                      Start ROS Analyse →
+                    </Button>
+                  </div>
+
+                  {/* Needs Analysis Tool */}
+                  <div className="border border-tech-orange/20 rounded-lg p-4 bg-tech-orange/5">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className="w-10 h-10 bg-tech-orange/20 rounded-full flex items-center justify-center">
+                        <span className="text-tech-orange text-lg">🎯</span>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-card-foreground">Behovsanalyseverktøy</h4>
+                        <p className="text-sm text-muted-foreground">Kartlegg pasient- og ansattbehov</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-card-foreground">Fokusområde</label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Velg område" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="pasient">Pasientbehov</SelectItem>
+                            <SelectItem value="ansatt">Ansattbehov</SelectItem>
+                            <SelectItem value="organisasjon">Organisasjonsbehov</SelectItem>
+                            <SelectItem value="teknisk">Tekniske behov</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-card-foreground">Metode</label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Velg metode" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="intervju">Intervjuer</SelectItem>
+                            <SelectItem value="spørreundersøkelse">Spørreundersøkelse</SelectItem>
+                            <SelectItem value="observasjon">Observasjon</SelectItem>
+                            <SelectItem value="workshop">Workshop</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <Button className="w-full bg-tech-orange hover:bg-tech-orange/90 text-white">
+                      Start Behovsanalyse →
+                    </Button>
+                  </div>
+
+                  {/* Progress Tracking */}
+                  <div className="bg-gradient-to-r from-primary/5 to-tech-blue/5 border border-primary/20 rounded-lg p-4">
+                    <h5 className="font-semibold text-card-foreground mb-3">Planleggingsstatus</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="text-center">
+                        <div className="w-12 h-12 bg-tech-blue/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                          <span className="text-tech-blue text-lg">📊</span>
+                        </div>
+                        <p className="text-sm font-medium text-card-foreground">DPIA</p>
+                        <p className="text-xs text-muted-foreground">Ikke startet</p>
+                      </div>
+                      <div className="text-center">
+                        <div className="w-12 h-12 bg-tech-green/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                          <span className="text-tech-blue text-lg">📈</span>
+                        </div>
+                        <p className="text-sm font-medium text-card-foreground">ROS</p>
+                        <p className="text-xs text-muted-foreground">Ikke startet</p>
+                      </div>
+                      <div className="text-center">
+                        <div className="w-12 h-12 bg-tech-orange/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                          <span className="text-tech-blue text-lg">🎯</span>
+                        </div>
+                        <p className="text-sm font-medium text-card-foreground">Behovsanalyse</p>
+                        <p className="text-xs text-muted-foreground">Ikke startet</p>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
