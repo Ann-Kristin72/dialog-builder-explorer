@@ -8,105 +8,105 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
-    --foreground: 215 25% 27%;
+    --background: 45 100% 98%; /* varmBeige #FFF8EA */
+    --foreground: 210 67% 16%; /* kontrastSort #222222 */
 
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 27%;
+    --card-foreground: 210 67% 16%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 27%;
+    --popover-foreground: 210 67% 16%;
 
-    --primary: 210 85% 55%;
+    --primary: 175 70% 47%; /* tasseTurkis #2EC4B6 */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 215 25% 27%;
+    --secondary: 175 45% 85%; /* tasseMint #65D6C2 */
+    --secondary-foreground: 210 67% 16%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 175 45% 85%;
+    --muted-foreground: 210 67% 16%;
 
-    --accent: 270 50% 85%;
-    --accent-foreground: 215 25% 27%;
+    --accent: 175 45% 85%;
+    --accent-foreground: 210 67% 16%;
 
-    --tech-blue: 210 85% 55%;
-    --tech-green: 140 60% 50%;
-    --tech-orange: 25 90% 70%;
+    --tech-blue: 210 67% 16%; /* teknoBlå #102A43 */
+    --tech-green: 175 70% 47%; /* tasseTurkis #2EC4B6 */
+    --tech-orange: 175 45% 85%; /* tasseMint #65D6C2 */
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 214 31% 91%;
-    --input: 214 31% 91%;
-    --ring: 210 85% 55%;
+    --border: 175 45% 85%;
+    --input: 175 45% 85%;
+    --ring: 175 70% 47%;
 
     --radius: 1rem;
 
     /* Gradients */
     --gradient-hero: linear-gradient(135deg, hsl(var(--tech-blue)) 0%, hsl(var(--tech-green)) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(210 40% 98%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(45 100% 98%) 0%, hsl(175 45% 95%) 100%);
 
     /* Shadows */
     --shadow-soft: 0 4px 20px -4px hsl(var(--tech-blue) / 0.15);
-    --shadow-card: 0 8px 32px -8px hsl(215 25% 27% / 0.1);
+    --shadow-card: 0 8px 32px -8px hsl(210 67% 16% / 0.1);
     --shadow-avatar: 0 8px 40px -8px hsl(var(--tech-blue) / 0.3);
 
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-background: 0 0% 98%;
+    --sidebar-background: 45 100% 98%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-foreground: 210 67% 16%;
 
-    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary: 210 67% 16%;
 
-    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-primary-foreground: 45 100% 98%;
 
-    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent: 175 45% 95%;
 
-    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-accent-foreground: 210 67% 16%;
 
-    --sidebar-border: 220 13% 91%;
+    --sidebar-border: 175 45% 85%;
 
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 175 70% 47%;
   }
 
   .dark {
-    --background: 215 28% 12%;
-    --foreground: 210 40% 98%;
+    --background: 210 67% 16%; /* teknoBlå #102A43 */
+    --foreground: 45 100% 98%; /* varmBeige #FFF8EA */
 
-    --card: 215 25% 15%;
-    --card-foreground: 210 40% 98%;
+    --card: 210 67% 20%;
+    --card-foreground: 45 100% 98%;
 
-    --popover: 215 25% 15%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 210 67% 20%;
+    --popover-foreground: 45 100% 98%;
 
-    --primary: 210 85% 55%;
+    --primary: 175 70% 47%; /* tasseTurkis #2EC4B6 */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 215 25% 18%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 210 67% 25%;
+    --secondary-foreground: 45 100% 98%;
 
-    --muted: 215 25% 18%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 210 67% 25%;
+    --muted-foreground: 175 45% 85%;
 
-    --accent: 270 50% 75%;
-    --accent-foreground: 215 25% 12%;
+    --accent: 175 45% 85%;
+    --accent-foreground: 210 67% 16%;
 
-    --tech-blue: 210 85% 55%;
-    --tech-green: 140 60% 50%;
-    --tech-orange: 25 80% 65%;
+    --tech-blue: 210 67% 16%; /* teknoBlå #102A43 */
+    --tech-green: 175 70% 47%; /* tasseTurkis #2EC4B6 */
+    --tech-orange: 175 45% 85%; /* tasseMint #65D6C2 */
 
     --destructive: 0 62% 50%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 45 100% 98%;
 
-    --border: 215 25% 22%;
-    --input: 215 25% 22%;
-    --ring: 210 85% 55%;
+    --border: 210 67% 25%;
+    --input: 210 67% 25%;
+    --ring: 175 70% 47%;
 
     /* Dark mode gradients */
     --gradient-hero: linear-gradient(135deg, hsl(var(--tech-blue)) 0%, hsl(var(--tech-green)) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(215 25% 15%) 0%, hsl(215 25% 18%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(210 67% 20%) 0%, hsl(210 67% 25%) 100%);
 
     /* Dark mode shadows */
     --shadow-soft: 0 4px 20px -4px hsl(0 0% 0% / 0.3);

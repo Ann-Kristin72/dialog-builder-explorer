@@ -52,9 +52,9 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				'tech-blue': 'hsl(var(--tech-blue))',
-				'tech-green': 'hsl(var(--tech-green))',
-				'tech-orange': 'hsl(var(--tech-orange))',
+				'tech-blue': 'hsl(var(--tech-blue))',      /* teknoBlå #102A43 */
+				'tech-green': 'hsl(var(--tech-green))',    /* tasseTurkis #2EC4B6 */
+				'tech-orange': 'hsl(var(--tech-orange))',  /* tasseMint #65D6C2 */
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
