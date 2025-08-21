@@ -98,6 +98,25 @@ const port = process.env.PORT || 8181;
 3. ✅ **/healthz endpoint** responderer med 200
 4. ✅ **Alle funksjoner** fungerer (RAG, AI, Azure services)
 
+## 🌐 **FRONTEND STATUS**
+
+### **✅ Vercel Deployment:**
+- **Frontend fungerer** fullstendig på Vercel
+- **TeknoTassen AI-assistent** er operativ i Demo Mode
+- **Bildehåndtering** fungerer med Markdown-filer
+- **Persistent dokumentlagring** implementert
+
+### **🔧 Demo Mode Funksjonalitet:**
+- **Intelligent respons** for vanlige spørsmål
+- **Dokument-søk** i opplastede filer
+- **Bildevisning** fra Markdown og direkte URLer
+- **Ingen backend-krav** for testing
+
+### **📱 Nåværende URL:**
+```
+https://dialog-builder-explorer-a3cr9ruhf-aino-frontend.vercel.app
+```
+
 ## 🎯 **NESTE STEG**
 
 1. **Deploy med container workflow** (manuell trigger)

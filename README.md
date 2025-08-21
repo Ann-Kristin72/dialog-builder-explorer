@@ -11,8 +11,11 @@ TeknoTassen er en intelligent AI-assistent som bruker **Retrieval-Augmented Gene
 - **📚 Kurs Opplasting** - Last opp markdown-filer med Nano/Unit struktur
 - **🔍 Semantisk Søk** - Finn relevant informasjon med AI-embeddings
 - **🎨 Moderne UI** - Responsivt design med Tailwind CSS og shadcn/ui
-- **🔐 Sikker Autentisering** - Azure AD B2C med OIDC
+- **🔐 Sikker Autentisering** - Azure AD B2C med OIDC (Demo Mode tilgjengelig)
 - **☁️ Cloud-Native** - Bygget for Azure og Vercel
+- **🖼️ Bildehåndtering** - Viser bilder fra Markdown-filer og direkte URLer
+- **🧠 Intelligent Respons** - Konsistent og forutsigbare svar fra TeknoTassen
+- **💾 Persistent Lagring** - Dokumenter huskes mellom sesjoner
 
 ## 🏗️ **Teknologi Stack**
 
@@ -71,6 +74,27 @@ NODE_ENV=development
 NEXT_PUBLIC_BACKEND_URL=http://localhost:8181
 ```
 
+## 🤖 **TeknoTassen AI-Assistent**
+
+### **🎯 Hva kan TeknoTassen?**
+TeknoTassen er en intelligent AI-assistent som kan:
+- **Svare på spørsmål** om velferdsteknologi (HEPRO Respons, Digital Tilsyn, DPIA, ROS, Varda Care, Aula)
+- **Lese opplastede dokumenter** og gi presise svar basert på innholdet
+- **Vise bilder** fra Markdown-filer og direkte URLer
+- **Gi veiledning** gjennom komplekse prosesser steg for steg
+- **Huske dokumenter** permanent mellom sesjoner
+
+### **🔧 Demo Mode**
+- **Fungerer uten backend** - perfekt for testing og demo
+- **Intelligente forhåndsdefinerte svar** for vanlige spørsmål
+- **Dokument-søk** i opplastede Markdown-filer
+- **Bildehåndtering** med riktig formatering
+
+### **📚 Dokumenttyper Støttet**
+- **Markdown (.md)** med bilde-URLer
+- **Direkte bilde-URLer** (jpg, jpeg, png, gif, webp)
+- **Strukturerte seksjoner** med overskrifter (# ## ### ####)
+
 ## 📚 **Dokumentasjon**
 
 ### **📖 Komplett Teknisk Dokumentasjon**
@@ -86,6 +110,25 @@ NEXT_PUBLIC_BACKEND_URL=http://localhost:8181
 - **[Azure Backend](./AZURE_DEPLOYMENT.md#azure-deployment-pipeline)** - GitHub Actions pipeline
 - **[Vercel Frontend](./VERCEL_DEPLOYMENT.md)** - Frontend deployment guide
 
+## 🔧 **Nylige Forbedringer (Siste Chat)**
+
+### **✅ TeknoTassen AI-Assistent**
+- **Fikset hikkup på svar** - konsistent og forutsigbare responser
+- **Forbedret søkealgoritme** - mer presis informasjon fra dokumenter
+- **Persistent dokumentlagring** - dokumenter huskes permanent
+- **Bildehåndtering** - viser bilder fra Markdown-filer og direkte URLer
+- **Intelligent respons-logikk** - 3-prioritets system for svar
+
+### **🎯 Respons-Prioritering**
+1. **Dokumenter først** - søker i opplastede filer (score ≥ 2)
+2. **Forhåndsdefinerte svar** - keyword matching for vanlige spørsmål
+3. **Fallback-veiledning** - hjelpsom informasjon når ingenting matcher
+
+### **🖼️ Bildehåndtering**
+- **Markdown-bilder**: `![Alt Text](URL)` → vises med emoji og formatering
+- **Direkte URLer**: `https://example.com/image.jpg` → automatisk bilde-gjenkjenning
+- **HTML-formatering** - bilder vises med styling og fallback
+
 ## 🎯 **Prosjekt Status**
 
 ### **✅ Fullført**
@@ -95,9 +138,16 @@ NEXT_PUBLIC_BACKEND_URL=http://localhost:8181
 - [x] Azure infrastruktur setup
 - [x] GitHub Actions deployment pipeline
 - [x] Alle kritiske kode-fixes implementert
+- [x] TeknoTassen AI-assistent med intelligent respons
+- [x] Bildehåndtering fra Markdown-filer
+- [x] Persistent dokumentlagring
+- [x] Demo Mode for testing
+- [x] Responsiv chat-interface
+- [x] Markdown parsing og formatering
 
 ### **🚧 Under Utvikling**
-- [ ] Azure B2C autentisering
+- [ ] Azure B2C autentisering (Demo Mode fungerer)
+- [ ] Backend RAG-integrasjon (Frontend Demo Mode komplett)
 - [ ] Database migrations
 - [ ] Kurs opplasting og parsing
 - [ ] TTS/STT integrasjon
