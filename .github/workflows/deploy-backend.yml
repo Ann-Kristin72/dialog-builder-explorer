@@ -183,7 +183,7 @@ jobs:
           PORT_RESULT=$(az webapp config appsettings set \
             --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --settings WEBSITES_PORT=8181 \
+            --settings WEBSITES_PORT=80 \
             2>&1)
           
           if [ $? -eq 0 ]; then
@@ -292,8 +292,8 @@ jobs:
           echo "WEBSITES_PORT setting: $PORT_SETTING"
           
           # Verify port is set correctly
-          if [ "$PORT_SETTING" != "8181" ]; then
-            echo "⚠️ Warning: WEBSITES_PORT is not set to 8181 (current: $PORT_SETTING)"
+          if [ "$PORT_SETTING" != "80" ]; then
+            echo "⚠️ Warning: WEBSITES_PORT is not set to 80 (current: $PORT_SETTING)"
           fi
           
           echo "✅ Linux Web App for Containers configuration verified"
@@ -447,6 +447,6 @@ jobs:
           echo "Web App: https://${HOSTNAME}"
           echo "Health: https://${HOSTNAME}/healthz"
           echo "Runtime: Linux Web App for Containers with Node.js 20"
-          echo "Port: 8181 (WEBSITES_PORT setting)"
+          echo "Port: 80 (WEBSITES_PORT setting)"
           echo "Container Config: Linux FX Version with ACR authentication"
           echo "ACR: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io"

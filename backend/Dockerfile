@@ -17,9 +17,9 @@ RUN echo "=== DEBUG: Checking package.json ===" && \
 
 COPY . .
 
-# Azure Web App standard port
-ENV PORT=8181
-EXPOSE 8181
+# Azure Web App standard port (80 works better than 8181)
+ENV PORT=80
+EXPOSE 80
 
 # Start appen (bruk npm start hvis du har start-script)
 CMD ["npm", "start"]

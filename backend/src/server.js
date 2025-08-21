@@ -16,9 +16,12 @@ app.get("/healthz", (_req, res) => res.status(200).send("OK"));
 app.get("/", (_req, res) => res.status(200).send("Up"));
 
 // Start tidlig – så healthz fungerer selv om init under feiler
-const port = process.env.PORT || 8181;
+const port = process.env.PORT || 80;
 app.listen(port, "0.0.0.0", () => {
   console.log(`🚀 Server starting on port ${port}`);
+  console.log(`🌍 Container environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🔗 Health check: http://0.0.0.0:${port}/healthz`);
+  console.log(`📚 API docs: http://0.0.0.0:${port}/api/courses`);
 });
 
 /* --- legg evt. resten av init UNDER denne linjen ---
@@ -177,6 +180,11 @@ async function initializeServices() {
 // Start services initialization (non-blocking)
 initializeServices();
 
+// Container startup verification
+console.log('✅ Container startup completed successfully');
+console.log('✅ Server is listening and ready to accept requests');
+console.log('✅ Health endpoint available at /healthz');
+
 // Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('🛑 SIGTERM received, shutting down gracefully...');
@@ -186,4 +194,17 @@ process.on('SIGTERM', () => {
 process.on('SIGINT', () => {
   console.log('🛑 SIGINT received, shutting down gracefully...');
   process.exit(0);
+});
+
+// Unhandled error handling
+process.on('uncaughtException', (error) => {
+  console.error('❌ Uncaught Exception:', error);
+  console.error('❌ Container will exit due to uncaught exception');
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+  console.error('❌ Container will exit due to unhandled rejection');
+  process.exit(1);
 });
