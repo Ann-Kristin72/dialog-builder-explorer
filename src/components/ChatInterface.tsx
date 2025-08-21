@@ -119,7 +119,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
     } catch (error) {
       console.error('Error sending message:', error);
       
-      // Smart demo responses for TeknoTassen
+      // Smart demo responses for TeknoTassen with MD content integration
       const demoResponses = [
         {
           keywords: ['dpia', 'personvern', 'gdpr', 'data protection'],
@@ -138,19 +138,41 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
           response: 'Velkommen til velferdsteknologi! Start med planleggingsfasen (DPIA, ROS, behovsanalyse) under Velferdsteknologi-tabben. Jeg kan veilede deg gjennom hele prosessen. 🚀'
         },
         {
-          keywords: ['hepro', 'digital nattilsyn', 'varda care', 'aula'],
-          response: 'Flott at du er interessert i disse områdene! HEPRO Respons, Digital Nattilsyn, Varda Care og Aula er alle viktige komponenter. La oss starte med planlegging og så kan vi gå videre til implementering. 💪'
+          keywords: ['hepro', 'hepro respons'],
+          response: 'HEPRO Respons er et avansert pasientvarslingssystem! 🏥\n\n**Hovedfunksjoner:**\n• Pasientovervåking med kontinuerlig overvåking av vitale tegn\n• Automatiske varsler ved avvik\n• Real-time dataoppdateringer\n\n**Implementering (3 steg):**\n1️⃣ **Systemoppsett**: Installer server, konfigurer database, sett opp Azure AD\n2️⃣ **Brukeropprettelse**: Opprett brukere i Azure AD, tildel roller\n3️⃣ **Pasientregistrering**: Registrer pasienter, konfigurer overvåking\n\n**Beste praksis**: Test grundig, opprett prosedyrer, opplær brukere, regelmessig backup.\n\nVil du at jeg skal veilede deg gjennom et spesifikt steg? 📋'
+        },
+        {
+          keywords: ['digital tilsyn', 'digitalt tilsyn', 'nattilsyn', 'kamera'],
+          response: 'Digitalt tilsyn er en enkel og ressursbesparende måte å sjekke hvordan innbygger har det! 🌙\n\n**Hva er det?**\nÅ se til innbyggere via kamera på avstand, uten å være fysisk til stede.\n\n**Viktige funksjoner:**\n• **Anonymisering**: Fargelagt versjon uten identifiserbare detaljer\n• **Toveis kommunikasjon**: Snakk med og lytt til innbyggeren\n• **Sensorer**: Varsler ved mistenkelig aktivitet og avvik\n\n**Lovlig bruk (3 kriterier):**\n1️⃣ Skriftlig samtykke fra innbygger\n2️⃣ Nødvendig for å hindre/begrense skade\n3️⃣ I innbyggers interesse, minst inngripende\n\n**Din rolle**: Du kan utføre digitale tilsyn eller følge opp med fysisk tilsyn.\n\nVil du lære mer om implementering eller lovlig bruk? 🔍'
+        },
+        {
+          keywords: ['varda care', 'varda'],
+          response: 'Varda Care fokuserer på opplæring og bruk av velferdsteknologi! 💙\n\n**Hovedområder:**\n• Opplæring av ansatte i bruk av teknologi\n• Implementering av brukervennlige løsninger\n• Kontinuerlig støtte og veiledning\n\n**Start med planleggingsverktøyene** under Velferdsteknologi-tabben for å strukturere implementeringen. 🎯'
+        },
+        {
+          keywords: ['aula', 'læringsplattform'],
+          response: 'Aula er din læringsplattform for velferdsteknologi! 📚\n\n**Funksjoner:**\n• Strukturerte læringsmoduler\n• Interaktive oppgaver og tester\n• Sporing av progresjon\n• Tilgang til alle kurs og ressurser\n\n**Start med:**\n1️⃣ Logg inn på Aula\n2️⃣ Velg relevant kurs (f.eks. Digital Tilsyn eller HEPRO)\n3️⃣ Gjennomfør modulene steg for steg\n\nVil du at jeg skal veilede deg gjennom et spesifikt kurs? 🚀'
         }
       ];
 
-      // Find best matching response
+      // Find best matching response with enhanced matching
       const userQuery = inputValue.toLowerCase();
-      let bestResponse = 'Hei! Jeg er TeknoTassen, din AI-assistent for velferdsteknologi. Jeg kan hjelpe deg med DPIA, ROS, behovsanalyse og implementering. Hva lurer du på? 🤖✨';
+      let bestResponse = 'Hei! Jeg er TeknoTassen, din AI-assistent for velferdsteknologi. Jeg kan hjelpe deg med DPIA, ROS, behovsanalyse, HEPRO Respons, Digital Tilsyn og mye mer! Hva lurer du på? 🤖✨';
       
-      for (const demoResponse of demoResponses) {
-        if (demoResponse.keywords.some(keyword => userQuery.includes(keyword))) {
-          bestResponse = demoResponse.response;
-          break;
+      // Enhanced matching for more specific queries
+      if (userQuery.includes('hepro') && (userQuery.includes('implementering') || userQuery.includes('oppsett') || userQuery.includes('start'))) {
+        bestResponse = '**HEPRO Respons Implementering - Steg for steg:** 🚀\n\n**Steg 1: Systemoppsett**\n1. Installer HEPRO Respons server\n2. Konfigurer database-tilkobling (PostgreSQL)\n3. Sett opp Azure AD-integrasjon\n4. Test grunnleggende funksjonalitet\n\n**Steg 2: Brukeropprettelse**\n1. Opprett brukere i Azure AD\n2. Tildel roller i HEPRO Respons (Admin, Bruker, Observer)\n3. Konfigurer varslingspreferanser\n4. Test innlogging og tilgang\n\n**Steg 3: Pasientregistrering**\n1. Registrer pasienter i systemet\n2. Konfigurer overvåkningsparametere\n3. Test varslingssystemet\n4. Opprett varslingsprosedyrer\n\n**Vil du at jeg skal veilede deg gjennom et spesifikt steg?** 📋';
+      } else if (userQuery.includes('digital') && (userQuery.includes('tilsyn') || userQuery.includes('nattilsyn')) && (userQuery.includes('lovlig') || userQuery.includes('rettigheter'))) {
+        bestResponse = '**Digitalt Tilsyn - Lovlig bruk og rettigheter:** ⚖️\n\n**3 kritiske kriterier som MÅ være oppfylt:**\n\n1️⃣ **Skriftlig samtykke** fra innbygger\n   - Må være spesifikt for digitalt tilsyn\n   - Kan trekkes tilbake når som helst\n\n2️⃣ **Nødvendighet** for å hindre/begrense skade\n   - Må være et reelt behov\n   - Kan ikke brukes "bare for sikkerhets skyld"\n\n3️⃣ **I innbyggers interesse** og minst inngripende\n   - Må være til beste for innbyggeren\n   - Ingen andre alternativer som er mindre inngripende\n\n**Viktig**: Se §4-6a i pasient- og brukerrettighetsloven.\n\n**Vil du lære mer om implementering eller beste praksis?** 🔍';
+      } else if (userQuery.includes('varda') && (userQuery.includes('opplæring') || userQuery.includes('implementering'))) {
+        bestResponse = '**Varda Care - Opplæring og Implementering:** 💙\n\n**Fase 1: Forberedelse**\n• Identifiser opplæringsbehov hos ansatte\n• Velg riktig teknologi for organisasjonen\n• Planlegg opplæringsprogram\n\n**Fase 2: Implementering**\n• Start med en pilotgruppe\n• Opprett brukervennlige prosedyrer\n• Gjennomfør opplæring i små grupper\n\n**Fase 3: Oppfølging**\n• Kontinuerlig støtte og veiledning\n• Regelmessig evaluering av bruk\n• Justering av prosedyrer etter behov\n\n**Start med planleggingsverktøyene** under Velferdsteknologi-tabben! 🎯';
+      } else {
+        // Standard keyword matching
+        for (const demoResponse of demoResponses) {
+          if (demoResponse.keywords.some(keyword => userQuery.includes(keyword))) {
+            bestResponse = demoResponse.response;
+            break;
+          }
         }
       }
 
