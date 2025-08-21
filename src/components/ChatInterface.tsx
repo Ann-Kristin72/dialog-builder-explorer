@@ -149,6 +149,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
     return formatted.trim();
   };
 
+  // Load persistent documents on component mount
+  React.useEffect(() => {
+    const savedDocs = localStorage.getItem('uploadedDocuments');
+    if (savedDocs) {
+      console.log('Loaded persistent documents:', JSON.parse(savedDocs).length);
+    }
+  }, []);
+
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
 
@@ -246,61 +254,91 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
       } else if (userQuery.includes('varda') && (userQuery.includes('opplæring') || userQuery.includes('implementering'))) {
         bestResponse = '**Varda Care - Opplæring og Implementering:** 💙\n\n**Fase 1: Forberedelse**\n• Identifiser opplæringsbehov hos ansatte\n• Velg riktig teknologi for organisasjonen\n• Planlegg opplæringsprogram\n\n**Fase 2: Implementering**\n• Start med en pilotgruppe\n• Opprett brukervennlige prosedyrer\n• Gjennomfør opplæring i små grupper\n\n**Fase 3: Oppfølging**\n• Kontinuerlig støtte og veiledning\n• Regelmessig evaluering av bruk\n• Justering av prosedyrer etter behov\n\n**Start med planleggingsverktøyene** under Velferdsteknologi-tabben! 🎯';
       } else {
-        // Check uploaded documents first with Markdown-aware search
+        // Check uploaded documents first with improved search
         const uploadedDocs = JSON.parse(localStorage.getItem('uploadedDocuments') || '[]');
         let documentResponse = '';
+        let bestOverallScore = 0;
+        let bestOverallSection = null;
+        let bestOverallDoc = null;
         
         if (uploadedDocs.length > 0) {
           console.log('Searching in uploaded documents:', uploadedDocs.length, 'documents');
           
-          // Enhanced search with Markdown structure awareness
+          // Improved search with better scoring and context
           for (const doc of uploadedDocs) {
             const docContent = doc.content;
             const queryWords = userQuery.toLowerCase().split(' ').filter(word => word.length > 2);
             
             // Parse Markdown structure to find relevant sections
             const sections = parseMarkdownSections(docContent);
-            let bestSection = null;
-            let bestScore = 0;
             
-            // Score each section based on query relevance
+            // Score each section with improved algorithm
             for (const section of sections) {
               let score = 0;
               const sectionText = section.content.toLowerCase();
+              const sectionTitle = section.title.toLowerCase();
               
+              // Boost score for title matches
               for (const word of queryWords) {
+                if (sectionTitle.includes(word)) {
+                  score += 3; // Title matches are more important
+                }
                 if (sectionText.includes(word)) {
                   score += 1;
                 }
               }
               
-              if (score > bestScore) {
-                bestScore = score;
-                bestSection = section;
+              // Bonus for exact phrase matches
+              if (sectionText.includes(userQuery.toLowerCase())) {
+                score += 5;
               }
-            }
-            
-            // If we found a relevant section
-            if (bestSection && bestScore > 0) {
-              const formattedSection = formatMarkdownSection(bestSection);
-              documentResponse = `**Fra opplastet dokument "${doc.title}":** 📚\n\n${formattedSection}\n\n*Dette er basert på dokumentet du lastet opp. Match-score: ${bestScore}/${queryWords.length} ord.*`;
-              break;
+              
+              // Bonus for longer, more detailed sections
+              if (section.content.length > 100) {
+                score += 1;
+              }
+              
+              // Update best overall match
+              if (score > bestOverallScore) {
+                bestOverallScore = score;
+                bestOverallSection = section;
+                bestOverallDoc = doc;
+              }
             }
           }
           
-          console.log('Document response found:', !!documentResponse);
+          // Only use document response if we have a good match
+          if (bestOverallSection && bestOverallScore >= 2) {
+            const formattedSection = formatMarkdownSection(bestOverallSection);
+            documentResponse = `**Fra opplastet dokument "${bestOverallDoc.title}":** 📚\n\n${formattedSection}\n\n*Dette er basert på dokumentet du lastet opp. Relevans: ${bestOverallScore} poeng.*`;
+            console.log('Using document response with score:', bestOverallScore);
+          } else {
+            console.log('No good document match found. Best score:', bestOverallScore);
+          }
         }
         
         if (documentResponse) {
           bestResponse = documentResponse;
           console.log('Using document response from:', documentResponse.substring(0, 50) + '...');
         } else {
-          // Standard keyword matching
+          // Standard keyword matching with improved fallback
+          let foundDemoResponse = false;
           for (const demoResponse of demoResponses) {
             if (demoResponse.keywords.some(keyword => userQuery.includes(keyword))) {
               bestResponse = demoResponse.response;
               console.log('Using demo response for keyword match');
+              foundDemoResponse = true;
               break;
+            }
+          }
+          
+          // If no demo response found, provide helpful guidance
+          if (!foundDemoResponse) {
+            const uploadedDocs = JSON.parse(localStorage.getItem('uploadedDocuments') || '[]');
+            if (uploadedDocs.length > 0) {
+              bestResponse = `Jeg forstår spørsmålet ditt, men fant ikke spesifikk informasjon i mine opplastede dokumenter. Jeg har ${uploadedDocs.length} dokument(er) tilgjengelig. Prøv å:\n\n• Stille spørsmålet på en annen måte\n• Bruke andre ord eller termer\n• Spørre om noe mer generelt\n\nEller last opp flere relevante dokumenter så kan jeg hjelpe deg bedre! 📚`;
+            } else {
+              bestResponse = `Jeg forstår spørsmålet ditt, men har ingen opplastede dokumenter å søke i ennå. Last opp relevante dokumenter (f.eks. HEPRO Respons guide, Digital Tilsyn prosedyre) så kan jeg gi deg presise svar basert på faktisk innhold! 📁\n\nDu kan laste opp dokumenter under Velferdsteknologi-tabben.`;
             }
           }
         }
@@ -355,6 +393,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
             <p className="text-sm text-muted-foreground">Teknisk kunnskapsassistent</p>
             <Badge variant="secondary" className="bg-tech-green/10 text-tech-green border-tech-green/20 text-xs mt-1">
               🔧 Demo Mode - Smart Responses
+            </Badge>
+            <Badge variant="outline" className="text-xs ml-2">
+              📚 {JSON.parse(localStorage.getItem('uploadedDocuments') || '[]').length} dokument(er)
             </Badge>
           </div>
         </div>
