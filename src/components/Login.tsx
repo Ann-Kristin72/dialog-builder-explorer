@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 
 
 const Login: React.FC = () => {
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, user, isAuthenticated } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -29,12 +29,23 @@ const Login: React.FC = () => {
 
   const handleLogin = async () => {
     try {
+      console.log('🔐 Starting login process...');
       // Her kan vi lagre brukerdata før login
       console.log('👤 Brukerdata:', formData);
       console.log('🎯 Rolle:', formData.role);
       console.log('🏥 Avdeling:', formData.department);
       console.log('🔒 Privacy Consent:', formData.privacyConsent);
+      
+      console.log('🔐 Calling login() function...');
       await login();
+      console.log('✅ Login function completed successfully');
+      
+      // Check if we're authenticated now
+      console.log('🔍 Checking authentication status...');
+      console.log('🔍 Current user:', user);
+      console.log('🔍 Is authenticated:', isAuthenticated);
+      console.log('🔍 Is loading:', isLoading);
+      
     } catch (error) {
       console.error('❌ Login failed:', error);
     }
