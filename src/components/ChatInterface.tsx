@@ -133,12 +133,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
             formatted += `🖼️ **${altText}**<br />📷 ${imageUrl}\n\n`;
           }
         } else if (line.match(/^https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp)/i)) {
-          // Handle direct image URLs
-          formatted += `🖼️ **Bilde**<br />📷 ${line}\n\n`;
+          // Handle direct image URLs - add image and keep going
+          const imageUrl = line.trim();
+          formatted += `🖼️ **Bilde**<br />📷 ${imageUrl}\n\n`;
         } else if (line.match(/^https?:\/\/[^\s]+/)) {
           // Handle other URLs
           formatted += `🔗 ${line}\n`;
         } else {
+          // Regular text content
           formatted += `${line}\n`;
         }
       }
