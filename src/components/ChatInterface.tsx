@@ -72,6 +72,67 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
     setIsTyping(false);
   };
 
+  // Parse Markdown content into structured sections
+  const parseMarkdownSections = (content: string) => {
+    const lines = content.split('\n');
+    const sections: Array<{level: number, title: string, content: string}> = [];
+    let currentSection: {level: number, title: string, content: string} | null = null;
+    let currentContent: string[] = [];
+    
+    for (const line of lines) {
+      // Check for headers (# ## ### ####)
+      const headerMatch = line.match(/^(#{1,4})\s+(.+)$/);
+      
+      if (headerMatch) {
+        // Save previous section if exists
+        if (currentSection) {
+          currentSection.content = currentContent.join('\n').trim();
+          sections.push(currentSection);
+        }
+        
+        // Start new section
+        const level = headerMatch[1].length;
+        const title = headerMatch[2].trim();
+        currentSection = { level, title, content: '' };
+        currentContent = [];
+      } else if (currentSection) {
+        // Add content to current section
+        currentContent.push(line);
+      }
+    }
+    
+    // Add last section
+    if (currentSection) {
+      currentSection.content = currentContent.join('\n').trim();
+      sections.push(currentSection);
+    }
+    
+    return sections;
+  };
+  
+  // Format Markdown section for display
+  const formatMarkdownSection = (section: {level: number, title: string, content: string}) => {
+    const headerPrefix = '#'.repeat(section.level);
+    let formatted = `${headerPrefix} ${section.title}\n\n`;
+    
+    // Add content with proper formatting
+    const contentLines = section.content.split('\n');
+    for (const line of contentLines) {
+      if (line.trim()) {
+        // Handle lists and other Markdown elements
+        if (line.match(/^[-*+]\s/)) {
+          formatted += `• ${line.substring(line.indexOf(' ') + 1)}\n`;
+        } else if (line.match(/^\d+\.\s/)) {
+          formatted += `${line}\n`;
+        } else {
+          formatted += `${line}\n`;
+        }
+      }
+    }
+    
+    return formatted.trim();
+  };
+
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
 
@@ -157,6 +218,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
 
       // Find best matching response with enhanced matching
       const userQuery = inputValue.toLowerCase();
+      console.log('User query:', userQuery);
+      
       let bestResponse = 'Hei! Jeg er TeknoTassen, din AI-assistent for velferdsteknologi. Jeg kan hjelpe deg med DPIA, ROS, behovsanalyse, HEPRO Respons, Digital Tilsyn og mye mer! Hva lurer du på? 🤖✨';
       
       // Enhanced matching for more specific queries
@@ -167,63 +230,67 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
       } else if (userQuery.includes('varda') && (userQuery.includes('opplæring') || userQuery.includes('implementering'))) {
         bestResponse = '**Varda Care - Opplæring og Implementering:** 💙\n\n**Fase 1: Forberedelse**\n• Identifiser opplæringsbehov hos ansatte\n• Velg riktig teknologi for organisasjonen\n• Planlegg opplæringsprogram\n\n**Fase 2: Implementering**\n• Start med en pilotgruppe\n• Opprett brukervennlige prosedyrer\n• Gjennomfør opplæring i små grupper\n\n**Fase 3: Oppfølging**\n• Kontinuerlig støtte og veiledning\n• Regelmessig evaluering av bruk\n• Justering av prosedyrer etter behov\n\n**Start med planleggingsverktøyene** under Velferdsteknologi-tabben! 🎯';
       } else {
-        // Check uploaded documents first with improved search
+        // Check uploaded documents first with Markdown-aware search
         const uploadedDocs = JSON.parse(localStorage.getItem('uploadedDocuments') || '[]');
         let documentResponse = '';
-        let bestMatchScore = 0;
-        let bestMatchDoc = null;
         
         if (uploadedDocs.length > 0) {
           console.log('Searching in uploaded documents:', uploadedDocs.length, 'documents');
           
+          // Enhanced search with Markdown structure awareness
           for (const doc of uploadedDocs) {
-            const docContent = doc.content.toLowerCase();
+            const docContent = doc.content;
             const queryWords = userQuery.toLowerCase().split(' ').filter(word => word.length > 2);
-            let matchScore = 0;
-            let relevantLines = [];
             
-            // Calculate match score based on word frequency
-            for (const word of queryWords) {
-              if (docContent.includes(word)) {
-                matchScore += 1;
-                // Find lines containing this word
-                const lines = doc.content.split('\n');
-                for (const line of lines) {
-                  if (line.toLowerCase().includes(word) && line.trim().length > 10) {
-                    relevantLines.push(line.trim());
-                  }
+            // Parse Markdown structure to find relevant sections
+            const sections = parseMarkdownSections(docContent);
+            let bestSection = null;
+            let bestScore = 0;
+            
+            // Score each section based on query relevance
+            for (const section of sections) {
+              let score = 0;
+              const sectionText = section.content.toLowerCase();
+              
+              for (const word of queryWords) {
+                if (sectionText.includes(word)) {
+                  score += 1;
                 }
+              }
+              
+              if (score > bestScore) {
+                bestScore = score;
+                bestSection = section;
               }
             }
             
-            // If we have a good match
-            if (matchScore > 0 && matchScore > bestMatchScore) {
-              bestMatchScore = matchScore;
-              bestMatchDoc = doc;
-              
-              // Get most relevant content (up to 5 lines)
-              const uniqueLines = [...new Set(relevantLines)].slice(0, 5);
-              const relevantContent = uniqueLines.join('\n');
-              
-              documentResponse = `**Fra opplastet dokument "${doc.title}":** 📚\n\n${relevantContent}\n\n*Dette er basert på dokumentet du lastet opp. Match-score: ${matchScore}/${queryWords.length} ord.*`;
+            // If we found a relevant section
+            if (bestSection && bestScore > 0) {
+              const formattedSection = formatMarkdownSection(bestSection);
+              documentResponse = `**Fra opplastet dokument "${doc.title}":** 📚\n\n${formattedSection}\n\n*Dette er basert på dokumentet du lastet opp. Match-score: ${bestScore}/${queryWords.length} ord.*`;
+              break;
             }
           }
           
-          console.log('Best document match:', bestMatchDoc?.title, 'Score:', bestMatchScore);
+          console.log('Document response found:', !!documentResponse);
         }
         
-        if (documentResponse && bestMatchScore > 0) {
+        if (documentResponse) {
           bestResponse = documentResponse;
+          console.log('Using document response from:', documentResponse.substring(0, 50) + '...');
         } else {
           // Standard keyword matching
           for (const demoResponse of demoResponses) {
             if (demoResponse.keywords.some(keyword => userQuery.includes(keyword))) {
               bestResponse = demoResponse.response;
+              console.log('Using demo response for keyword match');
               break;
             }
           }
         }
       }
+      
+      console.log('Final best response:', bestResponse.substring(0, 100) + '...');
 
       const fallbackMessage: Message = {
         id: (Date.now() + 1).toString(),
