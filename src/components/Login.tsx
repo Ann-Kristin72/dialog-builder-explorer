@@ -24,12 +24,7 @@ const Login: React.FC = () => {
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     
-    // Gå til neste steg hvis feltet er fylt ut (unntatt privacy consent)
-    if (value && field !== 'privacyConsent' && currentStep < 5) {
-      setTimeout(() => {
-        setCurrentStep(prev => prev + 1);
-      }, 500); // 500ms forsinkelse for smooth overgang
-    }
+    // Ikke gå til neste steg automatisk - la brukeren fylle ut feltet først
   };
 
   const handleLogin = async () => {
@@ -183,7 +178,7 @@ const Login: React.FC = () => {
                           type="button"
                           variant="outline" 
                           size="sm" 
-                          className="text-tech-green border-tech-green/30 hover:bg-tech-green/10 text-xs"
+                          className="text-tech-green border-tech-green/30 hover:bg-green/10 text-xs"
                         >
                           Les mer →
                         </Button>
@@ -203,6 +198,37 @@ const Login: React.FC = () => {
                     </div>
                   </div>
                 </div>
+              )}
+            </div>
+            
+            {/* Neste/Tilbake knapper */}
+            <div className="flex justify-between pt-4">
+              {currentStep > 0 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setCurrentStep(prev => prev - 1)}
+                  className="px-6"
+                >
+                  ← Tilbake
+                </Button>
+              )}
+              
+              {currentStep < 5 && (
+                <Button
+                  type="button"
+                  onClick={() => setCurrentStep(prev => prev + 1)}
+                  disabled={
+                    (currentStep === 0 && !formData.name) ||
+                    (currentStep === 1 && !formData.email) ||
+                    (currentStep === 2 && !formData.role) ||
+                    (currentStep === 3 && !formData.workplace) ||
+                    (currentStep === 4 && !formData.department)
+                  }
+                  className="ml-auto px-6 bg-tech-blue hover:bg-tech-blue/90"
+                >
+                  Neste →
+                </Button>
               )}
             </div>
           </div>
