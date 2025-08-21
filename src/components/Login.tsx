@@ -20,6 +20,7 @@ const Login: React.FC = () => {
   });
   
   const [currentStep, setCurrentStep] = useState(0);
+  const [rememberMe, setRememberMe] = useState(false);
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -37,8 +38,14 @@ const Login: React.FC = () => {
       console.log('🔒 Privacy Consent:', formData.privacyConsent);
       
       // For demo - lagre brukerdata og gå direkte til dashboard
-      localStorage.setItem('demoUserData', JSON.stringify(formData));
-      console.log('✅ Demo user data saved to localStorage');
+      const userDataToStore = {
+        ...formData,
+        rememberMe,
+        loginTime: new Date().toISOString()
+      };
+      
+      localStorage.setItem('demoUserData', JSON.stringify(userDataToStore));
+      console.log('✅ Demo user data saved to localStorage with remember me:', rememberMe);
       
       // Naviger direkte til dashboard
       window.location.href = '/';
@@ -201,6 +208,20 @@ const Login: React.FC = () => {
                           />
                           <Label htmlFor="privacy-consent" className="text-xs text-muted-foreground">
                             Jeg godtar personvernerklæringen
+                          </Label>
+                        </div>
+                        
+                        {/* Remember Me checkbox */}
+                        <div className="flex items-center space-x-2 mt-3 pt-3 border-t border-tech-green/20">
+                          <input
+                            type="checkbox"
+                            id="remember-me"
+                            checked={rememberMe}
+                            onChange={(e) => setRememberMe(e.target.checked)}
+                            className="w-4 h-4 text-tech-blue border-gray-300 rounded focus:ring-tech-blue focus:ring-offset-0"
+                          />
+                          <Label htmlFor="remember-me" className="text-xs text-muted-foreground">
+                            Husk meg neste gang
                           </Label>
                         </div>
                       </div>

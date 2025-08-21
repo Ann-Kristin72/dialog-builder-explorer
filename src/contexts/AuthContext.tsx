@@ -34,6 +34,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const demoUserData = localStorage.getItem('demoUserData');
       if (demoUserData) {
         const userData = JSON.parse(demoUserData);
+        
+        // Check if "remember me" is enabled and if login is still valid
+        if (userData.rememberMe && userData.loginTime) {
+          const loginTime = new Date(userData.loginTime);
+          const now = new Date();
+          const hoursSinceLogin = (now.getTime() - loginTime.getTime()) / (1000 * 60 * 60);
+          
+          // If more than 24 hours have passed, clear the data
+          if (hoursSinceLogin > 24) {
+            console.log('🔍 Login expired (more than 24 hours), clearing data');
+            localStorage.removeItem('demoUserData');
+            setIsLoading(false);
+            return;
+          }
+          
+          console.log('✅ Remember me active, login still valid');
+        } else {
+          console.log('🔍 Remember me not enabled or no login time');
+        }
+        
         const demoUser: AuthUser = {
           id: 'demo-user-' + Date.now(),
           email: userData.email,
@@ -114,6 +134,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (demoUserData) {
           console.log('🔍 Found demo user data, creating user...');
           const userData = JSON.parse(demoUserData);
+          
+          // Check if "remember me" is enabled and if login is still valid
+          if (userData.rememberMe && userData.loginTime) {
+            const loginTime = new Date(userData.loginTime);
+            const now = new Date();
+            const hoursSinceLogin = (now.getTime() - loginTime.getTime()) / (1000 * 60 * 60);
+            
+            // If more than 24 hours have passed, clear the data
+            if (hoursSinceLogin > 24) {
+              console.log('🔍 Login expired (more than 24 hours), clearing data');
+              localStorage.removeItem('demoUserData');
+              setIsLoading(false);
+              return;
+            }
+            
+            console.log('✅ Remember me active, login still valid');
+          } else {
+            console.log('🔍 Remember me not enabled or no login time');
+          }
+          
           const demoUser: AuthUser = {
             id: 'demo-user-' + Date.now(),
             email: userData.email,
