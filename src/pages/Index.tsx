@@ -277,13 +277,7 @@ const Index: React.FC = () => {
                   <p className="text-muted-foreground">
                     {user ? `Som din AI-assistent kan jeg hjelpe deg, ${user.givenName}, med:` : 'Som din AI-assistent kan jeg hjelpe deg med:'}
                   </p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-tech-blue">📋 DPIA & ROS Analyse</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Veiledning gjennom Data Protection Impact Assessment og Risk & Opportunity Screening
-                      </p>
-                    </div>
+                  <div className="grid grid-cols-1 gap-4">
                     <div className="space-y-2">
                       <h4 className="font-semibold text-tech-green">👥 Pasientbehov & Opplæring</h4>
                       <p className="text-sm text-muted-foreground">
