@@ -360,6 +360,79 @@ const Index: React.FC = () => {
                     <Button className="w-full mt-3 bg-tech-green hover:bg-tech-green/90 text-white">
                       Start Kartlegging →
                     </Button>
+                    
+                    {/* File Upload for AI Analysis - Under Opplæring */}
+                    <div className="mt-4 pt-4 border-t border-tech-green/20">
+                      <h5 className="font-medium text-tech-green mb-3 flex items-center">
+                        <span className="text-lg mr-2">📁</span>
+                        AI-dokumentanalyse
+                      </h5>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        Last opp filer for at TeknoTassen skal kunne lese og svare basert på innholdet
+                      </p>
+                      
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 gap-2">
+                          <Input 
+                            placeholder="Dokumenttittel (f.eks. HEPRO Guide)"
+                            className="text-xs border-tech-green/20 focus:border-tech-green"
+                            value={documentTitle}
+                            onChange={(e) => setDocumentTitle(e.target.value)}
+                          />
+                          <Input 
+                            placeholder="Beskrivelse (valgfritt)"
+                            className="text-xs border-tech-green/20 focus:border-tech-green"
+                            value={documentDescription}
+                            onChange={(e) => setDocumentDescription(e.target.value)}
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <div className="border border-dashed border-tech-green/30 rounded-lg p-3 text-center hover:border-tech-green/50 transition-colors">
+                            <Upload className="w-5 h-5 text-tech-green mx-auto mb-1" />
+                            <p className="text-xs text-muted-foreground mb-1">
+                              {selectedFile ? `Valgt: ${selectedFile.name}` : 'Klikk for å velge fil'}
+                            </p>
+                            <p className="text-xs text-muted-foreground mb-2">
+                              Støtter: .txt, .md, .pdf, .docx
+                            </p>
+                            <Input 
+                              type="file" 
+                              accept=".txt,.md,.pdf,.docx"
+                              className="hidden"
+                              id="opplæring-file-upload"
+                              onChange={handleFileSelect}
+                            />
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="text-xs border-tech-green/30 text-tech-green hover:bg-tech-green/10"
+                              onClick={() => document.getElementById('opplæring-file-upload')?.click()}
+                            >
+                              Velg fil
+                            </Button>
+                          </div>
+                        </div>
+
+                        <Button 
+                          className="w-full bg-tech-green hover:bg-tech-green/90 text-white text-xs"
+                          onClick={handleUpload}
+                          disabled={!selectedFile || !documentTitle.trim() || isUploading}
+                        >
+                          {isUploading ? (
+                            <>
+                              <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                              Laster opp...
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="w-3 h-3 mr-1" />
+                              Last opp til AI
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -577,104 +650,6 @@ const Index: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* File Upload for AI Analysis - Functional Integration */}
-                  <div className="bg-gradient-to-r from-tech-orange/5 to-tech-blue/5 border border-tech-orange/20 rounded-lg p-4">
-                    <div className="flex items-center space-x-3 mb-4">
-                      <div className="w-10 h-10 bg-tech-orange/20 rounded-full flex items-center justify-center">
-                        <span className="text-tech-orange text-lg">📁</span>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-card-foreground">AI-dokumentanalyse</h4>
-                        <p className="text-sm text-muted-foreground">Last opp filer for at TeknoTassen skal kunne lese og svare basert på innholdet</p>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-card-foreground">Dokumenttittel</label>
-                          <Input 
-                            placeholder="F.eks. HEPRO Respons Guide, Digital Tilsyn Prosedyre"
-                            className="border-tech-orange/20 focus:border-tech-orange"
-                            value={documentTitle}
-                            onChange={(e) => setDocumentTitle(e.target.value)}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-card-foreground">Beskrivelse</label>
-                          <Input 
-                            placeholder="Kort beskrivelse av dokumentet"
-                            className="border-tech-orange/20 focus:border-tech-orange"
-                            value={documentDescription}
-                            onChange={(e) => setDocumentDescription(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-card-foreground">Velg fil</label>
-                        <div className="border-2 border-dashed border-tech-orange/30 rounded-lg p-6 text-center hover:border-tech-orange/50 transition-colors">
-                          <Upload className="w-8 h-8 text-tech-orange mx-auto mb-2" />
-                          <p className="text-sm text-muted-foreground mb-2">
-                            {selectedFile ? `Valgt: ${selectedFile.name}` : 'Dra og slipp filer hit, eller klikk for å velge'}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Støtter: .txt, .md, .pdf, .docx
-                          </p>
-                          <Input 
-                            type="file" 
-                            accept=".txt,.md,.pdf,.docx"
-                            className="hidden"
-                            id="ai-file-upload"
-                            onChange={handleFileSelect}
-                          />
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            className="mt-2 border-tech-orange/30 text-tech-orange hover:bg-tech-orange/10"
-                            onClick={() => document.getElementById('ai-file-upload')?.click()}
-                          >
-                            Velg fil
-                          </Button>
-                        </div>
-                      </div>
-
-                      <div className="flex space-x-3">
-                        <Button 
-                          className="flex-1 bg-tech-orange hover:bg-tech-orange/90 text-white"
-                          onClick={handleUpload}
-                          disabled={!selectedFile || !documentTitle.trim() || isUploading}
-                        >
-                          {isUploading ? (
-                            <>
-                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                              Laster opp...
-                            </>
-                          ) : (
-                            <>
-                              <Upload className="w-4 h-4 mr-2" />
-                              Last opp til AI
-                            </>
-                          )}
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          className="border-tech-orange/30 text-tech-orange hover:bg-tech-orange/10"
-                          onClick={() => setShowUpload(true)}
-                        >
-                          <FileText className="w-4 h-4 mr-2" />
-                          Se opplastede filer
-                        </Button>
-                      </div>
-
-                      <div className="bg-tech-orange/5 border border-tech-orange/20 rounded-lg p-3">
-                        <p className="text-xs text-tech-orange/80">
-                          💡 <strong>Tips:</strong> Etter opplasting kan TeknoTassen svare på spørsmål basert på dokumentets innhold. 
-                          Perfekt for prosedyrer, retningslinjer og dokumentasjon!
-                        </p>
-                      </div>
-                    </div>
-                  </div>
                 </CardContent>
               </Card>
             </div>
