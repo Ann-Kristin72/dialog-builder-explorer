@@ -113,40 +113,12 @@ const Index: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-secondary via-background to-accent">
-      {/* Header */}
-      <header className="bg-card shadow-card border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 rounded-xl overflow-hidden shadow-avatar">
-                <img 
-                  src="/teknotassen-avatar.jpg" 
-                  alt="TeknoTassen"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <Badge variant="outline" className="bg-tech-green/10 text-tech-green border-tech-green/20">
-                Demo Mode
-              </Badge>
-              <Button 
-                onClick={() => window.location.href = '/login'}
-                className="bg-gradient-to-r from-primary to-tech-blue hover:from-primary/90 hover:to-tech-blue/90 text-primary-foreground shadow-soft"
-              >
-                <MessageSquare className="w-4 h-4 mr-2" />
-                Logg inn
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="dashboard" className="flex items-center space-x-2">
               <MessageSquare className="w-4 h-4" />
               <span>Dashboard</span>
@@ -154,14 +126,6 @@ const Index: React.FC = () => {
             <TabsTrigger value="velferdsteknologi" className="flex items-center space-x-2">
               <Brain className="w-4 h-4" />
               <span>Velferdsteknologi</span>
-            </TabsTrigger>
-            <TabsTrigger value="features" className="flex items-center space-x-2">
-              <Zap className="w-4 h-4" />
-              <span>Funksjoner</span>
-            </TabsTrigger>
-            <TabsTrigger value="tech" className="flex items-center space-x-2">
-              <Database className="w-4 h-4" />
-              <span>Teknologi</span>
             </TabsTrigger>
           </TabsList>
 
@@ -380,132 +344,7 @@ const Index: React.FC = () => {
             </div>
           </TabsContent>
 
-          {/* Features Tab */}
-          <TabsContent value="features" className="space-y-8">
-            <div className="text-center space-y-4">
-              <h2 className="text-3xl font-bold text-card-foreground">
-                Avanserte AI-Funksjoner
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                TeknoTassen Explorer kombinerer moderne AI-teknologi med robust infrastruktur
-                for å gi deg en kraftfull kunnskapsplattform.
-              </p>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {features.map((feature, index) => (
-                <FeatureCard
-                  key={index}
-                  icon={feature.icon}
-                  title={feature.title}
-                  description={feature.description}
-                  accentColor={feature.accentColor}
-                />
-              ))}
-            </div>
-
-            {/* Architecture Overview */}
-            <Card className="bg-gradient-to-r from-primary/5 to-tech-blue/5 border-primary/20">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2 text-primary">
-                  <Database className="w-5 h-5" />
-                  <span>Systemarkitektur</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                  <div className="space-y-2">
-                    <h4 className="font-semibold text-tech-blue">Frontend</h4>
-                    <ul className="space-y-1 text-tech-blue/80">
-                      <li>• React + TypeScript</li>
-                      <li>• Tailwind CSS + shadcn/ui</li>
-                      <li>• Vite build system</li>
-                    </ul>
-                  </div>
-                  <div className="space-y-2">
-                    <h4 className="font-semibold text-primary">Backend</h4>
-                    <ul className="space-y-1 text-primary/80">
-                      <li>• Express.js API</li>
-                      <li>• LangChain + OpenAI</li>
-                      <li>• Azure Web App</li>
-                    </ul>
-                  </div>
-                  <div className="space-y-2">
-                    <h4 className="font-semibold text-tech-green">Database</h4>
-                    <ul className="space-y-1 text-tech-green/80">
-                      <li>• PostgreSQL + pgvector</li>
-                      <li>• Azure Database</li>
-                      <li>• Managed Identity</li>
-                    </ul>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Technology Tab */}
-          <TabsContent value="tech" className="space-y-8">
-            <div className="text-center space-y-4">
-              <h2 className="text-3xl font-bold text-card-foreground">
-                Teknologistakk
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                Oversikt over alle teknologier som brukes i TeknoTassen Explorer,
-                fra frontend til backend og infrastruktur.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {technologies.map((tech, index) => (
-                <Card key={index} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-semibold text-gray-900">{tech.name}</h3>
-                        <p className="text-sm text-gray-600">v{tech.version}</p>
-                      </div>
-                      <Badge className={getStatusColor(tech.status)}>
-                        {getStatusIcon(tech.status)} {tech.status}
-                      </Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {/* Velkommen Status */}
-            <Card className="bg-gradient-to-r from-primary/5 to-tech-blue/5 border-primary/20">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2 text-primary">
-                  <MessageSquare className="w-5 h-5" />
-                  <span>Velkommen til TeknoTassen!</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-tech-green rounded-full animate-pulse"></div>
-                  <span className="text-sm text-tech-green">
-                    Frontend kjører på Vercel, backend på Azure
-                  </span>
-                </div>
-                <div className="text-sm text-muted-foreground space-y-1">
-                  <p>• Moderne React-applikasjon med TypeScript</p>
-                  <p>• AI-assistent med RAG-teknologi</p>
-                  <p>• Sikker autentisering og datahåndtering</p>
-                </div>
-                <div className="pt-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="text-primary border-primary/30"
-                    onClick={() => window.location.href = '/login'}
-                  >
-                    Kom i gang
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
         </Tabs>
       </main>
 
