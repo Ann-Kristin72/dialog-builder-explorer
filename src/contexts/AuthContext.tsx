@@ -33,6 +33,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const currentUser = await authService.getUser();
       setUser(currentUser);
       console.log('✅ User refreshed:', currentUser);
+      
+      // If we have a user, make sure we're not loading anymore
+      if (currentUser) {
+        setIsLoading(false);
+      }
     } catch (error) {
       console.error('❌ Error refreshing user:', error);
       setUser(null);
@@ -42,10 +47,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async () => {
     try {
       console.log('🔐 Starting login process...');
-      await authService.login();
-      console.log('✅ Login completed, refreshing user...');
-      // After login, refresh user to get the updated state
-      await refreshUser();
+      const newUser = await authService.login();
+      console.log('✅ Login completed, got user:', newUser);
+      
+      if (newUser) {
+        // Set user directly from login response
+        setUser(newUser);
+        console.log('✅ User set directly from login');
+      } else {
+        // Fallback to refresh if no user returned
+        await refreshUser();
+        console.log('✅ User refreshed after login');
+      }
+      
       console.log('✅ Login process completed successfully');
     } catch (error) {
       console.error('❌ Login error:', error);
@@ -66,15 +80,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
+        console.log('🔍 Initializing auth...');
+        console.log('🔍 Current URL:', window.location.href);
+        
         // Check if we're returning from login
         if (window.location.href.includes('id_token=') || window.location.href.includes('access_token=')) {
+          console.log('🔍 Detected OIDC callback, completing login...');
           const newUser = await authService.completeLogin();
           if (newUser) {
             setUser(newUser);
+            console.log('✅ OIDC login completed, user set:', newUser);
             // Clean up URL
             window.history.replaceState({}, document.title, window.location.pathname);
           }
         } else {
+          console.log('🔍 No OIDC callback, checking for existing user...');
           // Check for existing user
           await refreshUser();
         }
@@ -82,6 +102,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.error('❌ Auth initialization error:', error);
       } finally {
         setIsLoading(false);
+        console.log('🔍 Auth initialization completed, loading set to false');
       }
     };
 
@@ -91,7 +112,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value: AuthContextType = {
     user,
     isLoading,
-    isAuthenticated: !!user,
+    isAuthenticated: !!user && !!user.accessToken,
     login,
     logout,
     refreshUser,

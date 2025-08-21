@@ -57,7 +57,7 @@ class AuthService {
     });
   }
 
-  async login(): Promise<void> {
+  async login(): Promise<AuthUser> {
     if (this.demoMode) {
       // Demo login - create a mock user
       const demoUser: AuthUser = {
@@ -74,7 +74,7 @@ class AuthService {
       // Store in localStorage for demo
       localStorage.setItem('demoUser', JSON.stringify(demoUser));
       console.log('✅ Demo user created and stored:', demoUser);
-      return;
+      return demoUser;
     }
 
     try {
@@ -87,7 +87,12 @@ class AuthService {
 
   async completeLogin(): Promise<AuthUser | null> {
     if (this.demoMode) {
-      return null; // Demo mode doesn't use redirects
+      // In demo mode, get user from localStorage
+      const demoUser = localStorage.getItem('demoUser');
+      if (demoUser) {
+        return JSON.parse(demoUser);
+      }
+      return null;
     }
 
     try {
