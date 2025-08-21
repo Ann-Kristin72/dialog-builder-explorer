@@ -15,10 +15,11 @@ const Login: React.FC = () => {
     email: '',
     role: '',
     workplace: '',
-    department: ''
+    department: '',
+    privacyConsent: false
   });
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -28,13 +29,14 @@ const Login: React.FC = () => {
       console.log('👤 Brukerdata:', formData);
       console.log('🎯 Rolle:', formData.role);
       console.log('🏥 Avdeling:', formData.department);
+      console.log('🔒 Privacy Consent:', formData.privacyConsent);
       await login();
     } catch (error) {
       console.error('❌ Login failed:', error);
     }
   };
 
-  const isFormValid = formData.name && formData.email && formData.role && formData.workplace && formData.department;
+  const isFormValid = formData.name && formData.email && formData.role && formData.workplace && formData.department && formData.privacyConsent;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-secondary to-accent p-4 sm:p-6">
@@ -145,6 +147,47 @@ const Login: React.FC = () => {
                   className="mt-1"
                 />
               </div>
+              
+              {/* Privacy Policy Field */}
+              <div className="bg-gradient-to-r from-tech-green/5 to-tech-green/10 p-4 rounded-lg border border-tech-green/20">
+                <div className="flex items-start space-x-3">
+                  <div className="w-6 h-6 bg-tech-green/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <span className="text-tech-green text-sm">🔒</span>
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-card-foreground text-sm mb-2">
+                      Personvern og databehandling
+                    </h4>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Vi samler kun det som er nødvendig for kursene dine (navn, e-post, progresjon). 
+                      Alt lagres trygt i EU (Azure), kryptert og beskyttet. 
+                      Du har alltid rett til innsyn og sletting.
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <Button 
+                        type="button"
+                        variant="outline" 
+                        size="sm" 
+                        className="text-tech-green border-tech-green/30 hover:bg-tech-green/10 text-xs"
+                      >
+                        Les mer →
+                      </Button>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="privacy-consent"
+                          checked={formData.privacyConsent}
+                          onChange={(e) => handleInputChange('privacyConsent', e.target.checked)}
+                          className="w-4 h-4 text-tech-green border-gray-300 rounded focus:ring-tech-green focus:ring-offset-0"
+                        />
+                        <Label htmlFor="privacy-consent" className="text-xs text-muted-foreground">
+                          Jeg godtar personvernerklæringen
+                        </Label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           
@@ -169,7 +212,7 @@ const Login: React.FC = () => {
           </Button>
           
           <div className="text-center text-xs text-muted-foreground mt-4">
-            <p>🔧 Demo mode: Fyll ut alle 5 feltene for å aktivere "Logg inn"</p>
+            <p>🔧 Demo mode: Fyll ut alle 6 feltene for å aktivere "Logg inn"</p>
             <p>TeknoTassen vil veilede deg gjennom hele prosessen når du logger inn!</p>
           </div>
         </CardContent>
