@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DocumentUpload } from '../components/DocumentUpload';
 import { FeatureCard } from '../components/FeatureCard';
+import { ChatInterface } from '../components/ChatInterface';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
@@ -176,23 +177,36 @@ const Index: React.FC = () => {
           <TabsContent value="dashboard" className="space-y-6">
             <div className="space-y-6">
               {/* TeknoTassen velkomst for innloggede brukere */}
-              <div className="flex items-center space-x-6 mb-8">
-                <div className="w-24 h-24 rounded-full overflow-hidden shadow-avatar border-4 border-white">
-                  <img 
-                    src="/teknotassen-avatar.jpg" 
-                    alt="TeknoTassen"
-                    className="w-full h-full object-cover"
-                  />
+              <div className="text-center mb-8">
+                <div className="flex justify-center mb-6">
+                  <div className="w-32 h-32 rounded-full overflow-hidden shadow-avatar border-4 border-white">
+                    <img 
+                      src="/teknotassen-avatar.jpg" 
+                      alt="TeknoTassen"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 </div>
-                <div className="flex-1">
+                <div>
                   <h2 className="text-3xl font-bold text-card-foreground">
                     Velkommen tilbake, {user?.givenName || 'venn'}! 🎉
                   </h2>
-                  <p className="text-lg text-muted-foreground max-w-3xl">
-                    Jeg er TeknoTassen, din personlige AI-assistent for velferdsteknologi. 
-                    Jeg er her for å veilede deg gjennom hele prosessen med implementering av velferdsteknologi.
-                  </p>
                 </div>
+              </div>
+
+              {/* Chat Interface for AI Agent */}
+              <div className="mb-8">
+                <Card className="border-tech-blue/20 shadow-card">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2 text-tech-blue">
+                      <MessageSquare className="w-5 h-5" />
+                      <span>Chat med TeknoTassen AI</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ChatInterface />
+                  </CardContent>
+                </Card>
               </div>
 
               {/* Quick Actions */}
