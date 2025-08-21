@@ -14,7 +14,8 @@ const Login: React.FC = () => {
     name: '',
     email: '',
     role: '',
-    workplace: ''
+    workplace: '',
+    department: ''
   });
 
   const handleInputChange = (field: string, value: string) => {
@@ -25,17 +26,19 @@ const Login: React.FC = () => {
     try {
       // Her kan vi lagre brukerdata før login
       console.log('👤 Brukerdata:', formData);
+      console.log('🎯 Rolle:', formData.role);
+      console.log('🏥 Avdeling:', formData.department);
       await login();
     } catch (error) {
       console.error('❌ Login failed:', error);
     }
   };
 
-  const isFormValid = formData.name && formData.email && formData.role && formData.workplace;
+  const isFormValid = formData.name && formData.email && formData.role && formData.workplace && formData.department;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-secondary to-accent p-4 sm:p-6">
-      <Card className="w-full max-w-lg shadow-card">
+      <Card className="w-full max-w-xl shadow-card">
         <CardHeader className="text-center p-4 sm:p-6">
           <div className="mx-auto mb-6">
             {/* TeknoTassen avatar */}
@@ -128,6 +131,20 @@ const Login: React.FC = () => {
                   className="mt-1"
                 />
               </div>
+              
+              <div>
+                <Label htmlFor="department" className="text-sm font-medium text-card-foreground">
+                  Avdeling/Seksjon
+                </Label>
+                <Input
+                  id="department"
+                  type="text"
+                  placeholder="F.eks. Omsorg, Sykepleie, IT"
+                  value={formData.department}
+                  onChange={(e) => handleInputChange('department', e.target.value)}
+                  className="mt-1"
+                />
+              </div>
             </div>
           </div>
           
@@ -152,7 +169,7 @@ const Login: React.FC = () => {
           </Button>
           
           <div className="text-center text-xs text-muted-foreground mt-4">
-            <p>🔧 Demo mode: Fyll ut alle feltene for å aktivere "Logg inn"</p>
+            <p>🔧 Demo mode: Fyll ut alle 5 feltene for å aktivere "Logg inn"</p>
             <p>TeknoTassen vil veilede deg gjennom hele prosessen når du logger inn!</p>
           </div>
         </CardContent>
