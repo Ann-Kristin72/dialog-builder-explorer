@@ -2,6 +2,8 @@
 
 > En RAG-drevet AI-assistent bygget med moderne teknologi for å hjelpe med teknisk kunnskap og kurs
 
+<!-- Trigger Vercel deploy - Azure AD B2C aktivert -->
+
 ## 📋 **Hva er TeknoTassen?**
 
 TeknoTassen er en intelligent AI-assistent som bruker **Retrieval-Augmented Generation (RAG)** for å gi presise, kontekstuelle svar basert på kursinnhold og teknisk dokumentasjon.
