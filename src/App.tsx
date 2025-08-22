@@ -37,22 +37,32 @@ const AppContent: React.FC = () => {
     <Router>
       <IframeWrapper>
         <div className="min-h-screen bg-gray-50">
-          {/* Header vises alltid */}
-          <Header />
-          
           <Routes>
             {/* Login route */}
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={
+              <>
+                <Header />
+                <Login />
+              </>
+            } />
             
             {/* Public routes */}
-            <Route path="/aula" element={<AulaPage />} />
+            <Route path="/aula" element={
+              <>
+                <Header />
+                <AulaPage />
+              </>
+            } />
             
             {/* Protected routes */}
             <Route
               path="/"
               element={
                 <ProtectedRoute>
-                  <Index />
+                  <>
+                    <Header />
+                    <Index />
+                  </>
                 </ProtectedRoute>
               }
             />
