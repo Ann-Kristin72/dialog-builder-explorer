@@ -6,6 +6,7 @@
 <!-- Ny push for å trigge Vercel deploy -->
 <!-- Webhook test - Azure AD B2C endringer -->
 <!-- Environment variables oppdatert - Azure AD B2C skal fungere nå -->
+<!-- Azure AD B2C custom claims konfigurert - role, organization, Location -->
 
 ## 📋 **Hva er TeknoTassen?**
 
