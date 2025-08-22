@@ -5,6 +5,7 @@
 <!-- Trigger Vercel deploy - Azure AD B2C aktivert -->
 <!-- Ny push for å trigge Vercel deploy -->
 <!-- Webhook test - Azure AD B2C endringer -->
+<!-- Environment variables oppdatert - Azure AD B2C skal fungere nå -->
 
 ## 📋 **Hva er TeknoTassen?**
 
