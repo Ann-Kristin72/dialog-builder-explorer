@@ -294,6 +294,8 @@ jobs:
           # Verify port is set correctly
           if [ "$PORT_SETTING" != "80" ]; then
             echo "⚠️ Warning: WEBSITES_PORT is not set to 80 (current: $PORT_SETTING)"
+          else
+            echo "✅ WEBSITES_PORT is correctly set to 80"
           fi
           
           echo "✅ Linux Web App for Containers configuration verified"

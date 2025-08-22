@@ -37,6 +37,9 @@ const AppContent: React.FC = () => {
     <Router>
       <IframeWrapper>
         <div className="min-h-screen bg-gray-50">
+          {/* Header vises alltid */}
+          <Header />
+          
           <Routes>
             {/* Login route */}
             <Route path="/login" element={<Login />} />
@@ -49,10 +52,7 @@ const AppContent: React.FC = () => {
               path="/"
               element={
                 <ProtectedRoute>
-                  <>
-                    <Header />
-                    <Index />
-                  </>
+                  <Index />
                 </ProtectedRoute>
               }
             />

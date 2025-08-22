@@ -43,3 +43,13 @@ WEBSITES_PORT=80
 AZURE_CONTAINER_REGISTRY=acrteknotassen
 AZURE_WEBAPP_NAME=web-teknotassen
 AZURE_RESOURCE_GROUP=teknotassen-rg
+
+# Azure AD B2C Configuration
+AZURE_AD_B2C_TENANT_NAME=teknotassenb2c
+AZURE_AD_B2C_CLIENT_ID=your-azure-b2c-client-id
+AZURE_AD_B2C_CLIENT_SECRET=your-azure-b2c-client-secret
+AZURE_AD_B2C_DOMAIN=teknotassenb2c.onmicrosoft.com
+AZURE_AD_B2C_POLICY_NAME=B2C_1A_SIGNIN
+
+# JWT Validation (optional - for production)
+AZURE_AD_B2C_PUBLIC_KEY_URL=https://teknotassenb2c.b2clogin.com/teknotassenb2c.onmicrosoft.com/discovery/v2.0/keys

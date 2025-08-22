@@ -42,6 +42,8 @@ export const DocumentUpload = ({ onDocumentUploaded }: DocumentUploadProps) => {
       };
 
       const backendUrl = import.meta.env.VITE_API_URL || 'https://web-teknotassen-erf2emgebjh7cydy.norwayeast-01.azurewebsites.net';
+      console.log('🌐 Using backend URL for upload:', backendUrl);
+      
       const response = await fetch(`${backendUrl}/api/courses/upload`, {
         method: 'POST',
         headers: {

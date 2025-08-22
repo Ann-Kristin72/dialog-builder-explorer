@@ -23,6 +23,8 @@ export const KnowledgeManager = () => {
     setIsLoading(true);
           try {
         const backendUrl = import.meta.env.VITE_API_URL || 'https://web-teknotassen-erf2emgebjh7cydy.norwayeast-01.azurewebsites.net';
+        console.log('🌐 Using backend URL for documents:', backendUrl);
+        
         const response = await fetch(`${backendUrl}/api/courses`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -44,6 +46,8 @@ export const KnowledgeManager = () => {
       const deleteDocument = async (id: string, title: string) => {
       try {
         const backendUrl = import.meta.env.VITE_API_URL || 'https://web-teknotassen-erf2emgebjh7cydy.norwayeast-01.azurewebsites.net';
+        console.log('🌐 Using backend URL for delete:', backendUrl);
+        
         const response = await fetch(`${backendUrl}/api/courses/${id}`, {
           method: 'DELETE',
         });

@@ -8,6 +8,7 @@ import coursesRouter from './routes/courses.js';
 import ttsSttRouter from './routes/ttsStt.js';
 import { testConnection, initDatabase, initializeDatabasePool } from './utils/database.js';
 import { azureStorageService } from './services/azureStorageService.js';
+import { authenticateToken, optionalAuth } from './middleware/auth.js';
 
 const app = express();
 
@@ -60,8 +61,8 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // API routes
-app.use('/api/courses', coursesRouter);
-app.use('/api/tts-stt', ttsSttRouter);
+app.use('/api/courses', optionalAuth, coursesRouter);
+app.use('/api/tts-stt', optionalAuth, ttsSttRouter);
 
 // Error handling middleware
 app.use((error, req, res, next) => {

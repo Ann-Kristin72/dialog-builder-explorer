@@ -28,13 +28,17 @@ class AuthService {
     this.userManager = new UserManager({
       authority: import.meta.env.VITE_OIDC_AUTHORITY || 'https://teknotassenb2c.b2clogin.com/teknotassenb2c.onmicrosoft.com/B2C_1A_SIGNIN',
       client_id: import.meta.env.VITE_OIDC_CLIENT_ID || '',
-      redirect_uri: import.meta.env.VITE_REDIRECT_URI || 'https://dialog-builder-explorer-qrrvdgk63-aino-frontend.vercel.app',
-      response_type: 'id_token token',
+      redirect_uri: import.meta.env.VITE_REDIRECT_URI || 'https://dialog-builder-explorer-a3cr9ruhf-aino-frontend.vercel.app',
+      response_type: 'code',
       scope: 'openid profile email',
-      post_logout_redirect_uri: import.meta.env.VITE_REDIRECT_URI || 'https://dialog-builder-explorer-qrrvdgk63-aino-frontend.vercel.app',
+      post_logout_redirect_uri: import.meta.env.VITE_REDIRECT_URI || 'https://dialog-builder-explorer-a3cr9ruhf-aino-frontend.vercel.app',
       userStore: new WebStorageStateStore({ store: window.localStorage }),
       automaticSilentRenew: true,
-      silent_redirect_uri: import.meta.env.VITE_REDIRECT_URI || 'https://dialog-builder-explorer-qrrvdgk63-aino-frontend.vercel.app',
+      silent_redirect_uri: import.meta.env.VITE_REDIRECT_URI || 'https://dialog-builder-explorer-a3cr9ruhf-aino-frontend.vercel.app',
+      
+      // PKCE støtte for Azure AD B2C
+      code_challenge_method: 'S256',
+      code_verifier: undefined, // Genereres automatisk av oidc-client-ts
     });
 
     // Set up event handlers

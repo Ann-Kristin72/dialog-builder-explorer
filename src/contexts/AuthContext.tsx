@@ -30,54 +30,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const refreshUser = async () => {
     try {
-      // Check for demo user data first
-      const demoUserData = localStorage.getItem('demoUserData');
-      if (demoUserData) {
-        const userData = JSON.parse(demoUserData);
-        
-        // Check if "remember me" is enabled and if login is still valid
-        if (userData.rememberMe && userData.loginTime) {
-          const loginTime = new Date(userData.loginTime);
-          const now = new Date();
-          const hoursSinceLogin = (now.getTime() - loginTime.getTime()) / (1000 * 60 * 60);
-          
-          // If more than 24 hours have passed, clear the data
-          if (hoursSinceLogin > 24) {
-            console.log('🔍 Login expired (more than 24 hours), clearing data');
-            localStorage.removeItem('demoUserData');
-            setIsLoading(false);
-            return;
-          }
-          
-          console.log('✅ Remember me active, login still valid');
-        } else {
-          console.log('🔍 Remember me not enabled or no login time');
-        }
-        
-        const demoUser: AuthUser = {
-          id: 'demo-user-' + Date.now(),
-          email: userData.email,
-          givenName: userData.name,
-          surname: '',
-          organization: userData.workplace,
-          location: userData.department,
-          role: userData.role,
-          accessToken: 'demo-token-' + Date.now(),
-        };
-        
-        console.log('✅ Demo user created from form data:', demoUser);
-        setUser(demoUser);
-        setIsLoading(false);
-        return;
-      }
-      
-      // Fallback to authService
+      console.log('🔄 Refreshing user from Azure AD B2C...');
       const currentUser = await authService.getUser();
-      console.log('🔄 Setting user in refreshUser:', currentUser);
+      console.log('✅ User refreshed from Azure AD B2C:', currentUser);
       setUser(currentUser);
-      console.log('✅ User refreshed:', currentUser);
       
-      // If we have a user, make sure we're not loading anymore
       if (currentUser) {
         setIsLoading(false);
         console.log('✅ Loading set to false');
@@ -85,30 +42,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error) {
       console.error('❌ Error refreshing user:', error);
       setUser(null);
+      setIsLoading(false);
     }
   };
 
   const login = async () => {
     try {
-      console.log('🔐 Starting login process...');
+      console.log('🔐 Starting Azure AD B2C login...');
       const newUser = await authService.login();
-      console.log('✅ Login completed, got user:', newUser);
+      console.log('✅ Azure AD B2C login completed, got user:', newUser);
       
       if (newUser) {
-        // Set user directly from login response
-        console.log('🔄 Setting user directly from login:', newUser);
         setUser(newUser);
-        console.log('✅ User set directly from login');
+        console.log('✅ User set from Azure AD B2C login');
       } else {
-        // Fallback to refresh if no user returned
         console.log('🔄 No user from login, calling refreshUser...');
         await refreshUser();
-        console.log('✅ User refreshed after login');
       }
       
-      console.log('✅ Login process completed successfully');
+      console.log('✅ Azure AD B2C login process completed successfully');
     } catch (error) {
-      console.error('❌ Login error:', error);
+      console.error('❌ Azure AD B2C login error:', error);
       throw error;
     }
   };
@@ -126,50 +80,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        console.log('🔍 Initializing auth...');
+        console.log('🔍 Initializing Azure AD B2C auth...');
         console.log('🔍 Current URL:', window.location.href);
-        
-        // Check for demo user data first (priority for demo)
-        const demoUserData = localStorage.getItem('demoUserData');
-        if (demoUserData) {
-          console.log('🔍 Found demo user data, creating user...');
-          const userData = JSON.parse(demoUserData);
-          
-          // Check if "remember me" is enabled and if login is still valid
-          if (userData.rememberMe && userData.loginTime) {
-            const loginTime = new Date(userData.loginTime);
-            const now = new Date();
-            const hoursSinceLogin = (now.getTime() - loginTime.getTime()) / (1000 * 60 * 60);
-            
-            // If more than 24 hours have passed, clear the data
-            if (hoursSinceLogin > 24) {
-              console.log('🔍 Login expired (more than 24 hours), clearing data');
-              localStorage.removeItem('demoUserData');
-              setIsLoading(false);
-              return;
-            }
-            
-            console.log('✅ Remember me active, login still valid');
-          } else {
-            console.log('🔍 Remember me not enabled or no login time');
-          }
-          
-          const demoUser: AuthUser = {
-            id: 'demo-user-' + Date.now(),
-            email: userData.email,
-            givenName: userData.name,
-            surname: '',
-            organization: userData.workplace,
-            location: userData.department,
-            role: userData.role,
-            accessToken: 'demo-token-' + Date.now(),
-          };
-          
-          console.log('✅ Demo user created from localStorage:', demoUser);
-          setUser(demoUser);
-          setIsLoading(false);
-          return;
-        }
         
         // Check if we're returning from OIDC login
         if (window.location.href.includes('id_token=') || window.location.href.includes('access_token=')) {
@@ -183,14 +95,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
         } else {
           console.log('🔍 No OIDC callback, checking for existing user...');
-          // Check for existing user
+          // Check for existing user from Azure AD B2C
           await refreshUser();
         }
       } catch (error) {
         console.error('❌ Auth initialization error:', error);
       } finally {
         setIsLoading(false);
-        console.log('🔍 Auth initialization completed, loading set to false');
+        console.log('🔍 Azure AD B2C auth initialization completed, loading set to false');
       }
     };
 

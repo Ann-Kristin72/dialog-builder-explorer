@@ -14,7 +14,7 @@ export const authenticateToken = (req, res, next) => {
 
   try {
     // For Azure AD B2C, we need to verify the JWT token
-    // This is a simplified version - in production you'd want proper JWT validation
+    // Note: In production, you should validate the token signature with Azure AD B2C public keys
     const decoded = jwt.decode(token);
     
     if (!decoded) {
@@ -24,17 +24,36 @@ export const authenticateToken = (req, res, next) => {
       });
     }
 
+    // Validate token structure (basic validation)
+    if (!decoded.sub || !decoded.iss || !decoded.aud) {
+      return res.status(403).json({ 
+        error: 'Invalid token structure',
+        message: 'Token har ugyldig struktur'
+      });
+    }
+
+    // Check if token is expired
+    if (decoded.exp && Date.now() >= decoded.exp * 1000) {
+      return res.status(403).json({ 
+        error: 'Token expired',
+        message: 'Token har utløpt'
+      });
+    }
+
     // Add user info to request
     req.user = {
       id: decoded.sub || decoded.oid,
       email: decoded.email || decoded.upn,
-      givenName: decoded.given_name,
+      givenName: decoded.given_name || decoded.name,
       surname: decoded.family_name,
-      organization: decoded.organization,
-      location: decoded.location,
-      role: decoded.role,
+      organization: decoded.extension_Organization || decoded.organization,
+      location: decoded.extension_Location || decoded.location,
+      role: decoded.extension_Role || decoded.role,
+      tenantId: decoded.tid, // Azure AD tenant ID
+      issuer: decoded.iss, // Token issuer
     };
 
+    console.log('✅ User authenticated:', req.user.email);
     next();
   } catch (error) {
     console.error('❌ JWT verification error:', error);
@@ -54,19 +73,32 @@ export const optionalAuth = (req, res, next) => {
     try {
       const decoded = jwt.decode(token);
       if (decoded) {
-        req.user = {
-          id: decoded.sub || decoded.oid,
-          email: decoded.email || decoded.upn,
-          givenName: decoded.given_name,
-          surname: decoded.family_name,
-          organization: decoded.organization,
-          location: decoded.location,
-          role: decoded.role,
-        };
+        // Basic validation
+        if (decoded.sub && decoded.iss && decoded.aud) {
+          // Check if token is expired
+          if (!decoded.exp || Date.now() < decoded.exp * 1000) {
+            req.user = {
+              id: decoded.sub || decoded.oid,
+              email: decoded.email || decoded.upn,
+              givenName: decoded.given_name || decoded.name,
+              surname: decoded.family_name,
+              organization: decoded.extension_Organization || decoded.organization,
+              location: decoded.extension_Location || decoded.location,
+              role: decoded.extension_Role || decoded.role,
+              tenantId: decoded.tid,
+              issuer: decoded.iss,
+            };
+            console.log('✅ Optional auth: User authenticated:', req.user.email);
+          } else {
+            console.log('⚠️ Optional auth: Token expired, continuing as anonymous');
+          }
+        }
       }
     } catch (error) {
       console.error('❌ Optional auth error:', error);
     }
+  } else {
+    console.log('ℹ️ Optional auth: No token provided, continuing as anonymous');
   }
 
   next();

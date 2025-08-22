@@ -224,8 +224,10 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
     setIsLoading(true);
 
     try {
-      // API call to backend
+      // API call to live backend
       const backendUrl = import.meta.env.VITE_API_URL || 'https://web-teknotassen-erf2emgebjh7cydy.norwayeast-01.azurewebsites.net';
+      console.log('🌐 Using backend URL:', backendUrl);
+      
       const response = await fetch(`${backendUrl}/api/courses/query`, {
         method: 'POST',
         headers: {
@@ -242,6 +244,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
 
       if (response.ok) {
         const data = await response.json();
+        console.log('✅ Backend response:', data);
+        
         const assistantMessage: Message = {
           id: (Date.now() + 1).toString(),
           content: data.answer || 'Jeg forstår spørsmålet ditt, men trenger mer kontekst for å gi et godt svar.',
@@ -251,6 +255,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onUpload }) => {
         };
         setMessages(prev => [...prev, assistantMessage]);
       } else {
+        console.warn('⚠️ Backend API call failed, falling back to demo mode');
         throw new Error('API call failed');
       }
     } catch (error) {
