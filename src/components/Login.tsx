@@ -33,10 +33,10 @@ const Login: React.FC = () => {
           {/* Velkomstmelding */}
           <div className="space-y-4">
             <h2 className="text-3xl font-bold text-card-foreground">
-              Velkommen til TeknoTassen! 👋
+              Velkommen tilbake til TeknoTassen! 👋
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Din AI-assistent for velferdsteknologi. Logg inn med din organisasjons konto for å komme i gang.
+              Din AI-assistent for velferdsteknologi. Logg inn med din organisasjons konto for å fortsette.
             </p>
           </div>
         </CardHeader>

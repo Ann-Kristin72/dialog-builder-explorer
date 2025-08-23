@@ -107,7 +107,7 @@ export const Header: React.FC = () => {
                 className="bg-gradient-to-r from-primary to-tech-blue hover:from-primary/90 hover:to-tech-blue/90 text-white font-medium px-6 py-2 rounded-lg transition-smooth transform hover:scale-105 shadow-soft"
               >
                 <LogIn className="mr-2 h-4 w-4" />
-                Logg inn
+                Logg inn igjen
               </Button>
             )}
           </div>
