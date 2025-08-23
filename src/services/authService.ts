@@ -34,17 +34,10 @@ class AuthService {
   private demoMode: boolean = false; // Default to Azure AD B2C
 
   constructor() {
-    // Check if we're in demo mode (no Azure AD B2C configured)
-    this.demoMode = !import.meta.env.VITE_OIDC_CLIENT_ID || 
-                   import.meta.env.VITE_OIDC_CLIENT_ID === 'your-azure-b2c-client-id-here' ||
-                   import.meta.env.VITE_OIDC_CLIENT_ID === '';
+    // Always use Azure AD B2C when MSAL is configured
+    this.demoMode = false; // Force Azure AD B2C mode
     
-    if (this.demoMode) {
-      console.log('🔧 Demo mode enabled - using local authentication');
-      return;
-    }
-
-    console.log('🔐 Azure AD B2C mode enabled - using OIDC authentication');
+    console.log('🔐 Azure AD B2C mode enabled - using MSAL authentication');
     console.log('🔑 Client ID:', import.meta.env.VITE_OIDC_CLIENT_ID);
     console.log('🌐 Authority:', import.meta.env.VITE_OIDC_AUTHORITY);
 
@@ -65,25 +58,6 @@ class AuthService {
   }
 
   async login(): Promise<AuthUser> {
-    if (this.demoMode) {
-      // Demo login - create a mock user
-      const demoUser: AuthUser = {
-        id: 'demo-user-123',
-        email: 'demo@teknotassen.no',
-        givenName: 'Demo',
-        surname: 'Bruker',
-        organization: 'TeknoTassen',
-        location: 'Oslo',
-        role: 'Admin',
-        accessToken: 'demo-token-' + Date.now(),
-      };
-      
-      // Store in localStorage for demo
-      localStorage.setItem('demoUser', JSON.stringify(demoUser));
-      console.log('✅ Demo user created and stored:', demoUser);
-      return demoUser;
-    }
-
     try {
       // Use MSAL to initiate login with redirect flow
       await this.msalInstance.loginRedirect({
@@ -102,15 +76,6 @@ class AuthService {
   }
 
   async completeLogin(): Promise<AuthUser | null> {
-    if (this.demoMode) {
-      // In demo mode, get user from localStorage
-      const demoUser = localStorage.getItem('demoUser');
-      if (demoUser) {
-        return JSON.parse(demoUser);
-      }
-      return null;
-    }
-
     try {
       // Handle redirect response from Azure AD B2C
       const response = await this.msalInstance.handleRedirectPromise();
@@ -142,14 +107,9 @@ class AuthService {
   }
 
   async logout(): Promise<void> {
-    if (this.demoMode) {
-      localStorage.removeItem('demoUser');
-      return;
-    }
-
     try {
-      await this.msalInstance.logoutPopup({
-        mainWindowRedirectUri: import.meta.env.VITE_REDIRECT_URI || 'https://dialog-builder-explorer-a3cr9ruhf-aino-frontend.vercel.app',
+      await this.msalInstance.logoutRedirect({
+        postLogoutRedirectUri: import.meta.env.VITE_REDIRECT_URI || 'https://dialog-builder-explorer-a3cr9ruhf-aino-frontend.vercel.app',
       });
     } catch (error) {
       console.error('❌ Logout error:', error);
@@ -158,17 +118,6 @@ class AuthService {
   }
 
   async getUser(): Promise<AuthUser | null> {
-    if (this.demoMode) {
-      const demoUser = localStorage.getItem('demoUser');
-      if (demoUser) {
-        const user = JSON.parse(demoUser);
-        console.log('✅ Demo user retrieved:', user);
-        return user;
-      }
-      console.log('❌ No demo user found in localStorage');
-      return null;
-    }
-
     try {
       if (!this.user) {
         // If user is null, try to acquire token silently to get the account
@@ -195,14 +144,6 @@ class AuthService {
   }
 
   getAccessToken(): string | null {
-    if (this.demoMode) {
-      const demoUser = localStorage.getItem('demoUser');
-      if (demoUser) {
-        return JSON.parse(demoUser).accessToken;
-      }
-      return null;
-    }
-
     return this.user?.idTokenClaims?.sub || null;
   }
 
@@ -226,8 +167,6 @@ class AuthService {
 
   // Handle silent renew
   async startSilentRenew(): Promise<void> {
-    if (this.demoMode) return; // Demo mode doesn't need token renewal
-
     try {
       await this.msalInstance.acquireTokenSilent({
         scopes: ['openid', 'profile', 'email'],
