@@ -40,13 +40,29 @@ try {
 // Security middleware
 app.use(helmet());
 
-// CORS configuration
+// CORS configuration - oppdatert etter CTO's spesifikasjon
+const allowedOrigins = [
+  "https://dialog-builder-explorer.vercel.app",         // prod
+  "https://dialog-builder-explorer-a3cr9ruhf-aino-frontend.vercel.app", // nåværende Vercel URL
+  /\.vercel\.app$/                                      // alle preview-domener
+];
+
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://teknotassen.vercel.app', 'https://web-teknotassen.azurewebsites.net', 'https://dialog-builder-explorer.vercel.app']
-    : ['http://localhost:8080', 'http://localhost:8081', 'http://localhost:3000'],
-  credentials: true,
+  origin: (origin, cb) => {
+    if (!origin) return cb(null, true); // curl/postman
+    if (allowedOrigins.some(a => (a instanceof RegExp ? a.test(origin) : a === origin))) {
+      return cb(null, true);
+    }
+    console.log(`🚫 CORS blocked: ${origin}`);
+    cb(new Error("CORS blocked: " + origin));
+  },
+  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
+  allowedHeaders: ["Authorization","Content-Type"],
+  credentials: false
 }));
+
+// Preflight support - CTO's spesifikasjon
+app.options("*", (_req, res) => res.sendStatus(200));   // preflight OK
 
 // Rate limiting
 const limiter = rateLimit({
