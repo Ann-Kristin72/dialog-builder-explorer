@@ -22,66 +22,56 @@ export const useAuth = () => {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [ready, setReady] = useState(false); // CTO's ready state
+  const [isLoading, setIsLoading] = useState(true);   // brukes av App.tsx
+  const [ready, setReady] = useState(false);          // CTO bootstrap gate
 
-  // CTO's recommendation: Don't render anything until MSAL is ready
+  // 🔧 MSAL bootstrap MÅ kjøre før noe tidlig return
+  useEffect(() => {
+    (async () => {
+      try {
+        console.log("🚀 Auth bootstrap start");
+
+        // 1) Hent redirect-respons (hvis vi kom fra B2C)
+        const resp = await authService.handleRedirectPromise();
+        if (resp?.account) {
+          authService.setActiveAccount(resp.account);
+          console.log("✅ Redirect account satt");
+        }
+
+        // 2) Finn/sett aktiv konto eller start login
+        let acct = authService.getActiveAccount() ?? authService.getAllAccounts()[0];
+        if (!acct) {
+          console.log("➡️ Ingen konto, starter loginRedirect");
+          await authService.loginRedirectWithQueryMode(); // inkluderer response_mode=query
+          return; // redirect nå
+        }
+        authService.setActiveAccount(acct);
+
+        // 3) Marker bootstrap done, så refresher vi bruker
+        setReady(true);
+        await refreshUser();           // 🔑 setter isLoading=false når ferdig
+      } catch (err) {
+        console.error("❌ Auth bootstrap error:", err);
+        setReady(true);
+        await refreshUser();           // 🔑 selv ved feil, sørg for at spinner stopper
+      }
+    })();
+  }, []);
+
+  // ⛔ Ikke rendr noe annet før MSAL bootstrap er ferdig
   if (!ready) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Initialiserer Azure AD B2C...</p>
+          <p className="text-muted-foreground">Initialiserer Azure AD B2C…</p>
         </div>
       </div>
     );
   }
 
-  // CTO's AuthBootstrap pattern
-  useEffect(() => {
-    (async () => {
-      try {
-        console.log('🔍 Starting CTO AuthBootstrap...');
-        
-        // Wait for MSAL to be ready
-        await authService.waitForReady();
-        console.log('✅ MSAL is ready, proceeding with auth bootstrap');
-        
-        // Handle redirect promise first
-        const resp = await authService.handleRedirectPromise();
-        if (resp?.account) {
-          console.log('✅ Got redirect response, setting active account');
-          authService.setActiveAccount(resp.account);
-        }
-        
-        // Get active account or first available
-        let acct = authService.getActiveAccount() ?? authService.getAllAccounts()[0];
-        
-        if (!acct) {
-          console.log('🔍 No account found, starting login...');
-          // No session → start login
-          await authService.loginRedirectWithQueryMode();
-          return; // We get redirected – code below won't run now
-        }
-        
-        console.log('✅ Account found, setting active account');
-        authService.setActiveAccount(acct);
-        setReady(true);
-        
-        // KRITISK: Kall refreshUser etter at AuthBootstrap er ferdig
-        await refreshUser();
-        
-      } catch (error) {
-        console.error('❌ Auth bootstrap error:', error);
-        // Set ready to true even on error to avoid infinite spinner
-        setReady(true);
-        // KRITISK: Kall refreshUser også ved feil for å sette isLoading = false
-        await refreshUser();
-      }
-    })();
-  }, []);
-
   const refreshUser = async () => {
+    setIsLoading(true);
     try {
       console.log('🔄 Refreshing user from Azure AD B2C...');
       const currentUser = await authService.getUser();
@@ -89,13 +79,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(currentUser);
       
       if (currentUser) {
-        setIsLoading(false);
-        console.log('✅ Loading set to false');
+        console.log('✅ User found, setting loading to false');
       }
     } catch (error) {
       console.error('❌ Error refreshing user:', error);
       setUser(null);
-      setIsLoading(false);
+    } finally {
+      setIsLoading(false);   // 🔑 viktig - alltid sett isLoading = false
+      console.log('✅ Loading set to false');
     }
   };
 
