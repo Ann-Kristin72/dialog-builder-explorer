@@ -14,16 +14,22 @@ export interface AuthUser {
 class AuthService {
   private userManager: UserManager;
   private user: User | null = null;
-  private demoMode: boolean = true; // Demo mode for testing
+  private demoMode: boolean = false; // Default to Azure AD B2C
 
   constructor() {
     // Check if we're in demo mode (no Azure AD B2C configured)
-    this.demoMode = !import.meta.env.VITE_OIDC_CLIENT_ID || import.meta.env.VITE_OIDC_CLIENT_ID === 'your-azure-b2c-client-id-here';
+    this.demoMode = !import.meta.env.VITE_OIDC_CLIENT_ID || 
+                   import.meta.env.VITE_OIDC_CLIENT_ID === 'your-azure-b2c-client-id-here' ||
+                   import.meta.env.VITE_OIDC_CLIENT_ID === '';
     
     if (this.demoMode) {
       console.log('🔧 Demo mode enabled - using local authentication');
       return;
     }
+
+    console.log('🔐 Azure AD B2C mode enabled - using OIDC authentication');
+    console.log('🔑 Client ID:', import.meta.env.VITE_OIDC_CLIENT_ID);
+    console.log('🌐 Authority:', import.meta.env.VITE_OIDC_AUTHORITY);
 
     this.userManager = new UserManager({
       authority: import.meta.env.VITE_OIDC_AUTHORITY || 'https://teknotassenb2c.b2clogin.com/teknotassenb2c.onmicrosoft.com/B2C_1_B2C_1A_',
