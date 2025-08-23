@@ -37,6 +37,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
   }
 
+  // CTO's AuthBootstrap pattern
+  useEffect(() => {
+    (async () => {
+      try {
+        console.log('🔍 Starting CTO AuthBootstrap...');
+        
+        // Wait for MSAL to be ready
+        await authService.waitForReady();
+        console.log('✅ MSAL is ready, proceeding with auth bootstrap');
+        
+        // Handle redirect promise first
+        const resp = await authService.handleRedirectPromise();
+        if (resp?.account) {
+          console.log('✅ Got redirect response, setting active account');
+          authService.setActiveAccount(resp.account);
+        }
+        
+        // Get active account or first available
+        let acct = authService.getActiveAccount() ?? authService.getAllAccounts()[0];
+        
+        if (!acct) {
+          console.log('🔍 No account found, starting login...');
+          // No session → start login
+          await authService.loginRedirectWithQueryMode();
+          return; // We get redirected – code below won't run now
+        }
+        
+        console.log('✅ Account found, setting active account');
+        authService.setActiveAccount(acct);
+        setReady(true);
+        
+      } catch (error) {
+        console.error('❌ Auth bootstrap error:', error);
+        // Set ready to true even on error to avoid infinite spinner
+        setReady(true);
+      }
+    })();
+  }, []);
+
   const refreshUser = async () => {
     try {
       console.log('🔄 Refreshing user from Azure AD B2C...');
@@ -87,38 +126,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw error;
     }
   };
-
-  useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        console.log('🔍 Initializing Azure AD B2C auth...');
-        console.log('🔍 Current URL:', window.location.href);
-        console.log('🔍 Current hash:', window.location.hash);
-        
-        // Wait for MSAL to be ready
-        await authService.waitForReady();
-        console.log('✅ MSAL is ready, proceeding with auth initialization');
-        
-        // Now check for existing user or callback
-        const existingUser = await authService.getUser();
-        if (existingUser) {
-          setUser(existingUser);
-          console.log('✅ Found existing user:', existingUser);
-        } else {
-          console.log('🔍 No existing user found');
-        }
-      } catch (error) {
-        console.error('❌ Auth initialization error:', error);
-      } finally {
-        setIsLoading(false);
-        setReady(true); // ALWAYS set to true to avoid infinite spinner
-        console.log('🔍 Azure AD B2C auth initialization completed, ready set to true');
-      }
-    };
-
-    // Start initialization
-    initializeAuth();
-  }, []);
 
   const isAuthenticatedValue = !!user && !!user.accessToken;
   

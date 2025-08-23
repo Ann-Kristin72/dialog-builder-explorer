@@ -4,7 +4,7 @@ import { PublicClientApplication, Configuration, AuthenticationResult, AccountIn
 const msalConfig: Configuration = {
   auth: {
     clientId: import.meta.env.VITE_OIDC_CLIENT_ID || '',
-    authority: 'https://teknotassenb2c.b2clogin.com/teknotassenb2c.onmicrosoft.com/B2C_1_B2C_1A_',
+    authority: `https://teknotassenb2c.b2clogin.com/teknotassenb2c.onmicrosoft.com/B2C_1_B2C_1A_`,
     knownAuthorities: ['teknotassenb2c.b2clogin.com'],
     redirectUri: import.meta.env.VITE_REDIRECT_URI || 'https://dialog-builder-explorer-a3cr9ruhf-aino-frontend.vercel.app',
     navigateToLoginRequestUrl: false, // <= unngå ekstra redirect-loop
@@ -243,6 +243,30 @@ class AuthService {
         }
       };
       checkReady();
+    });
+  }
+
+  // CTO's recommendation: Public methods for AuthBootstrap
+  async handleRedirectPromise() {
+    return this.msalInstance.handleRedirectPromise();
+  }
+
+  getActiveAccount() {
+    return this.msalInstance.getActiveAccount();
+  }
+
+  getAllAccounts() {
+    return this.msalInstance.getAllAccounts();
+  }
+
+  setActiveAccount(account: AccountInfo) {
+    return this.msalInstance.setActiveAccount(account);
+  }
+
+  async loginRedirectWithQueryMode() {
+    return this.msalInstance.loginRedirect({
+      scopes: ['openid', 'offline_access'],
+      extraQueryParameters: { response_mode: 'query' },
     });
   }
 }
