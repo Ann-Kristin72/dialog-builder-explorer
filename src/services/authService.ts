@@ -4,7 +4,7 @@ import { PublicClientApplication, Configuration, AuthenticationResult, AccountIn
 const msalConfig: Configuration = {
   auth: {
     clientId: import.meta.env.VITE_OIDC_CLIENT_ID || '',
-    authority: import.meta.env.VITE_OIDC_AUTHORITY || 'https://teknotassenb2c.b2clogin.com/teknotassenb2c.onmicrosoft.com/B2C_1_B2C_1A_',
+    authority: 'https://teknotassenb2c.b2clogin.com/teknotassenb2c.onmicrosoft.com',
     knownAuthorities: ['teknotassenb2c.b2clogin.com'],
     redirectUri: import.meta.env.VITE_REDIRECT_URI || 'https://dialog-builder-explorer-a3cr9ruhf-aino-frontend.vercel.app',
   },
@@ -82,6 +82,7 @@ class AuthService {
       await this.msalInstance.loginRedirect({
         scopes: ['openid', 'profile', 'email'],
         prompt: 'select_account', // Ensure user is prompted for account selection
+        authority: 'https://teknotassenb2c.b2clogin.com/teknotassenb2c.onmicrosoft.com/B2C_1_B2C_1A_',
       });
       
       // With redirect flow, we don't get a result here
