@@ -52,9 +52,6 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				'tech-blue': 'hsl(var(--tech-blue))',      /* teknoBlå #102A43 */
-				'tech-green': 'hsl(var(--tech-green))',    /* tasseTurkis #2EC4B6 */
-				'tech-orange': 'hsl(var(--tech-orange))',  /* tasseMint #65D6C2 */
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -72,8 +69,7 @@ export default {
 				sm: 'calc(var(--radius) - 4px)'
 			},
 			backgroundImage: {
-				'gradient-hero': 'var(--gradient-hero)',
-				'gradient-card': 'var(--gradient-card)'
+				// Gradients removed - using CSS variables directly
 			},
 			boxShadow: {
 				'soft': 'var(--shadow-soft)',
