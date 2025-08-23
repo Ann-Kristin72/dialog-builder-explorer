@@ -71,16 +71,6 @@ const AppContent: React.FC = () => {
             <Route path="/auth/callback" element={<Navigate to="/" replace />} />
             <Route path="/auth/silent-renew" element={<Navigate to="/" replace />} />
             
-            {/* Azure AD B2C callback route - handle root path with query params */}
-            <Route path="/" element={
-              <ProtectedRoute>
-                <>
-                  <Header />
-                  <Index />
-                </>
-              </ProtectedRoute>
-            } />
-            
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
