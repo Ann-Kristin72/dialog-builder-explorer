@@ -1,10 +1,24 @@
 import { UserManager, User, WebStorageStateStore } from 'oidc-client-ts';
 
-// Simple PKCE utility functions
+// PKCE utility functions
 function generateCodeVerifier(): string {
   const array = new Uint8Array(32);
   crypto.getRandomValues(array);
   return btoa(String.fromCharCode(...array))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+}
+
+async function generateCodeChallenge(verifier: string): Promise<string> {
+  // Simple SHA256 implementation for PKCE
+  const encoder = new TextEncoder();
+  const data = encoder.encode(verifier);
+  
+  // Use Web Crypto API for SHA256
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = new Uint8Array(hash);
+  return btoa(String.fromCharCode(...hashArray))
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
     .replace(/=/g, '');
@@ -97,7 +111,27 @@ class AuthService {
     }
 
     try {
-      await this.userManager.signinRedirect();
+      // Generate PKCE parameters
+      const codeVerifier = generateCodeVerifier();
+      const codeChallenge = await generateCodeChallenge(codeVerifier);
+      
+      // Store code_verifier for callback
+      localStorage.setItem('pkce_code_verifier', codeVerifier);
+      
+      console.log('🔐 PKCE generated - code_verifier stored');
+      
+      // Create custom OIDC request with PKCE
+      const loginUrl = new URL(this.userManager.settings.authority + '/oauth2/v2.0/authorize');
+      loginUrl.searchParams.set('client_id', this.userManager.settings.client_id);
+      loginUrl.searchParams.set('response_type', 'code');
+      loginUrl.searchParams.set('redirect_uri', this.userManager.settings.redirect_uri);
+      loginUrl.searchParams.set('scope', this.userManager.settings.scope);
+      loginUrl.searchParams.set('code_challenge', codeChallenge);
+      loginUrl.searchParams.set('code_challenge_method', 'S256');
+      loginUrl.searchParams.set('response_mode', 'query');
+      
+      // Redirect to Azure AD B2C
+      window.location.href = loginUrl.toString();
     } catch (error) {
       console.error('❌ Login error:', error);
       throw error;
@@ -115,9 +149,65 @@ class AuthService {
     }
 
     try {
-      const user = await this.userManager.signinRedirectCallback();
-      this.user = user;
-      return this.mapUserToAuthUser(user);
+      // Get stored PKCE code_verifier
+      const codeVerifier = localStorage.getItem('pkce_code_verifier');
+      if (!codeVerifier) {
+        console.error('❌ No PKCE code_verifier found');
+        return null;
+      }
+      
+      // Get authorization code from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      
+      if (!code) {
+        console.error('❌ No authorization code found in URL');
+        return null;
+      }
+      
+      console.log('🔐 PKCE callback - exchanging code for token');
+      
+      // Exchange authorization code for token using PKCE
+      const tokenUrl = new URL(this.userManager.settings.authority + '/oauth2/v2.0/token');
+      const tokenResponse = await fetch(tokenUrl.toString(), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          client_id: this.userManager.settings.client_id,
+          grant_type: 'authorization_code',
+          code: code,
+          redirect_uri: this.userManager.settings.redirect_uri,
+          code_verifier: codeVerifier,
+        }),
+      });
+      
+      if (!tokenResponse.ok) {
+        const errorText = await tokenResponse.text();
+        console.error('❌ Token exchange failed:', errorText);
+        return null;
+      }
+      
+      const tokenData = await tokenResponse.json();
+      console.log('✅ Token exchange successful');
+      
+      // Clean up PKCE data
+      localStorage.removeItem('pkce_code_verifier');
+      
+      // Create user object from token data
+      const user: AuthUser = {
+        id: tokenData.id_token ? JSON.parse(atob(tokenData.id_token.split('.')[1])).sub : '',
+        email: tokenData.id_token ? JSON.parse(atob(tokenData.id_token.split('.')[1])).email : '',
+        givenName: tokenData.id_token ? JSON.parse(atob(tokenData.id_token.split('.')[1])).given_name || '' : '',
+        surname: tokenData.id_token ? JSON.parse(atob(tokenData.id_token.split('.')[1])).family_name || '' : '',
+        organization: tokenData.id_token ? JSON.parse(atob(tokenData.id_token.split('.')[1])).extension_Organization : undefined,
+        location: tokenData.id_token ? JSON.parse(atob(tokenData.id_token.split('.')[1])).extension_Location : undefined,
+        role: tokenData.id_token ? JSON.parse(atob(tokenData.id_token.split('.')[1])).extension_Role : undefined,
+        accessToken: tokenData.access_token || '',
+      };
+      
+      return user;
     } catch (error) {
       console.error('❌ Complete login error:', error);
       return null;
