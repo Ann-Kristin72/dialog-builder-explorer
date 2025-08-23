@@ -171,6 +171,11 @@ const Index: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
 
+      {/* Test div to verify CSS variables are working */}
+      <div className="p-4 bg-primary text-primary-foreground text-center">
+        🎨 TEST: Hvis du ser denne grønne boksen med hvit tekst, fungerer det nye designet!
+      </div>
+
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
