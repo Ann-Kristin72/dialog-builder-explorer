@@ -86,7 +86,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.log('🔍 Current URL:', window.location.href);
         
         // Check if we're returning from OIDC login
-        if (window.location.href.includes('id_token=') || window.location.href.includes('access_token=')) {
+        if (window.location.href.includes('id_token=') || window.location.href.includes('access_token=') || window.location.href.includes('code=')) {
           console.log('🔍 Detected OIDC callback, completing login...');
           const newUser = await authService.completeLogin();
           if (newUser) {
