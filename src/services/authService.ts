@@ -42,9 +42,10 @@ class AuthService {
       automaticSilentRenew: true,
       silent_redirect_uri: import.meta.env.VITE_REDIRECT_URI || 'https://dialog-builder-explorer-a3cr9ruhf-aino-frontend.vercel.app',
       
-      // PKCE støtte for Azure AD B2C
+      // PKCE støtte for Azure AD B2C - eksplisitt konfigurert
       code_challenge_method: 'S256',
       code_verifier: undefined, // Genereres automatisk av oidc-client-ts
+      response_mode: 'query',
     });
 
     // Set up event handlers
