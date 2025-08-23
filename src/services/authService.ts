@@ -1,5 +1,15 @@
 import { UserManager, User, WebStorageStateStore } from 'oidc-client-ts';
 
+// Simple PKCE utility functions
+function generateCodeVerifier(): string {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return btoa(String.fromCharCode(...array))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+}
+
 export interface AuthUser {
   id: string;
   email: string;
@@ -42,9 +52,7 @@ class AuthService {
       automaticSilentRenew: true,
       silent_redirect_uri: import.meta.env.VITE_REDIRECT_URI || 'https://dialog-builder-explorer-a3cr9ruhf-aino-frontend.vercel.app',
       
-      // PKCE støtte for Azure AD B2C - eksplisitt konfigurert
-      code_challenge_method: 'S256',
-      code_verifier: undefined, // Genereres automatisk av oidc-client-ts
+      // Azure AD B2C konfigurasjon
       response_mode: 'query',
     });
 
@@ -183,11 +191,11 @@ class AuthService {
     return {
       id: user.profile.sub || '',
       email: user.profile.email || '',
-      givenName: user.profile.given_name || user.profile.name || '',
+      givenName: (user.profile.given_name as string) || (user.profile.name as string) || '',
       surname: user.profile.family_name || '',
-      organization: user.profile.extension_Organization || undefined,
-      location: user.profile.extension_Location || undefined,
-      role: user.profile.extension_Role || undefined,
+      organization: user.profile.extension_Organization as string || undefined,
+      location: user.profile.extension_Location as string || undefined,
+      role: user.profile.extension_Role as string || undefined,
       accessToken: user.access_token || '',
     };
   }
