@@ -95,7 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('🔍 Current URL:', window.location.href);
         console.log('🔍 Current hash:', window.location.hash);
         
-        // CTO's recommendation: Wait for MSAL to be ready first
+        // Wait for MSAL to be ready
         await authService.waitForReady();
         console.log('✅ MSAL is ready, proceeding with auth initialization');
         
@@ -111,11 +111,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.error('❌ Auth initialization error:', error);
       } finally {
         setIsLoading(false);
-        setReady(true); // CTO's ready state
+        setReady(true); // ALWAYS set to true to avoid infinite spinner
         console.log('🔍 Azure AD B2C auth initialization completed, ready set to true');
       }
     };
 
+    // Start initialization
     initializeAuth();
   }, []);
 

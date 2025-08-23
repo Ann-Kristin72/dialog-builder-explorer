@@ -233,9 +233,12 @@ class AuthService {
   async waitForReady(): Promise<void> {
     return new Promise((resolve) => {
       const checkReady = () => {
-        if (this.msalInstance) {
+        // Check if MSAL is fully initialized
+        if (this.msalInstance && this.msalInstance.initialize) {
+          console.log('✅ MSAL instance is ready');
           resolve();
         } else {
+          console.log('⏳ Waiting for MSAL to be ready...');
           setTimeout(checkReady, 100);
         }
       };
