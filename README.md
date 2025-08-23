@@ -1,225 +1,178 @@
-# 🚀 **TeknoTassen - AI-Assistent for Teknisk Kunnskap**
+# 🚀 TEKNOTASSEN - DIALOG BUILDER EXPLORER
 
-> En RAG-drevet AI-assistent bygget med moderne teknologi for å hjelpe med teknisk kunnskap og kurs
+## 📋 **OPPSUMMERING**
+TeknoTassen er en intelligent chatbot-applikasjon bygget med React, TypeScript og moderne web-teknologier. Applikasjonen integrerer Azure AD B2C for sikker autentisering og bruker avansert AI for å hjelpe brukere med ulike oppgaver.
 
-<!-- Trigger Vercel deploy - Azure AD B2C aktivert -->
-<!-- Ny push for å trigge Vercel deploy -->
-<!-- Webhook test - Azure AD B2C endringer -->
-<!-- Environment variables oppdatert - Azure AD B2C skal fungere nå -->
-<!-- Azure AD B2C custom claims konfigurert - role, organization, Location -->
-<!-- Cache busting - tving Vercel til å oppdatere kode -->
+---
 
-## 📋 **Hva er TeknoTassen?**
+## 🔐 **AZURE AD B2C INTEGRASJON STATUS**
 
-TeknoTassen er en intelligent AI-assistent som bruker **Retrieval-Augmented Generation (RAG)** for å gi presise, kontekstuelle svar basert på kursinnhold og teknisk dokumentasjon.
+### **✅ IMPLEMENTERT:**
+- **MSAL Browser** - Robust Azure AD B2C autentisering
+- **AuthBootstrap Pattern** - Automatisk login når ingen konto
+- **Design System** - Moderne UI med CSS variabler
+- **Backend Integration** - Live Azure backend med health checks
 
-### **🎯 Hovedfunksjoner**
-- **🤖 RAG-Powered AI Chat** - Intelligent samtale basert på kursinnhold
-- **📚 Kurs Opplasting** - Last opp markdown-filer med Nano/Unit struktur
-- **🔍 Semantisk Søk** - Finn relevant informasjon med AI-embeddings
-- **🎨 Moderne UI** - Responsivt design med Tailwind CSS og shadcn/ui
-- **🔐 Sikker Autentisering** - Azure AD B2C med OIDC (Demo Mode tilgjengelig)
-- **☁️ Cloud-Native** - Bygget for Azure og Vercel
-- **🖼️ Bildehåndtering** - Viser bilder fra Markdown-filer og direkte URLer
-- **🧠 Intelligent Respons** - Konsistent og forutsigbare svar fra TeknoTassen
-- **💾 Persistent Lagring** - Dokumenter huskes mellom sesjoner
+### **🚨 GJENVÆRENDE PROBLEM:**
+**Console loggene viser fortsatt gammel kode:**
+```
+🔐 Azure AD B2C mode enabled - using MSAL authentication
+🔑 Client ID: dceaf456-f134-409c-b63e-e6eca59677ab
+🌐 Authority: B2C_1_B2C_1A_
+✅ MSAL initialized successfully
+[MSAL] handleRedirectPromise called but there is no interaction in progress, returning null.
+🔍 No existing accounts found
+```
 
-## 🏗️ **Teknologi Stack**
+**Ingen av de nye loggene fra CTO's AuthBootstrap vises - tyder på deployment problem.**
 
-### **Frontend**
-- **React 18** + **TypeScript** + **Vite**
-- **Tailwind CSS** + **shadcn/ui** komponenter
-- **React Router** for navigasjon
-- **Lottie** for animasjoner
+### **📋 NESTE STEG:**
+1. **Verifiser Vercel deploy status**
+2. **Sjekk om AuthBootstrap logging vises**
+3. **Test Azure AD B2C login flow**
+4. **Debug callback handling**
 
-### **Backend**
-- **Node.js** + **Express.js**
-- **LangChain** for RAG pipeline
-- **OpenAI API** for embeddings og chat
-- **PostgreSQL** + **pgvector** for vector storage
+---
 
-### **Infrastruktur**
-- **Azure Web App (Linux) for Containers** (Backend)
-- **Azure PostgreSQL** med pgvector
-- **Azure Blob Storage** for filer
-- **Azure Key Vault** for secrets
+## 🛠️ **TEKNOLOGISTACK**
+
+### **Frontend:**
+- **React 18** med TypeScript
+- **Vite** for build tooling
+- **Tailwind CSS** med custom design system
+- **shadcn/ui** komponenter
+- **MSAL Browser** for Azure AD B2C
+
+### **Backend:**
+- **Node.js** med Express.js
+- **LangChain** for AI/ML
+- **OpenAI** integrasjon
+- **PostgreSQL** med pgvector
+- **Azure Blob Storage**
+
+### **Deployment:**
 - **Vercel** (Frontend)
+- **Azure Web App for Containers** (Backend)
+- **GitHub Actions** for CI/CD
+- **Docker** containerisering
 
-## 🚀 **Hurtig Start**
+---
 
-### **Forutsetninger**
+## 🚀 **RASK START**
+
+### **Forutsetninger:**
 - Node.js 18+
-- PostgreSQL med pgvector extension
-- Azure konto (for production)
-- OpenAI API key
+- npm eller yarn
+- Azure AD B2C tenant
+- Vercel konto
 
-### **Lokalt Utvikling**
+### **Installasjon:**
 ```bash
 # Klone repository
-git clone https://github.com/your-username/dialog-builder-explorer.git
+git clone https://github.com/Ann-Kristin72/dialog-builder-explorer.git
 cd dialog-builder-explorer
 
 # Installer dependencies
 npm install
-cd backend && npm install
 
-# Start frontend (port 8080)
+# Kopier environment variables
+cp env.example .env.local
+
+# Start utviklingsserver
 npm run dev
-
-# Start backend (port 80)
-cd backend && npm run dev
 ```
 
-### **Environment Variables**
+### **Environment Variables:**
 ```bash
-# Backend (.env)
-OPENAI_API_KEY=your-openai-key
-POSTGRES_URL=postgresql://user:pass@localhost:5432/teknotassen
-NODE_ENV=development
+# Azure AD B2C
+VITE_OIDC_CLIENT_ID=your-azure-b2c-client-id
+VITE_OIDC_AUTHORITY=https://teknotassenb2c.b2clogin.com/teknotassenb2c.onmicrosoft.com/B2C_1_B2C_1A_
+VITE_REDIRECT_URI=https://your-vercel-url.vercel.app
 
-# Frontend (.env.local)
-NEXT_PUBLIC_BACKEND_URL=http://localhost:80
+# Backend API
+VITE_API_URL=https://your-azure-backend-url
 ```
 
-## 🤖 **TeknoTassen AI-Assistent**
+---
 
-### **🎯 Hva kan TeknoTassen?**
-TeknoTassen er en intelligent AI-assistent som kan:
-- **Svare på spørsmål** om velferdsteknologi (HEPRO Respons, Digital Tilsyn, DPIA, ROS, Varda Care, Aula)
-- **Lese opplastede dokumenter** og gi presise svar basert på innholdet
-- **Vise bilder** fra Markdown-filer og direkte URLer
-- **Gi veiledning** gjennom komplekse prosesser steg for steg
-- **Huske dokumenter** permanent mellom sesjoner
+## 🔍 **TROUBLESHOOTING**
 
-### **🔧 Demo Mode**
-- **Fungerer uten backend** - perfekt for testing og demo
-- **Intelligente forhåndsdefinerte svar** for vanlige spørsmål
-- **Dokument-søk** i opplastede Markdown-filer
-- **Bildehåndtering** med riktig formatering
+### **Vanlige Problemer:**
+1. **Infinite Spinner** - Ready state settes aldri til true
+2. **Demo Mode Fallback** - Race condition mellom MSAL og demo
+3. **Callback Ignored** - Hash vs query params mismatch
+4. **API Failures** - "Failed to fetch" uten autentisering
 
-### **📚 Dokumenttyper Støttet**
-- **Markdown (.md)** med bilde-URLer
-- **Direkte bilde-URLer** (jpg, jpeg, png, gif, webp)
-- **Strukturerte seksjoner** med overskrifter (# ## ### ####)
+### **Løsninger:**
+- **Hard refresh** siden (Ctrl+F5)
+- **Sjekk Vercel deploy status**
+- **Verifiser environment variables**
+- **Se troubleshooting guide**
 
-## 📚 **Dokumentasjon**
+---
 
-### **📖 Komplett Teknisk Dokumentasjon**
-- **[AZURE_DEPLOYMENT.md](./AZURE_DEPLOYMENT.md)** - Detaljert Azure setup og deployment
-- **[VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md)** - Frontend deployment til Vercel
+## 📚 **DOKUMENTASJON**
 
-### **🔧 Utvikling**
-- **[Backend API](./backend/README.md)** - Backend endpoints og services
-- **[Frontend Components](./src/components/)** - React komponenter
-- **[Database Schema](./AZURE_DEPLOYMENT.md#database-schema)** - PostgreSQL tabeller og indekser
+### **Teknisk Dokumentasjon:**
+- **[AZURE_AD_B2C_INTEGRATION.md](./AZURE_AD_B2C_INTEGRATION.md)** - Komplett Azure AD B2C implementasjon
+- **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** - Debugging guide
+- **[AZURE_DEPLOYMENT.md](./AZURE_DEPLOYMENT.md)** - Backend deployment
+- **[VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md)** - Frontend deployment
 
-### **🚀 Deployment**
-- **[Azure Backend](./AZURE_DEPLOYMENT.md#azure-deployment-pipeline)** - GitHub Actions pipeline
-- **[Vercel Frontend](./VERCEL_DEPLOYMENT.md)** - Frontend deployment guide
+### **Azure Konfigurasjon:**
+- **App Registration** - Redirect URIs og scopes
+- **User Flows** - Sign-up/sign-in policies
+- **B2C Tenant** - Domain og policy navn
 
-## 🔧 **Nylige Forbedringer (Siste Chat)**
+---
 
-### **✅ TeknoTassen AI-Assistent**
-- **Fikset hikkup på svar** - konsistent og forutsigbare responser
-- **Forbedret søkealgoritme** - mer presis informasjon fra dokumenter
-- **Persistent dokumentlagring** - dokumenter huskes permanent
-- **Bildehåndtering** - viser bilder fra Markdown-filer og direkte URLer
-- **Intelligent respons-logikk** - 3-prioritets system for svar
+## 🎯 **FUNKSJONALITET**
 
-### **🎯 Respons-Prioritering**
-1. **Dokumenter først** - søker i opplastede filer (score ≥ 2)
-2. **Forhåndsdefinerte svar** - keyword matching for vanlige spørsmål
-3. **Fallback-veiledning** - hjelpsom informasjon når ingenting matcher
+### **Hovedfunksjoner:**
+- **Intelligent Chatbot** - AI-drevet samtale
+- **Dokument Håndtering** - Upload og analyse
+- **Kurs Management** - Strukturert læring
+- **Azure AD B2C** - Sikker autentisering
+- **Responsivt Design** - Mobil og desktop
 
-### **🖼️ Bildehåndtering**
-- **Markdown-bilder**: `![Alt Text](URL)` → vises med emoji og formatering
-- **Direkte URLer**: `https://example.com/image.jpg` → automatisk bilde-gjenkjenning
-- **HTML-formatering** - bilder vises med styling og fallback
+### **AI Capabilities:**
+- **Natural Language Processing**
+- **Document Analysis**
+- **Contextual Responses**
+- **Learning & Adaptation**
 
-## 🎯 **Prosjekt Status**
+---
 
-### **✅ Fullført**
-- [x] Frontend UI med React + TypeScript
-- [x] Backend API med Express + LangChain
-- [x] RAG pipeline med OpenAI embeddings
-- [x] Azure infrastruktur setup
-- [x] GitHub Actions deployment pipeline
-- [x] Alle kritiske kode-fixes implementert
-- [x] TeknoTassen AI-assistent med intelligent respons
-- [x] Bildehåndtering fra Markdown-filer
-- [x] Persistent dokumentlagring
-- [x] Demo Mode for testing
-- [x] Responsiv chat-interface
-- [x] Markdown parsing og formatering
+## 🤝 **BIDRAG**
 
-### **🚧 Under Utvikling**
-- [ ] Azure B2C autentisering (Demo Mode fungerer)
-- [ ] Backend RAG-integrasjon (Frontend Demo Mode komplett)
-- [ ] Database migrations
-- [ ] Kurs opplasting og parsing
-- [ ] TTS/STT integrasjon
-
-### **📋 Planlagt**
-- [ ] Analytics dashboard
-- [ ] Mobile app (React Native)
-- [ ] Advanced RAG features
-- [ ] Multi-modal support
-
-## 🐛 **Troubleshooting**
-
-### **Vanlige Problemer**
-- **Backend starter ikke:** Sjekk import statements og environment variables
-- **Database connection failed:** Verifiser PostgreSQL connection string
-- **Azure deployment feiler:** Sjekk GitHub Secrets og RBAC permissions
-
-### **Debug Commands**
-```bash
-# Backend health check
-curl http://localhost:80/healthz
-
-# Database connection test
-curl http://localhost:80/api/courses/test-db
-
-# Azure Web App logs
-az webapp log tail --name web-teknotassen --resource-group teknotassen-rg
-```
-
-## 🤝 **Bidrag**
-
-### **Utvikling**
+### **Utvikling:**
 1. Fork repository
-2. Opprett feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit endringer (`git commit -m 'Add amazing feature'`)
-4. Push til branch (`git push origin feature/amazing-feature`)
+2. Opprett feature branch
+3. Commit endringer
+4. Push til branch
 5. Opprett Pull Request
 
-### **Rapportere Bugs**
+### **Rapportering av Bugs:**
 - Bruk GitHub Issues
-- Inkluder detaljert beskrivelse og repro steps
-- Legg til logs og error messages
+- Inkluder console logging
+- Beskriv problemet detaljert
+- Legg til screenshots hvis relevant
 
-## 📄 **Lisens**
+---
+
+## 📄 **LISENS**
 
 Dette prosjektet er lisensiert under MIT License - se [LICENSE](LICENSE) filen for detaljer.
 
-## 📞 **Kontakt**
+---
 
-### **Team**
-- **Kristil** - Backend development, Azure infrastructure
-- **Ann-Kristin** - Frontend development, project management
+## 📞 **KONTAKT**
 
-### **Ressurser**
-- **GitHub:** [dialog-builder-explorer](https://github.com/your-username/dialog-builder-explorer)
-- **Azure Portal:** [web-teknotassen](https://web-teknotassen.azurewebsites.net)
-- **Vercel:** [teknotassen.vercel.app](https://teknotassen.vercel.app)
+- **Prosjekt:** TeknoTassen Dialog Builder Explorer
+- **Repository:** [GitHub](https://github.com/Ann-Kristin72/dialog-builder-explorer)
+- **Status:** Azure AD B2C implementert, deployment problem
 
 ---
 
-## 🎉 **Takk for at du bruker TeknoTassen!**
-
-Hvis du liker dette prosjektet, vennligst gi det en ⭐ på GitHub!
-
----
-
-**📝 Sist oppdatert:** August 2025  
-**🔧 Status:** Backend klar for deployment, Frontend klar for Vercel
+*Sist oppdatert: 23. august 2025*
+*Azure AD B2C Status: Implementert, men deployment problem*
