@@ -9,8 +9,8 @@ const msalConfig: Configuration = {
     redirectUri: import.meta.env.VITE_REDIRECT_URI || 'https://dialog-builder-explorer-a3cr9ruhf-aino-frontend.vercel.app',
   },
   cache: {
-    cacheLocation: 'localStorage',
-    storeAuthStateInCookie: false,
+    cacheLocation: 'sessionStorage',
+    storeAuthStateInCookie: true,
   },
   system: {
     allowRedirectInIframe: true,
@@ -54,6 +54,17 @@ class AuthService {
     // Initialize MSAL
     this.msalInstance.initialize().then(() => {
       console.log('✅ MSAL initialized successfully');
+      
+      // CTO's recommendation: Check accounts immediately after init
+      const accounts = this.msalInstance.getAllAccounts();
+      console.log('🔍 Accounts after MSAL init:', accounts);
+      
+      if (accounts.length > 0) {
+        console.log('✅ Found existing accounts, setting active account');
+        this.msalInstance.setActiveAccount(accounts[0]);
+      } else {
+        console.log('🔍 No existing accounts found');
+      }
     }).catch((error) => {
       console.error('❌ MSAL initialization failed:', error);
     });
@@ -110,6 +121,11 @@ class AuthService {
         if (response.account) {
           this.user = response.account;
           console.log('✅ Login successful with redirect, account:', response.account);
+          
+          // CTO's recommendation: Set active account explicitly
+          this.msalInstance.setActiveAccount(response.account);
+          console.log('✅ Active account set:', response.account);
+          
           const authUser = this.mapUserToAuthUser(this.user);
           console.log('✅ Mapped to AuthUser:', authUser);
           return authUser;
@@ -125,6 +141,11 @@ class AuthService {
         if (accounts.length > 0) {
           this.user = accounts[0];
           console.log('✅ User already logged in, account:', accounts[0]);
+          
+          // CTO's recommendation: Set active account explicitly
+          this.msalInstance.setActiveAccount(accounts[0]);
+          console.log('✅ Active account set:', accounts[0]);
+          
           const authUser = this.mapUserToAuthUser(this.user);
           console.log('✅ Mapped to AuthUser:', authUser);
           return authUser;

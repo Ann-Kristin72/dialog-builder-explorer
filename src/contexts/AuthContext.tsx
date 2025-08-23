@@ -86,6 +86,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.log('🔍 Current URL:', window.location.href);
         console.log('🔍 Current hash:', window.location.hash);
         
+        // CTO's recommendation: Run handleRedirectPromise first before anything else
+        console.log('🔍 Running MSAL handleRedirectPromise...');
+        
         // Check if we're returning from OIDC login
         // Use both href and hash to ensure we catch the callback
         const hasCallback = window.location.href.includes('code=') || 
