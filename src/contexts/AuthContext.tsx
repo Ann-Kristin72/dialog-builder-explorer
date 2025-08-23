@@ -20,13 +20,22 @@ export const useAuth = () => {
   return context;
 };
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [ready, setReady] = useState(false); // CTO's ready state
+
+  // CTO's recommendation: Don't render anything until MSAL is ready
+  if (!ready) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Initialiserer Azure AD B2C...</p>
+        </div>
+      </div>
+    );
+  }
 
   const refreshUser = async () => {
     try {
@@ -86,44 +95,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.log('🔍 Current URL:', window.location.href);
         console.log('🔍 Current hash:', window.location.hash);
         
-        // CTO's recommendation: Set loading true while waiting for handleRedirectPromise
-        setIsLoading(true);
+        // CTO's recommendation: Wait for MSAL to be ready first
+        await authService.waitForReady();
+        console.log('✅ MSAL is ready, proceeding with auth initialization');
         
-        // CTO's recommendation: Run handleRedirectPromise first before anything else
-        console.log('🔍 Running MSAL handleRedirectPromise...');
-        
-        // Check if we're returning from OIDC login
-        // Use both href and hash to ensure we catch the callback
-        const hasCallback = window.location.href.includes('code=') || 
-                           window.location.hash.includes('code=') ||
-                           window.location.href.includes('id_token=') || 
-                           window.location.hash.includes('id_token=') ||
-                           window.location.href.includes('access_token=') || 
-                           window.location.hash.includes('access_token=');
-        
-        console.log('🔍 TEST: hasCallback result:', hasCallback);
-        
-        if (hasCallback) {
-          console.log('🔍 Detected OIDC callback, completing login...');
-          const newUser = await authService.completeLogin();
-          if (newUser) {
-            setUser(newUser);
-            console.log('✅ OIDC login completed, user set:', newUser);
-            // Clean up URL
-            window.history.replaceState({}, document.title, window.location.pathname);
-          } else {
-            console.log('❌ OIDC login failed, no user returned');
-          }
+        // Now check for existing user or callback
+        const existingUser = await authService.getUser();
+        if (existingUser) {
+          setUser(existingUser);
+          console.log('✅ Found existing user:', existingUser);
         } else {
-          console.log('🔍 No OIDC callback, checking for existing user...');
-          // Check for existing user from Azure AD B2C
-          await refreshUser();
+          console.log('🔍 No existing user found');
         }
       } catch (error) {
         console.error('❌ Auth initialization error:', error);
       } finally {
         setIsLoading(false);
-        console.log('🔍 Azure AD B2C auth initialization completed, loading set to false');
+        setReady(true); // CTO's ready state
+        console.log('🔍 Azure AD B2C auth initialization completed, ready set to true');
       }
     };
 

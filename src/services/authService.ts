@@ -1,29 +1,22 @@
-import { PublicClientApplication, Configuration, AuthenticationResult, AccountInfo } from '@azure/msal-browser';
+import { PublicClientApplication, Configuration, AuthenticationResult, AccountInfo, LogLevel } from '@azure/msal-browser';
 
-// MSAL configuration for Azure AD B2C
+// MSAL configuration for Azure AD B2C - CTO's robust template
 const msalConfig: Configuration = {
   auth: {
     clientId: import.meta.env.VITE_OIDC_CLIENT_ID || '',
     authority: 'https://teknotassenb2c.b2clogin.com/teknotassenb2c.onmicrosoft.com/B2C_1_B2C_1A_',
     knownAuthorities: ['teknotassenb2c.b2clogin.com'],
     redirectUri: import.meta.env.VITE_REDIRECT_URI || 'https://dialog-builder-explorer-a3cr9ruhf-aino-frontend.vercel.app',
+    navigateToLoginRequestUrl: false, // <= unngå ekstra redirect-loop
   },
   cache: {
     cacheLocation: 'sessionStorage',
-    storeAuthStateInCookie: true,
+    storeAuthStateInCookie: true, // Safari/ITP
   },
   system: {
-    allowRedirectInIframe: true,
-  },
+    loggerOptions: { logLevel: LogLevel.Info, loggerCallback: (_l, m) => console.log('[MSAL]', m) }
+  }
 };
-
-// Log MSAL configuration for debugging
-console.log('🔧 MSAL Configuration:', {
-  clientId: msalConfig.auth.clientId,
-  authority: msalConfig.auth.authority,
-  redirectUri: msalConfig.auth.redirectUri,
-  knownAuthorities: msalConfig.auth.knownAuthorities
-});
 
 export interface AuthUser {
   id: string;
@@ -51,19 +44,26 @@ class AuthService {
 
     this.msalInstance = new PublicClientApplication(msalConfig);
 
-    // Initialize MSAL
+    // CTO's recommendation: Initialize MSAL and handle redirect promise FIRST
     this.msalInstance.initialize().then(() => {
       console.log('✅ MSAL initialized successfully');
       
-      // CTO's recommendation: Check accounts immediately after init
-      const accounts = this.msalInstance.getAllAccounts();
-      console.log('🔍 Accounts after MSAL init:', accounts);
-      
-      if (accounts.length > 0) {
-        console.log('✅ Found existing accounts, setting active account');
-        this.msalInstance.setActiveAccount(accounts[0]);
+      // VIKTIG: kjør handleRedirectPromise FØRST for å unngå race condition
+      return this.msalInstance.handleRedirectPromise();
+    }).then((resp) => {
+      if (resp?.account) {
+        console.log('✅ Got redirect response, setting active account');
+        this.msalInstance.setActiveAccount(resp.account);
+        this.user = resp.account;
       } else {
-        console.log('🔍 No existing accounts found');
+        const accounts = this.msalInstance.getAllAccounts();
+        if (accounts.length > 0) {
+          console.log('✅ Found existing accounts, setting active account');
+          this.msalInstance.setActiveAccount(accounts[0]);
+          this.user = accounts[0];
+        } else {
+          console.log('🔍 No existing accounts found');
+        }
       }
     }).catch((error) => {
       console.error('❌ MSAL initialization failed:', error);
@@ -227,6 +227,20 @@ class AuthService {
     } catch (error) {
       console.error('❌ Silent renew start error:', error);
     }
+  }
+
+  // CTO's recommendation: Wait for MSAL to be ready
+  async waitForReady(): Promise<void> {
+    return new Promise((resolve) => {
+      const checkReady = () => {
+        if (this.msalInstance) {
+          resolve();
+        } else {
+          setTimeout(checkReady, 100);
+        }
+      };
+      checkReady();
+    });
   }
 }
 
