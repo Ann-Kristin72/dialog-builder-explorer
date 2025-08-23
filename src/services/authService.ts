@@ -17,6 +17,14 @@ const msalConfig: Configuration = {
   },
 };
 
+// Log MSAL configuration for debugging
+console.log('🔧 MSAL Configuration:', {
+  clientId: msalConfig.auth.clientId,
+  authority: msalConfig.auth.authority,
+  redirectUri: msalConfig.auth.redirectUri,
+  knownAuthorities: msalConfig.auth.knownAuthorities
+});
+
 export interface AuthUser {
   id: string;
   email: string;
