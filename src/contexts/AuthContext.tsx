@@ -53,11 +53,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('✅ Azure AD B2C login completed, got user:', newUser);
       
       if (newUser) {
+        // User returned immediately (popup flow)
         setUser(newUser);
         console.log('✅ User set from Azure AD B2C login');
       } else {
-        console.log('🔄 No user from login, calling refreshUser...');
-        await refreshUser();
+        // User will be redirected to Azure AD B2C (redirect flow)
+        console.log('🔄 Redirect flow - user will be redirected to Azure AD B2C');
+        // Don't call refreshUser here - wait for redirect callback
       }
       
       console.log('✅ Azure AD B2C login process completed successfully');
