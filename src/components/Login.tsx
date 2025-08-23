@@ -16,12 +16,12 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-secondary to-accent p-4 sm:p-6">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4 sm:p-6">
       <Card className="w-full max-w-2xl shadow-card">
         <CardHeader className="text-center p-4 sm:p-6">
           <div className="mx-auto mb-8">
             {/* TeknoTassen avatar */}
-            <div className="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-full overflow-hidden shadow-avatar border-4 border-white transform hover:scale-105 transition-transform duration-300">
+            <div className="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-full overflow-hidden shadow-avatar border-4 border-primary/20 transform hover:scale-105 transition-transform duration-300">
               <img 
                 src="/teknotassen-avatar.jpg" 
                 alt="TeknoTassen AI Assistent"
@@ -32,7 +32,7 @@ const Login: React.FC = () => {
           
           {/* Velkomstmelding */}
           <div className="space-y-4">
-            <h2 className="text-3xl font-bold text-card-foreground">
+            <h2 className="text-3xl font-bold text-foreground">
               Velkommen tilbake til TeknoTassen! 👋
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -47,11 +47,11 @@ const Login: React.FC = () => {
             <Button
               onClick={handleAzureLogin}
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-primary to-tech-blue hover:from-primary/90 hover:to-tech-blue/90 text-primary-foreground font-semibold py-3 px-6 rounded-lg transition-smooth transform hover:scale-105 shadow-soft"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 px-6 rounded-lg transition-smooth transform hover:scale-105 shadow-soft"
             >
               {isLoading ? (
                 <div className="flex items-center space-x-2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground"></div>
                   <span>Logger inn...</span>
                 </div>
               ) : (

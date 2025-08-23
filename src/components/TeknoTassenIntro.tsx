@@ -23,16 +23,16 @@ export default function TeknoTassenIntro() {
   // Fallback hvis Lottie feiler
   if (error) {
     return (
-      <div className="w-32 h-32 mx-auto rounded-full overflow-hidden shadow-avatar bg-gradient-to-br from-tech-blue to-tech-green flex items-center justify-center">
-        <div className="text-4xl font-bold text-white">🤓</div>
+      <div className="w-32 h-32 mx-auto rounded-full overflow-hidden shadow-avatar bg-primary flex items-center justify-center">
+        <div className="text-4xl font-bold text-primary-foreground">🤓</div>
       </div>
     );
   }
 
   // Test-versjon først - bare vis en enkel div
   return (
-    <div className="w-32 h-32 mx-auto rounded-full overflow-hidden shadow-avatar bg-gradient-to-br from-tech-blue to-tech-green flex items-center justify-center">
-      <div className="text-4xl font-bold text-white">🤓</div>
+    <div className="w-32 h-32 mx-auto rounded-full overflow-hidden shadow-avatar bg-primary flex items-center justify-center">
+      <div className="text-4xl font-bold text-primary-foreground">🤓</div>
     </div>
   );
 

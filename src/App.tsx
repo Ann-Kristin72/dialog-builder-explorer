@@ -36,7 +36,7 @@ const AppContent: React.FC = () => {
   return (
     <Router>
       <IframeWrapper>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen">
           <Routes>
             {/* Login route */}
             <Route path="/login" element={

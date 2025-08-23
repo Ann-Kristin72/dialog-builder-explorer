@@ -52,19 +52,19 @@ export const IframeWrapper: React.FC<IframeWrapperProps> = ({ children }) => {
         style={{
           minHeight: iframeHeight ? `${iframeHeight}px` : '600px',
           padding: '16px',
-          backgroundColor: '#f8fafc',
+          backgroundColor: 'hsl(var(--background))',
         }}
       >
-        <div className="iframe-header mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="iframe-header mb-4 p-3 bg-muted/50 border border-border rounded-lg">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-bold">T</span>
+            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+              <span className="text-primary-foreground text-sm font-bold">T</span>
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-blue-900">
+              <h1 className="text-lg font-semibold text-foreground">
                 TeknoTassen
               </h1>
-              <p className="text-sm text-blue-700">
+              <p className="text-sm text-muted-foreground">
                 Velferdsteknologi AI-Assistent
               </p>
             </div>

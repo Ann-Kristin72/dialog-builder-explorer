@@ -32,8 +32,8 @@ export const Header: React.FC = () => {
               />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">TeknoTassen</h1>
-              <p className="text-sm text-gray-500">Velferdsteknologi AI-Assistent</p>
+              <h1 className="text-xl font-bold text-foreground">TeknoTassen</h1>
+              <p className="text-sm text-muted-foreground">Velferdsteknologi AI-Assistent</p>
             </div>
           </div>
 
@@ -43,15 +43,15 @@ export const Header: React.FC = () => {
               <>
                 {/* Rolle badge */}
                 <div className="flex items-center space-x-2">
-                  <Shield className="h-4 w-4 text-blue-500" />
-                  <span className="text-sm font-medium text-gray-700 capitalize">
+                  <Shield className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium text-foreground capitalize">
                     {user.role || 'Bruker'}
                   </span>
                 </div>
 
                 {/* Organisasjon */}
                 {user.organization && (
-                  <div className="hidden md:block text-sm text-gray-500">
+                  <div className="hidden md:block text-sm text-muted-foreground">
                     {user.organization}
                   </div>
                 )}
@@ -62,7 +62,7 @@ export const Header: React.FC = () => {
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                       <Avatar className="h-8 w-8">
                         <AvatarImage src="" alt={`${user.givenName} ${user.surname}`} />
-                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-sm font-semibold">
+                        <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
                           {user.givenName.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
@@ -93,7 +93,7 @@ export const Header: React.FC = () => {
                     
                     <DropdownMenuSeparator />
                     
-                    <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                    <DropdownMenuItem onClick={handleLogout} className="text-destructive">
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Logg ut</span>
                     </DropdownMenuItem>
@@ -104,7 +104,7 @@ export const Header: React.FC = () => {
               /* Login-knapp når ikke autentisert */
               <Button
                 onClick={handleLogin}
-                className="bg-gradient-to-r from-primary to-tech-blue hover:from-primary/90 hover:to-tech-blue/90 text-white font-medium px-6 py-2 rounded-lg transition-smooth transform hover:scale-105 shadow-soft"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-6 py-2 rounded-lg transition-all transform hover:scale-105 shadow-sm"
               >
                 <LogIn className="mr-2 h-4 w-4" />
                 Logg inn igjen

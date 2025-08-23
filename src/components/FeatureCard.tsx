@@ -10,30 +10,30 @@ interface FeatureCardProps {
 
 export const FeatureCard = ({ icon, title, description, accentColor }: FeatureCardProps) => {
   const borderColorClass = {
-    blue: "border-tech-blue/30",
-    green: "border-tech-green/30", 
-    orange: "border-tech-orange/30",
-    "tech-blue": "border-tech-blue/30",
-    "tech-green": "border-tech-green/30",
-    "tech-orange": "border-tech-orange/30"
+    blue: "border-primary/30",
+    green: "border-primary/30", 
+    orange: "border-primary/30",
+    "tech-blue": "border-primary/30",
+    "tech-green": "border-primary/30",
+    "tech-orange": "border-primary/30"
   }[accentColor];
 
   const iconColorClass = {
-    blue: "text-tech-blue",
-    green: "text-tech-green",
-    orange: "text-tech-orange",
-    "tech-blue": "text-tech-blue",
-    "tech-green": "text-tech-green",
-    "tech-orange": "text-tech-orange"
+    blue: "text-primary",
+    green: "text-primary",
+    orange: "text-primary",
+    "tech-blue": "text-primary",
+    "tech-green": "text-primary",
+    "tech-orange": "text-primary"
   }[accentColor];
 
   return (
-    <Card className={`bg-gradient-card shadow-card border-2 ${borderColorClass} hover:shadow-soft transition-smooth hover:-translate-y-1`}>
+    <Card className={`bg-muted/50 shadow-card border-2 ${borderColorClass} hover:shadow-soft transition-smooth hover:-translate-y-1`}>
       <CardContent className="p-8 text-center">
         <div className={`w-16 h-16 mx-auto mb-6 flex items-center justify-center ${iconColorClass}`}>
           {icon}
         </div>
-        <h3 className="text-xl font-semibold mb-4 text-card-foreground">
+        <h3 className="text-xl font-semibold mb-4 text-foreground">
           {title}
         </h3>
         <p className="text-muted-foreground leading-relaxed">
