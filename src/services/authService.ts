@@ -97,27 +97,39 @@ class AuthService {
 
   async completeLogin(): Promise<AuthUser | null> {
     try {
+      console.log('🔍 Starting completeLogin...');
+      console.log('🔍 Current URL:', window.location.href);
+      
       // Handle redirect response from Azure AD B2C
       const response = await this.msalInstance.handleRedirectPromise();
+      console.log('🔍 MSAL handleRedirectPromise response:', response);
       
       if (response) {
         // User returned from Azure AD B2C
+        console.log('🔍 Got redirect response, checking account...');
         if (response.account) {
           this.user = response.account;
-          console.log('✅ Login successful with redirect');
-          return this.mapUserToAuthUser(this.user);
+          console.log('✅ Login successful with redirect, account:', response.account);
+          const authUser = this.mapUserToAuthUser(this.user);
+          console.log('✅ Mapped to AuthUser:', authUser);
+          return authUser;
         } else {
           console.error('❌ No account in redirect response');
           return null;
         }
       } else {
         // No redirect response, check if user is already logged in
+        console.log('🔍 No redirect response, checking existing accounts...');
         const accounts = this.msalInstance.getAllAccounts();
+        console.log('🔍 Existing accounts:', accounts);
         if (accounts.length > 0) {
           this.user = accounts[0];
-          console.log('✅ User already logged in');
-          return this.mapUserToAuthUser(this.user);
+          console.log('✅ User already logged in, account:', accounts[0]);
+          const authUser = this.mapUserToAuthUser(this.user);
+          console.log('✅ Mapped to AuthUser:', authUser);
+          return authUser;
         }
+        console.log('🔍 No existing accounts found');
         return null;
       }
     } catch (error) {
