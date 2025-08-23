@@ -25,6 +25,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);   // brukes av App.tsx
   const [ready, setReady] = useState(false);          // CTO bootstrap gate
 
+  // 🔧 refreshUser funksjon MÅ være definert før useEffect
+  const refreshUser = async () => {
+    setIsLoading(true);
+    try {
+      console.log('🔄 Refreshing user from Azure AD B2C...');
+      const currentUser = await authService.getUser();
+      console.log('✅ User refreshed from Azure AD B2C:', currentUser);
+      setUser(currentUser);
+      
+      if (currentUser) {
+        console.log('✅ User found, setting loading to false');
+      }
+    } catch (error) {
+      console.error('❌ Error refreshing user:', error);
+      setUser(null);
+    } finally {
+      setIsLoading(false);   // 🔑 viktig - alltid sett isLoading = false
+      console.log('✅ Loading set to false');
+    }
+  };
+
   // 🔧 MSAL bootstrap MÅ kjøre før noe tidlig return
   useEffect(() => {
     (async () => {
@@ -69,26 +90,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       </div>
     );
   }
-
-  const refreshUser = async () => {
-    setIsLoading(true);
-    try {
-      console.log('🔄 Refreshing user from Azure AD B2C...');
-      const currentUser = await authService.getUser();
-      console.log('✅ User refreshed from Azure AD B2C:', currentUser);
-      setUser(currentUser);
-      
-      if (currentUser) {
-        console.log('✅ User found, setting loading to false');
-      }
-    } catch (error) {
-      console.error('❌ Error refreshing user:', error);
-      setUser(null);
-    } finally {
-      setIsLoading(false);   // 🔑 viktig - alltid sett isLoading = false
-      console.log('✅ Loading set to false');
-    }
-  };
 
   const login = async () => {
     try {
