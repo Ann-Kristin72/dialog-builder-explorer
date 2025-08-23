@@ -18,6 +18,11 @@ const msalConfig: Configuration = {
   }
 };
 
+// Authority validation logging for Vercel deployment
+console.log("✅ Using authority:", msalConfig.auth.authority);
+console.log("✅ Using client ID:", msalConfig.auth.clientId);
+console.log("✅ Using redirect URI:", msalConfig.auth.redirectUri);
+
 export interface AuthUser {
   id: string;
   email: string;

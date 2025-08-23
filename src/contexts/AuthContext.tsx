@@ -68,10 +68,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         authService.setActiveAccount(acct);
         setReady(true);
         
+        // KRITISK: Kall refreshUser etter at AuthBootstrap er ferdig
+        await refreshUser();
+        
       } catch (error) {
         console.error('❌ Auth bootstrap error:', error);
         // Set ready to true even on error to avoid infinite spinner
         setReady(true);
+        // KRITISK: Kall refreshUser også ved feil for å sette isLoading = false
+        await refreshUser();
       }
     })();
   }, []);
