@@ -51,6 +51,13 @@ class AuthService {
 
     this.msalInstance = new PublicClientApplication(msalConfig);
 
+    // Initialize MSAL
+    this.msalInstance.initialize().then(() => {
+      console.log('✅ MSAL initialized successfully');
+    }).catch((error) => {
+      console.error('❌ MSAL initialization failed:', error);
+    });
+
     // Set up event handlers
     this.msalInstance.addEventCallback((event) => {
       if (event.eventType === 'msal:loginSuccess') {
@@ -67,6 +74,10 @@ class AuthService {
 
   async login(): Promise<AuthUser> {
     try {
+      // Ensure MSAL is initialized before proceeding
+      await this.msalInstance.initialize();
+      console.log('✅ MSAL ready for login');
+      
       // Use MSAL to initiate login with redirect flow
       await this.msalInstance.loginRedirect({
         scopes: ['openid', 'profile', 'email'],
