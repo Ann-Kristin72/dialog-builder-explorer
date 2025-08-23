@@ -1,7 +1,6 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from './ui/button';
-import { Badge } from './ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 
 const Login: React.FC = () => {
@@ -21,7 +20,7 @@ const Login: React.FC = () => {
       <Card className="w-full max-w-2xl shadow-card">
         <CardHeader className="text-center p-4 sm:p-6">
           <div className="mx-auto mb-8">
-            {/* TeknoTassen avatar - mye større og mer tilstede */}
+            {/* TeknoTassen avatar */}
             <div className="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-full overflow-hidden shadow-avatar border-4 border-white transform hover:scale-105 transition-transform duration-300">
               <img 
                 src="/teknotassen-avatar.jpg" 
@@ -34,29 +33,17 @@ const Login: React.FC = () => {
           {/* Velkomstmelding */}
           <div className="space-y-4">
             <h2 className="text-3xl font-bold text-card-foreground">
-              Hei, jeg heter TeknoTassen! 👋
+              Velkommen til TeknoTassen! 👋
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Jeg digger alt som gjør livene våre lettere og teknologi er en av dem. Jeg er her for å hjelpe deg med alt du lurer på om velferdsteknologi og hvordan den kan tas i bruk.
+              Din AI-assistent for velferdsteknologi. Logg inn med din organisasjons konto for å komme i gang.
             </p>
-            <div className="mt-4">
-              <Badge variant="secondary" className="bg-tech-green/10 text-tech-green border-tech-green/20">
-                🔐 Sikker innlogging
-              </Badge>
-            </div>
           </div>
         </CardHeader>
         
         <CardContent className="space-y-6 p-4 sm:p-6">
           {/* Azure AD B2C Login Button */}
           <div className="space-y-4">
-            <div className="text-center">
-              <div className="inline-flex items-center space-x-2 bg-tech-green/10 text-tech-green px-4 py-2 rounded-full border border-tech-green/20">
-                <span className="text-sm">🔐</span>
-                <span className="text-sm font-medium">Logg inn med din organisasjon</span>
-              </div>
-            </div>
-            
             <Button
               onClick={handleAzureLogin}
               disabled={isLoading}
@@ -79,8 +66,7 @@ const Login: React.FC = () => {
           </div>
           
           <div className="text-center text-xs text-muted-foreground mt-4">
-            <p>🔐 Sikker innlogging med din organisasjons konto</p>
-            <p>TeknoTassen vil hjelpe deg videre etter innlogging!</p>
+            <p>Sikker innlogging med din organisasjons konto</p>
           </div>
         </CardContent>
       </Card>

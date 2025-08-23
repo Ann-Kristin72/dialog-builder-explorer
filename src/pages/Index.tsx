@@ -57,7 +57,7 @@ const Index: React.FC = () => {
     try {
       const text = await selectedFile.text();
       
-      // For demo purposes, we'll store in localStorage
+      // Store document data
       const documentData = {
         title: documentTitle,
         description: documentDescription,
@@ -65,7 +65,7 @@ const Index: React.FC = () => {
         created_at: new Date().toISOString(),
       };
 
-      // Store in localStorage for demo
+      // Store in localStorage for now (will be replaced with backend storage)
       const existingDocs = JSON.parse(localStorage.getItem('uploadedDocuments') || '[]');
       existingDocs.push(documentData);
       localStorage.setItem('uploadedDocuments', JSON.stringify(existingDocs));
