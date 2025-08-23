@@ -12,6 +12,9 @@ const msalConfig: Configuration = {
     cacheLocation: 'localStorage',
     storeAuthStateInCookie: false,
   },
+  system: {
+    allowRedirectInIframe: true,
+  },
 };
 
 export interface AuthUser {
@@ -82,20 +85,16 @@ class AuthService {
     }
 
     try {
-      // Use MSAL to initiate login
-      const loginResult = await this.msalInstance.loginPopup({
+      // Use MSAL to initiate login with redirect flow
+      await this.msalInstance.loginRedirect({
         scopes: ['openid', 'profile', 'email'],
         prompt: 'select_account', // Ensure user is prompted for account selection
       });
-
-      if (loginResult.account) {
-        this.user = loginResult.account;
-        console.log('✅ Login successful');
-        return this.mapUserToAuthUser(this.user);
-      } else {
-        console.error('❌ Login failed or user cancelled');
-        throw new Error('Login failed or user cancelled');
-      }
+      
+      // With redirect flow, we don't get a result here
+      // The user will be redirected to Azure AD B2C
+      // We'll handle the result in completeLogin method
+      return null;
     } catch (error) {
       console.error('❌ Login error:', error);
       throw error;
@@ -113,18 +112,27 @@ class AuthService {
     }
 
     try {
-      // Use MSAL to acquire token silently
-      const silentResult = await this.msalInstance.acquireTokenSilent({
-        scopes: ['openid', 'profile', 'email'],
-        account: this.user,
-      });
-
-      if (silentResult.account) {
-        this.user = silentResult.account;
-        console.log('✅ Silent renew successful');
-        return this.mapUserToAuthUser(this.user);
+      // Handle redirect response from Azure AD B2C
+      const response = await this.msalInstance.handleRedirectPromise();
+      
+      if (response) {
+        // User returned from Azure AD B2C
+        if (response.account) {
+          this.user = response.account;
+          console.log('✅ Login successful with redirect');
+          return this.mapUserToAuthUser(this.user);
+        } else {
+          console.error('❌ No account in redirect response');
+          return null;
+        }
       } else {
-        console.error('❌ Silent renew failed or no account found');
+        // No redirect response, check if user is already logged in
+        const accounts = this.msalInstance.getAllAccounts();
+        if (accounts.length > 0) {
+          this.user = accounts[0];
+          console.log('✅ User already logged in');
+          return this.mapUserToAuthUser(this.user);
+        }
         return null;
       }
     } catch (error) {
