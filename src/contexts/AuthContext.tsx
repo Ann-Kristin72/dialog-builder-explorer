@@ -84,9 +84,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         console.log('🔍 Initializing Azure AD B2C auth...');
         console.log('🔍 Current URL:', window.location.href);
+        console.log('🔍 Current hash:', window.location.hash);
         
         // Check if we're returning from OIDC login
-        if (window.location.href.includes('id_token=') || window.location.href.includes('access_token=') || window.location.href.includes('code=')) {
+        // Use both href and hash to ensure we catch the callback
+        const hasCallback = window.location.href.includes('code=') || 
+                           window.location.hash.includes('code=') ||
+                           window.location.href.includes('id_token=') || 
+                           window.location.hash.includes('id_token=') ||
+                           window.location.href.includes('access_token=') || 
+                           window.location.hash.includes('access_token=');
+        
+        if (hasCallback) {
           console.log('🔍 Detected OIDC callback, completing login...');
           const newUser = await authService.completeLogin();
           if (newUser) {
@@ -94,6 +103,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             console.log('✅ OIDC login completed, user set:', newUser);
             // Clean up URL
             window.history.replaceState({}, document.title, window.location.pathname);
+          } else {
+            console.log('❌ OIDC login failed, no user returned');
           }
         } else {
           console.log('🔍 No OIDC callback, checking for existing user...');
