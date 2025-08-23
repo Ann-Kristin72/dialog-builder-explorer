@@ -86,6 +86,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.log('🔍 Current URL:', window.location.href);
         console.log('🔍 Current hash:', window.location.hash);
         
+        // TEST: Check if we can see the callback parameters
+        console.log('🔍 TEST: Checking callback parameters...');
+        console.log('🔍 TEST: URL contains code?', window.location.href.includes('code='));
+        console.log('🔍 TEST: Hash contains code?', window.location.hash.includes('code='));
+        
         // CTO's recommendation: Run handleRedirectPromise first before anything else
         console.log('🔍 Running MSAL handleRedirectPromise...');
         
@@ -97,6 +102,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                            window.location.hash.includes('id_token=') ||
                            window.location.href.includes('access_token=') || 
                            window.location.hash.includes('access_token=');
+        
+        console.log('🔍 TEST: hasCallback result:', hasCallback);
         
         if (hasCallback) {
           console.log('🔍 Detected OIDC callback, completing login...');
