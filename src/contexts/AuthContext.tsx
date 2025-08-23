@@ -62,11 +62,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // 2) Finn/sett aktiv konto eller start login
         let acct = authService.getActiveAccount() ?? authService.getAllAccounts()[0];
         if (!acct) {
-          console.log("➡️ Ingen konto, starter loginRedirect");
-          await authService.loginRedirectWithQueryMode(); // inkluderer response_mode=query
-          return; // redirect nå
+          console.log("➡️ Ingen konto funnet - venter på bruker-initiert login");
+          // IKKE start automatisk login - la brukeren klikke på knappen
+          // await authService.loginRedirectWithQueryMode(); // Fjernet for å unngå interaction_in_progress
+        } else {
+          authService.setActiveAccount(acct);
         }
-        authService.setActiveAccount(acct);
 
         // 3) Marker bootstrap done, så refresher vi bruker
         setReady(true);
